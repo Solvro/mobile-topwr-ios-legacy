@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		6AFDDF4B2708E180006B2766 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6AFDDF4A2708E180006B2766 /* Preview Assets.xcassets */; };
 		6AFDDF562708E181006B2766 /* AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF552708E181006B2766 /* AppTests.swift */; };
 		6AFDDF612708E181006B2766 /* AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF602708E181006B2766 /* AppUITests.swift */; };
+		6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */ = {isa = PBXBuildFile; productRef = 6AFDDF702708F33A006B2766 /* ToPwr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +81,7 @@
 				6AFDDF542708E181006B2766 /* AppTests */,
 				6AFDDF5F2708E181006B2766 /* AppUITests */,
 				6AFDDF412708E17D006B2766 /* Products */,
+				6AFDDF6F2708F33A006B2766 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,6 +133,13 @@
 			path = AppUITests;
 			sourceTree = "<group>";
 		};
+		6AFDDF6F2708F33A006B2766 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -146,6 +156,9 @@
 			dependencies = (
 			);
 			name = App;
+			packageProductDependencies = (
+				6AFDDF702708F33A006B2766 /* ToPwr */,
+			);
 			productName = App;
 			productReference = 6AFDDF402708E17D006B2766 /* App.app */;
 			productType = "com.apple.product-type.application";
@@ -580,6 +593,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6AFDDF702708F33A006B2766 /* ToPwr */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ToPwr;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6AFDDF382708E17D006B2766 /* Project object */;
 }

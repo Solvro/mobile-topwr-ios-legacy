@@ -1,3 +1,18 @@
-struct ToPwr {
-    var text = "Hello, World!"
+import ComposableArchitecture
+import SplashFeature
+
+private let store = Store(
+    initialState: SplashState(),
+    reducer: splashReducer,
+    environment: env()
+)
+
+public let splashView: SplashView = SplashView(
+    store: store
+)
+
+private func env() -> SplashEnvironment {
+    .init(
+        mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+    )
 }
