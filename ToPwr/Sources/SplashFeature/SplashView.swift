@@ -1,15 +1,19 @@
 import SwiftUI
 import ComposableArchitecture
+import MenuFeature
 
 //MARK: - STATE
 public struct SplashState: Equatable {
     var text: String = "Hello World ToPwr"
     var isButtonTapped: Bool = false
+    
+    var menuState = MenuState()
     public init(){}
 }
 //MARK: - ACTION
 public enum SplashAction: Equatable {
     case buttonTapped
+    case menuAction(MenuAction)
 }
 
 //MARK: - ENVIRONMENT
@@ -33,6 +37,8 @@ public let splashReducer = Reducer<
   case .buttonTapped:
     state.isButtonTapped.toggle()
     return .none
+  case .menuAction:
+      return .none
   }
 }
 
@@ -52,22 +58,12 @@ public struct SplashView: View {
                 Color.gray
                     .ignoresSafeArea()
                 
-                VStack {
-                    Text(viewStore.text)
-                    
-                    if viewStore.isButtonTapped {
-                        Text("Text1")
-                    } else {
-                        Text("Text2")
-                    }
-                    
-                    Button(action: {
-                        viewStore.send(.buttonTapped)
-                    },
-                    label: {
-                        Text("Button")
-                    })
-                }
+                MenuView(
+                    store: self.store.scope(
+                        state: \.menuState,
+                        action: SplashAction.menuAction
+                    )
+                )
             }
         }
     }

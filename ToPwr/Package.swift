@@ -20,7 +20,30 @@ let package = Package(
             name: "SplashFeature",
             targets: ["ToPwr"]
         ),
-        
+        .library(
+            name: "MenuFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "HomeFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "MapFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "FacultiesFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "ClubsFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "InfoFeature",
+            targets: ["ToPwr"]
+        ),
     ],
     dependencies: [
         .package(
@@ -59,6 +82,7 @@ let package = Package(
         .target(
             name: "SplashFeature",
             dependencies: [
+                "MenuFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -68,6 +92,94 @@ let package = Package(
         .testTarget(
             name: "SplashFeatureTests",
             dependencies: ["SplashFeature"]
+        ),
+        .target(
+            name: "MenuFeature",
+            dependencies: [
+                "HomeFeature",
+                "MapFeature",
+                "FacultiesFeature",
+                "ClubsFeature",
+                "InfoFeature",
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "MenuFeatureTests",
+            dependencies: ["MenuFeature"]
+        ),
+        .target(
+            name: "HomeFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "HomeFeatureTests",
+            dependencies: ["HomeFeature"]
+        ),
+        .target(
+            name: "MapFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "MapFeatureTests",
+            dependencies: ["MapFeature"]
+        ),
+        .target(
+            name: "FacultiesFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "FacultiesFeatureTests",
+            dependencies: ["FacultiesFeature"]
+        ),
+        .target(
+            name: "ClubsFeature",
+            dependencies: [
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "ClubsFeatureTests",
+            dependencies: ["ClubsFeature"]
+        ),
+        .target(
+            name: "InfoFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "InfoFeatureTests",
+            dependencies: ["InfoFeature"]
         ),
     ]
 )
