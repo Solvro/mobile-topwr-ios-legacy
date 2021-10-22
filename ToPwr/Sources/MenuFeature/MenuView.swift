@@ -19,7 +19,7 @@ public struct MenuState: Equatable {
 }
 
 //MARK: - ACTION
-public enum MenuAction: Equatable {
+public enum MenuAction: Equatable, BindableAction {
     case homeAction(HomeAction)
     case mapAction(MapAction)
     case facultiesAction(FacultiesAction)
@@ -60,7 +60,7 @@ public let menuReducer = Reducer<
         return .none
     }
 }
-.binding(action: /MenuAction.binding)
+.binding()
 .combined(
     with: homeReducer
         .pullback(
