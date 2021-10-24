@@ -8,6 +8,7 @@ public struct K {
         public static let white = Color.white
         public static let firstColorDark = Color(hex: "#e56353")
         public static let firstColorLight = Color(hex: "#ff9f7e")
+        public static let scienceBackground = Color(hex: "#F7F7F8")
     }
     
 //MARK: - IMAGES
