@@ -1,25 +1,36 @@
 import SwiftUI
 import ComposableArchitecture
+import Combine
 import Common
+import CryptoKit
+import Api
 
 //MARK: - STATE
 public struct HomeState: Equatable {
     var text: String = "Hello World ToPwr"
+    var sessionDay: SessionDay? = nil
+
     public init(){}
 }
 //MARK: - ACTION
 public enum HomeAction: Equatable {
+    case onAppear
+    case onDisappear
+    case receivedSessionDate(Result<SessionDay, ErrorModel>)
     case buttonTapped
 }
 
 //MARK: - ENVIRONMENT
 public struct HomeEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getSessionDate = getSessionDate
     }
 }
 
@@ -28,12 +39,29 @@ public let homeReducer = Reducer<
     HomeState,
     HomeAction,
     HomeEnvironment
-> { state, action, environment in
+> { state, action, env in
   switch action {
+  case .onAppear:
+      if state.sessionDay == nil {
+          return env.getSessionDate()
+              .receive(on: env.mainQueue)
+              .catchToEffect()
+              .map(HomeAction.receivedSessionDate)
+      } else {
+          return .none
+      }
+  case .onDisappear:
+      return .none
+  case .receivedSessionDate(.success(let sessionDate)):
+      state.sessionDay = sessionDate
+      return .none
+  case .receivedSessionDate(.failure):
+      return .none
   case .buttonTapped:
     return .none
   }
 }
+
 
 //MARK: - VIEW
 public struct HomeView: View {
@@ -68,16 +96,13 @@ public struct HomeView: View {
                     .padding([.top, .bottom], 35)
                     
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("Cześć, miło Cię widzieć")
-                            Text("w Parzysty Piątek!")
-                                .fontWeight(.bold)
-                        }
-                        .padding(20)
+                        WelcomeView()
                         Spacer()
                     }
-                    
-                    DaysToSessionView(sessionDate: Date(year: 2022, month: 02, day: 28))
+                    DaysToSessionView(session: viewStore.sessionDay)
+                }
+                .onAppear {
+                    viewStore.send(.onAppear)
                 }
             }
         }
@@ -92,9 +117,16 @@ struct HomeView_Previews: PreviewProvider {
             store: Store(
                 initialState: .init(),
                 reducer: homeReducer,
-                environment: .init(mainQueue: .immediate)
+                environment: .failing
             )
         )
     }
+}
+
+public extension HomeEnvironment {
+    static let failing: Self = .init(
+        mainQueue: .immediate,
+        getSessionDate: failing0
+    )
 }
 #endif

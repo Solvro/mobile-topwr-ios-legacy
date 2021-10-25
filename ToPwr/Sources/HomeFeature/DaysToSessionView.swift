@@ -2,18 +2,20 @@ import Foundation
 import SwiftUI
 import Common
 
-//MARK: - Session struct
-private struct SessionDay {
-    var sessionDate: Date
-    
-    public init(
-        date: Date
-    ) {
-        sessionDate = date
-    }
+//MARK: - View
+public struct DaysToSessionView: View {
+    private var sessionDay: SessionDay?
+    private var date: Date?
     
     var days: Int {
-        return Date().daysBetween(start: Date(), end: sessionDate)
+        Calendar
+            .current
+            .dateComponents(
+                [.day],
+                from: Date(),
+                to: date ?? Date()
+            )
+            .day!
     }
     
     var first: String {
@@ -37,38 +39,42 @@ private struct SessionDay {
     var third: String {
         return "\(days % 10)"
     }
-}
-
-//MARK: - View
-public struct DaysToSessionView: View {
-    private var sessionDate: SessionDay
-    
     public init(
-        sessionDate: Date
+        session: SessionDay?
     ) {
-        self.sessionDate = .init(date: sessionDate)
+        if session == nil {
+            self.sessionDay = nil
+            self.date = nil
+        } else {
+            self.sessionDay = session
+            self.date = getDate(text: session?.sessionDate)
+        }
     }
  
     public var body: some View {
         ZStack {
-            HStack {
-                ZStack {
-                    CounterView(
-                        first: sessionDate.first,
-                        second: sessionDate.second,
-                        third: sessionDate.third
-                    )
+            if sessionDay != nil {
+                HStack {
+                    ZStack {
+                        CounterView(
+                            first: first,
+                            second: second,
+                            third: third
+                        )
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text("dni")
+                            .foregroundColor(K.Colors.white)
+                            .fontWeight(.bold)
+                        Text("do rozpoczęcia sesji")
+                            .foregroundColor(K.Colors.white)
+                    }
                 }
-                
-                VStack(alignment: .leading) {
-                    Text("dni")
-                        .foregroundColor(K.Colors.white)
-                        .fontWeight(.bold)
-                    Text("do rozpoczęcia sesji")
-                        .foregroundColor(K.Colors.white)
-                }
+                .padding()
+            } else {
+                ProgressView()
             }
-            .padding()
         }
         .frame(width: 340, height: 80)
         .background(
@@ -87,6 +93,19 @@ public struct DaysToSessionView: View {
     }
 }
 
+extension DaysToSessionView {
+    func getDate(text: String?) -> Date? {
+        #warning("TODO: inject DateFormatter")
+        guard let text = text else {
+            return nil
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.date(from: text)!
+    }
+}
 
 //Counter View - showing numbers only
 private struct CounterView: View {
