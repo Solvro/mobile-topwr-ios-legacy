@@ -29,35 +29,62 @@ public struct WelcomeView: View {
     
     private func dayString() -> String {
         var text: String = "w "
-        
-        if isEvenWeek {
-            text += "parzysty "
-        } else {
-            text += "nieparzysty "
-        }
+        var textDay: String = ""
         
         if let day = Calendar.current.dateComponents([.weekday], from: Date()).weekday {
             switch day {
             case 1:
-                text += "Poniedziałek!"
+                if isEvenWeek {
+                    textDay = "parzystą Niedzielę!"
+                } else {
+                    textDay = "nieparzystą Niedzielę!"
+                }
             case 2:
-                text += "Wtorek!"
+                if isEvenWeek {
+                    textDay = "parzysty Poniedziałek!"
+                } else {
+                    textDay = "nieparzysty Poniedziałek!"
+                }
             case 3:
-                text += "Środę!"
+                if isEvenWeek {
+                    textDay = "parzysty Wtorek!"
+                } else {
+                    textDay = "nieparzysty Wtorek!"
+                }
             case 4:
-                text += "Czwartek!"
+                if isEvenWeek {
+                    textDay = "parzystą Środę!"
+                } else {
+                    textDay = "nieparzystą Środę!"
+                }
             case 5:
-                text += "Piątek!"
+                if isEvenWeek {
+                    textDay = "parzysty Czwartek!"
+                } else {
+                    textDay = "nieparzysty Czwartek!"
+                }
             case 6:
-                text += "Sobotę!"
+                if isEvenWeek {
+                    textDay = "parzysty Piątek!"
+                } else {
+                    textDay = "nieparzysty Piątek!"
+                }
             case 7:
-                text += "Niedzielę!"
+                if isEvenWeek {
+                    textDay = "parzystą Sobotę!"
+                } else {
+                    textDay = "nieparzystą Sobotę!"
+                }
             default:
-                text += "Niezidentyfikowany dzień! "
+                if isEvenWeek {
+                    textDay += "parzysty Niezidentyfikowany dzień! "
+                } else {
+                    textDay += "nieparzysty Niezidentyfikowany dzień! "
+                }
             }
         } else {
             text += "Niezidentyfikowany dzień! "
         }
-        return text
+        return text + textDay
     }
 }
