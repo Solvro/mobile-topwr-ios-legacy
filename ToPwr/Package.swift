@@ -45,7 +45,7 @@ let package = Package(
             targets: ["ToPwr"]
         ),
         .library(
-            name: "Cells",
+            name: "CellsFeature",
             targets: ["ToPwr"]
         ),
     ],
@@ -120,7 +120,7 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
-                "Cells",
+                "CellsFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -187,7 +187,7 @@ let package = Package(
             dependencies: ["InfoFeature"]
         ),
         .target(
-            name: "Cells",
+            name: "CellsFeature",
             dependencies: [
                 "Common",
                 .product(
@@ -197,8 +197,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "CellsTests",
-            dependencies: ["Cells"]
+            name: "CellsFeatureTests",
+            dependencies: ["CellsFeature"]
         ),
     ]
 )

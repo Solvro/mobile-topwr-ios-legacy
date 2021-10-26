@@ -1,14 +1,15 @@
 import SwiftUI
 import ComposableArchitecture
 import Common
-import Cells
+import CellsFeature
 
 //MARK: - STATE
 public struct HomeState: Equatable {
     var text: String = "Hello World ToPwr"
     
+    var departmentListState = DepartmentListState()
+    
     var buildingCellState = BuildingCellState()
-    var departmentCellState = DepartmentCellState()
     var scienceClubCellState = ScienceClubCellState()
     public init(){}
 }
@@ -16,7 +17,7 @@ public struct HomeState: Equatable {
 public enum HomeAction: Equatable {
     case buttonTapped
     case buildingCellAction(BuildingCellAction)
-    case departmentCellAction(DepartmentCellAction)
+    case departmentListAction(DepartmentListAction)
     case scienceClubAction(ScienceClubCellAction)
 }
 
@@ -43,12 +44,22 @@ public let homeReducer = Reducer<
     case .buildingCellAction:
         print("XDDD")
         return .none
-    case .departmentCellAction:
+    case .departmentListAction:
         return .none
     case .scienceClubAction:
         return .none
     }
 }
+.combined(
+    with: departmentListReducer
+        .pullback(
+            state: \.departmentListState,
+            action: /HomeAction.departmentListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
 
 //MARK: - VIEW
 public struct HomeView: View {
@@ -115,27 +126,14 @@ public struct HomeView: View {
                     }
                     .padding(.bottom, 30)
                     
-                    // TWO
-                    HStack() {
-                        Text("Wydziały")
-                            .bold()
-                        Spacer()
-                        Text("Lista")
-                            .foregroundColor(.gray)
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<5)  { _ in
-                                DepartmentCellView(imageURL: "XXX", name: "W-1", fullName: "Wydział Architektury", store: self.store.scope(
-                                        state: \.departmentCellState,
-                                        action: HomeAction.departmentCellAction))
-                            }
-                        }
-                    }
-                    .padding(.bottom, 30)
+                    // WYDZIAŁY
+                    DepartmentListView(
+                        store: self.store.scope(
+                            state: \.departmentListState,
+                            action: HomeAction.departmentListAction
+                        )
+                    )
+
                     
                     // THREE
                     HStack() {
