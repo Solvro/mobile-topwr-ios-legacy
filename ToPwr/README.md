@@ -8,6 +8,11 @@ A description of this package.
 - [ComposableArchitecture](https://github.com/pointfreeco/swift-composable-architecture)
 
 ## 📗 PR codes Dictionary 
-- STP-0
+- TPWR-001 - 
+- TPWR-002 - 
+- TPWR-003 - 
+- TPWR-004 - 
+- TPWR-005 - 
+- TPWR-010 - CoreLogic: Api & Storage
 
  

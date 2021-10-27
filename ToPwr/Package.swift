@@ -44,6 +44,18 @@ let package = Package(
             name: "InfoFeature",
             targets: ["ToPwr"]
         ),
+        .library(
+            name: "Api",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "Storage",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "CoreLogic",
+            targets: ["ToPwr"]
+        ),
     ],
     dependencies: [
         .package(
@@ -56,6 +68,8 @@ let package = Package(
             name: "ToPwr",
             dependencies: [
                 "SplashFeature",
+                "Common",
+                "CoreLogic",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -180,6 +194,50 @@ let package = Package(
         .testTarget(
             name: "InfoFeatureTests",
             dependencies: ["InfoFeature"]
+        ),
+        .target(
+            name: "Api",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "ApiTests",
+            dependencies: ["Api"]
+        ),
+        .target(
+            name: "Storage",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "StorageTests",
+            dependencies: ["Storage"]
+        ),
+        .target(
+            name: "CoreLogic",
+            dependencies: [
+                "Common",
+                "Api",
+                "Storage",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "CoreLogicTests",
+            dependencies: ["CoreLogic"]
         ),
     ]
 )

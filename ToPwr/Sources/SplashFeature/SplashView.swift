@@ -1,5 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
+import Combine
+import Common
 import MenuFeature
 
 //MARK: - STATE
@@ -19,11 +21,14 @@ public enum SplashAction: Equatable {
 //MARK: - ENVIRONMENT
 public struct SplashEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getSessionDate = getSessionDate
     }
 }
 
@@ -41,6 +46,19 @@ public let splashReducer = Reducer<
       return .none
   }
 }
+.combined(
+    with: menuReducer
+        .pullback(
+            state: \.menuState,
+            action: /SplashAction.menuAction,
+            environment: { env in
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getSessionDate: env.getSessionDate
+                    )
+            }
+        )
+)
 
 //MARK: - VIEW
 public struct SplashView: View {
@@ -76,7 +94,10 @@ struct SplashView_Previews: PreviewProvider {
             store: Store(
                 initialState: .init(),
                 reducer: splashReducer,
-                environment: .init(mainQueue: .immediate)
+                environment: .init(
+                    mainQueue: .immediate,
+                    getSessionDate: failing0
+                )
             )
         )
     }
