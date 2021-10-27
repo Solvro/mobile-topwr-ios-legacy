@@ -16,7 +16,6 @@ public struct Storage {
     public func saveContent<T: Codable> (content: T, key: String) {
         if let data = decode(content: content) {
             defaults.set(data, forKey: key)
-            print("saved")
         }
     }
     

@@ -130,7 +130,6 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
-                "Api", //TO DELETE!!!
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"

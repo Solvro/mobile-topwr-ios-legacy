@@ -65,11 +65,9 @@ public struct DaysToSessionView: View {
                     
                     VStack(alignment: .leading) {
                         Text("dni")
-                            .foregroundColor(K.Colors.white)
-                            .fontWeight(.bold)
                         Text("do rozpoczęcia sesji")
-                            .foregroundColor(K.Colors.white)
                     }
+                    .foregroundColor(K.Colors.white)
                 }
                 .padding()
             } else {

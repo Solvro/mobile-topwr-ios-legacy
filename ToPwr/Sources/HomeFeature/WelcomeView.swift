@@ -9,11 +9,7 @@ public struct WelcomeView: View {
     public init(){
         self.date = Date()
         let weekOfYear = Calendar.current.component(.weekOfYear, from: Date.init(timeIntervalSinceNow: 0))
-        if weekOfYear % 2 == 0 {
-            self.isEvenWeek = true
-        } else {
-            self.isEvenWeek = false
-        }
+        self.isEvenWeek = (weekOfYear % 2 == 0) ? true : false
     }
     
     public var body: some View {

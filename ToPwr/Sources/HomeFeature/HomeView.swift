@@ -3,7 +3,6 @@ import ComposableArchitecture
 import Combine
 import Common
 import CryptoKit
-import Api
 
 //MARK: - STATE
 public struct HomeState: Equatable {
@@ -61,7 +60,6 @@ public let homeReducer = Reducer<
     return .none
   }
 }
-
 
 //MARK: - VIEW
 public struct HomeView: View {
