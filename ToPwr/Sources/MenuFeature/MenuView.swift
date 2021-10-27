@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import Combine
 import HomeFeature
 import MapFeature
 import FacultiesFeature
@@ -31,11 +32,14 @@ public enum MenuAction: Equatable, BindableAction {
 //MARK: - ENVIRONMENT
 public struct MenuEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getSessionDate = getSessionDate
     }
 }
 
@@ -67,7 +71,10 @@ public let menuReducer = Reducer<
             state: \.homeState,
             action: /MenuAction.homeAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getSessionDate: env.getSessionDate
+                    )
             }
         )
 )
@@ -189,7 +196,10 @@ struct MenuView_Previews: PreviewProvider {
             store: Store(
                 initialState: .init(),
                 reducer: menuReducer,
-                environment: .init(mainQueue: .immediate)
+                environment: .init(
+                    mainQueue: .immediate,
+                    getSessionDate: failing0
+                )
             )
         )
     }
