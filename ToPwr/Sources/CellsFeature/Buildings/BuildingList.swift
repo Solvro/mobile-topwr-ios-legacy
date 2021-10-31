@@ -4,7 +4,7 @@ import ComposableArchitecture
 //MARK: - STATE
 public struct BuildingListState: Equatable {
     let title: String = "Ostatnio wyszukiwane"
-    let buttonText: String = "Lista"
+    let buttonText: String = "Mapa"
     var buildings: IdentifiedArrayOf<BuildingCellState> = []
     
     var isLoading: Bool {
@@ -81,10 +81,10 @@ public struct BuildingListView: View {
         WithViewStore(store) { viewStore in
             
             HStack() {
-                Text("Ostatnio wyszukiwane")
+                Text(viewStore.title)
                     .bold()
                 Spacer()
-                Text("Mapa")
+                Text(viewStore.buttonText)
                     .foregroundColor(.gray)
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)

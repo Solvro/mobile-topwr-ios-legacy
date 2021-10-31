@@ -78,7 +78,7 @@ public struct ScienceClubListView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             HStack() {
-                Text("Koła naukowe")
+                Text(viewStore.title)
                     .bold()
                 Spacer()
             }

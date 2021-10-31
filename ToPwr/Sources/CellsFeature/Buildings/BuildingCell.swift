@@ -84,7 +84,8 @@ public extension BuildingCellState {
     static let mock: Self = .init(
         id: 1,
         imageURL: "tree",
-        name: "B-4")
+        name: "B-4"
+    )
     
     static func mocks(id: Int) -> Self {
         .init(
