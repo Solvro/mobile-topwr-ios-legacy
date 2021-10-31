@@ -19,7 +19,7 @@ public struct WelcomeView: View {
                 Text(dayString())
                     .fontWeight(.bold)
             }
-            .padding(20)
+            .padding([.top, .bottom])
         }
     }
     

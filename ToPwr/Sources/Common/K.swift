@@ -10,6 +10,10 @@ public struct K {
         public static let firstColorLight = Color(hex: "#ff9f7e")
     }
     
+    public struct CellColors {
+        public static let scienceBackground = Color(hex: "#F7F7F8")
+    }
+    
 //MARK: - IMAGES
     public struct Images {
 //        public static let blackPropeller = Image("propeller_black", bundle: .module)
