@@ -8,17 +8,17 @@ public struct HomeState: Equatable {
     var text: String = "Hello World ToPwr"
     
     var departmentListState = DepartmentListState()
-    
-    var buildingCellState = BuildingCellState()
-    var scienceClubCellState = ScienceClubCellState()
+    var buildingListState = BuildingListState()
+    var scienceClubListState = ScienceClubListState()
+
     public init(){}
 }
 //MARK: - ACTION
 public enum HomeAction: Equatable {
     case buttonTapped
-    case buildingCellAction(BuildingCellAction)
     case departmentListAction(DepartmentListAction)
-    case scienceClubAction(ScienceClubCellAction)
+    case buildingListAction(BuildingListAction)
+    case scienceClubListAction(ScienceClubListAction)
 }
 
 //MARK: - ENVIRONMENT
@@ -41,12 +41,11 @@ public let homeReducer = Reducer<
     switch action {
     case .buttonTapped:
         return .none
-    case .buildingCellAction:
-        print("XDDD")
-        return .none
     case .departmentListAction:
         return .none
-    case .scienceClubAction:
+    case .buildingListAction:
+        return .none
+    case .scienceClubListAction:
         return .none
     }
 }
@@ -55,6 +54,26 @@ public let homeReducer = Reducer<
         .pullback(
             state: \.departmentListState,
             action: /HomeAction.departmentListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
+.combined(
+    with: buildingListReducer
+        .pullback(
+            state: \.buildingListState,
+            action: /HomeAction.buildingListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
+.combined(
+    with: scienceClubListReducer
+        .pullback(
+            state: \.scienceClubListState,
+            action: /HomeAction.scienceClubListAction,
             environment: { env in
                     .init(mainQueue: env.mainQueue)
             }
@@ -102,29 +121,14 @@ public struct HomeView: View {
                     }
                     DaysToSessionView(sessionDate: Date(year: 2022, month: 02, day: 28))
                         .padding(.bottom, 30)
-                    // ONE
-                    HStack() {
-                        Text("Ostatnio wyszukiwane")
-                            .bold()
-                        Spacer()
-                        Text("Mapa")
-                            .foregroundColor(.gray)
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<5)  { _ in
-                                BuildingCellView(imageURL: "XXX",
-                                                 name: "B-4",
-                                                 store: self.store.scope(
-                                                    state: \.buildingCellState,
-                                                    action: HomeAction.buildingCellAction))
-                            }
-                        }
-                    }
-                    .padding(.bottom, 30)
+                    
+                    // OSTATNIO WYSZUKIWANE
+                    BuildingListView(
+                        store:  self.store.scope(
+                            state: \.buildingListState,
+                            action: HomeAction.buildingListAction
+                        )
+                    )
                     
                     // WYDZIAŁY
                     DepartmentListView(
@@ -135,24 +139,15 @@ public struct HomeView: View {
                     )
 
                     
-                    // THREE
-                    HStack() {
-                        Text("Koła naukowe")
-                            .bold()
-                        Spacer()
-                    }
-                    .padding(.trailing)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<5)  { _ in
-                                ScienceClubCellView(imageURL: "XXX", fullName: "KNN Solvro",
-                                                    store: self.store.scope(
-                                                        state: \.scienceClubCellState,
-                                                        action: HomeAction.scienceClubAction))
-                            }
-                        }
-                    }
-                    .padding(.bottom, 30)
+                    // SCIENCE CLUBS
+                    ScienceClubListView(
+                        store: self.store.scope(
+                            state: \.scienceClubListState,
+                            action: HomeAction.scienceClubListAction
+                        )
+                    )
+                    
+                    
                     Text("Co słychać?")
                         .bold()
                 }

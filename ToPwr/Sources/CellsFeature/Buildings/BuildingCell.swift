@@ -2,9 +2,20 @@ import SwiftUI
 import ComposableArchitecture
 
 //MARK: - STATE
-public struct BuildingCellState: Equatable {
-    var text: String = "Hello World ToPwr"
-    public init(){}
+public struct BuildingCellState: Equatable, Identifiable {
+    public let id: Int
+    let imageURL: String
+    let name: String
+    
+    public init(
+        id: Int,
+        imageURL: String,
+        name: String
+    ){
+        self.id = id
+        self.imageURL = imageURL
+        self.name = name
+    }
 }
 //MARK: - ACTION
 public enum BuildingCellAction: Equatable {
@@ -30,6 +41,7 @@ public let buildingCellReducer = Reducer<
 > { state, action, environment in
   switch action {
   case .buttonTapped:
+      print("Building Button Tapped")
     return .none
   }
 }
@@ -37,17 +49,11 @@ public let buildingCellReducer = Reducer<
 //MARK: - VIEW
 public struct BuildingCellView: View {
     let store: Store<BuildingCellState, BuildingCellAction>
-    let imageURL: String
-    let name: String
     
     public init(
-        imageURL: String,
-        name: String,
         store: Store<BuildingCellState, BuildingCellAction>
     ) {
         self.store = store
-        self.imageURL = imageURL
-        self.name = name
     }
     
     public var body: some View {
@@ -57,12 +63,12 @@ public struct BuildingCellView: View {
             }, label: {
                 #warning("Replace with an ImageURL")
                 ZStack(alignment: .bottomLeading) {
-                    Image("tree")
+                    Image(viewStore.imageURL)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 120, height: 120)
                         .cornerRadius(8)
-                    Text(name)
+                    Text(viewStore.name)
                         .bold()
                         .foregroundColor(.white)
                         .padding()
@@ -74,13 +80,18 @@ public struct BuildingCellView: View {
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
-struct BuildingCell_Previews: PreviewProvider {
-    static var previews: some View {
-        BuildingCellView(imageURL: "Image",
-                         name: "Name",
-                         store: Store(initialState: .init(),
-                                      reducer: buildingCellReducer,
-                                      environment: .init(mainQueue: .immediate)))
+public extension BuildingCellState {
+    static let mock: Self = .init(
+        id: 1,
+        imageURL: "tree",
+        name: "B-4")
+    
+    static func mocks(id: Int) -> Self {
+        .init(
+            id: id,
+            imageURL: "tree",
+            name: "B-\(id)"
+        )
     }
 }
 #endif

@@ -44,7 +44,7 @@ public let departmentCellReducer = Reducer<
 > { state, action, environment in
   switch action {
   case .buttonTapped:
-      print("CELL TAPPED")
+      print("Departament Button Tapped")
     return .none
   }
 }
@@ -87,17 +87,6 @@ public struct DepartmentCellView: View {
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
-//struct DepartmentCell_Previews: PreviewProvider {
-//    static var previews: some View {
-//        DepartmentCellView(imageURL: "ImageURL",
-//                           name: "Name",
-//                           fullName: "FullName",
-//                           store: Store(initialState: .init(),
-//                                        reducer: departmentCellReducer,
-//                                        environment: .init(mainQueue: .immediate)))
-//    }
-//}
-
 public extension DepartmentCellState {
     static let mock: Self = .init(
         id: 1,

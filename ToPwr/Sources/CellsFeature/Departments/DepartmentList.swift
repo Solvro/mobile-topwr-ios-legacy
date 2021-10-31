@@ -8,11 +8,7 @@ public struct DepartmentListState: Equatable {
     var departments: IdentifiedArrayOf<DepartmentCellState> = []
     
     var isLoading: Bool {
-        if departments.isEmpty {
-            return true
-        } else {
-            return false
-        }
+        departments.isEmpty ? true : false
     }
     
     public init(){
@@ -26,6 +22,7 @@ public struct DepartmentListState: Equatable {
         ]
     }
 }
+
 //MARK: - ACTION
 public enum DepartmentListAction: Equatable {
     case buttonTapped
@@ -87,10 +84,7 @@ public struct DepartmentListView: View {
                 HStack {
                     Text(viewStore.title)
                         .fontWeight(.bold)
-                        .padding(.leading, 10)
-                    
                     Spacer()
-
                     Button(
                         action: {
                             viewStore.send(.listButtonTapped)
@@ -117,20 +111,7 @@ public struct DepartmentListView: View {
                     }
                 }
             }
+            .padding(.bottom, 30)
         }
     }
 }
-
-//MARK: - MOCKS & PREVIEW
-#if DEBUG
-//struct DepartmentList_Previews: PreviewProvider {
-//    static var previews: some View {
-//        DepartmentListView(imageURL: "ImageURL",
-//                           name: "Name",
-//                           fullName: "FullName",
-//                           store: Store(initialState: .init(),
-//                                        reducer: departmentListReducer,
-//                                        environment: .init(mainQueue: .immediate)))
-//    }
-//}
-#endif

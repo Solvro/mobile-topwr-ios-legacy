@@ -1,17 +1,22 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jan Krzempek on 24/10/2021.
-//
 import SwiftUI
 import ComposableArchitecture
 import Common
 
 //MARK: - STATE
-public struct ScienceClubCellState: Equatable {
-    var text: String = "Hello World ToPwr"
-    public init(){}
+public struct ScienceClubCellState: Equatable, Identifiable {
+    public let id: Int
+    public let imageURL: String
+    public let fullName: String
+
+    public init(
+        id: Int,
+        imageURL: String,
+        fullName: String
+    ){
+        self.id = id
+        self.imageURL = imageURL
+        self.fullName = fullName
+    }
 }
 //MARK: - ACTION
 public enum ScienceClubCellAction: Equatable {
@@ -37,7 +42,7 @@ public let scienceClubCellReducer = Reducer<
 > { state, action, environment in
     switch action {
     case .buttonTapped:
-        print("CELL TAPPED")
+        print("Science Club Cell Tapped")
         return .none
     }
 }
@@ -45,27 +50,21 @@ public let scienceClubCellReducer = Reducer<
 //MARK: - VIEW
 public struct ScienceClubCellView: View {
     let store: Store<ScienceClubCellState, ScienceClubCellAction>
-    let imageURL: String
-    let fullName: String
     
     public init(
-        imageURL: String,
-        fullName: String,
         store: Store<ScienceClubCellState, ScienceClubCellAction>
     ) {
         self.store = store
-        self.imageURL = imageURL
-        self.fullName = fullName
     }
     
     public var body: some View {
         WithViewStore(store) { viewStore in
             Button(action: {
-                print("SCIENCE CLUB CELL TAPPED")
+                viewStore.send(.buttonTapped)
             }, label: {
                 ZStack(alignment: .topLeading) {
                     Rectangle()
-                        .foregroundColor(K.Colors.scienceBackground)
+                        .foregroundColor(K.CellColors.scienceBackground)
                         .cornerRadius(8)
                     VStack() {
                         HStack() {
@@ -76,7 +75,7 @@ public struct ScienceClubCellView: View {
                                     .frame(width: 48, height: 48)
                                     .foregroundColor(.white)
                                     .cornerRadius(5)
-                                Image("tree")
+                                Image(viewStore.imageURL)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: 20, height: 20)
@@ -84,7 +83,7 @@ public struct ScienceClubCellView: View {
                         }
                         Spacer()
                         HStack() {
-                            Text(fullName)
+                            Text(viewStore.fullName)
                                 .fontWeight(.medium)
                                 .foregroundColor(.black)
                             Spacer()
@@ -99,13 +98,19 @@ public struct ScienceClubCellView: View {
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
-struct ScienceClubCell_Previews: PreviewProvider {
-    static var previews: some View {
-        ScienceClubCellView(imageURL: "ImageURL",
-                            fullName: "Name",
-                            store: Store(initialState: .init(),
-                                         reducer: scienceClubCellReducer,
-                                         environment: .init(mainQueue: .immediate)))
+public extension ScienceClubCellState {
+    static let mock: Self = .init(
+        id: 1,
+        imageURL: "tree",
+        fullName: "Solvro"
+    )
+    
+    static func mocks(id: Int) -> Self {
+        .init(
+            id: id,
+            imageURL: "tree",
+            fullName: "Solvro \(id)"
+        )
     }
 }
 #endif
