@@ -45,6 +45,10 @@ let package = Package(
             targets: ["ToPwr"]
         ),
         .library(
+            name: "CellsFeature",
+            targets: ["ToPwr"]
+        ),
+        .library(
             name: "Api",
             targets: ["ToPwr"]
         ),
@@ -130,6 +134,7 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
+                "CellsFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -196,20 +201,6 @@ let package = Package(
             dependencies: ["InfoFeature"]
         ),
         .target(
-            name: "Api",
-            dependencies: [
-                "Common",
-                .product(
-                    name: "ComposableArchitecture",
-                    package: "swift-composable-architecture"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "ApiTests",
-            dependencies: ["Api"]
-        ),
-        .target(
             name: "Storage",
             dependencies: [
                 "Common",
@@ -238,6 +229,35 @@ let package = Package(
         .testTarget(
             name: "CoreLogicTests",
             dependencies: ["CoreLogic"]
+        ),
+        .target(
+            name: "Api",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "ApiTests",
+            dependencies: ["Api"]
+        ),
+        
+        .target(
+            name: "CellsFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "CellsFeatureTests",
+            dependencies: ["CellsFeature"]
         ),
     ]
 )

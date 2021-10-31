@@ -2,11 +2,16 @@ import SwiftUI
 import ComposableArchitecture
 import Combine
 import Common
+import CellsFeature
 import CryptoKit
 
 //MARK: - STATE
 public struct HomeState: Equatable {
     var text: String = "Hello World ToPwr"
+    
+    var departmentListState = DepartmentListState()
+    var buildingListState = BuildingListState()
+    var scienceClubListState = ScienceClubListState()
     var sessionDay: SessionDay? = nil
 
     public init(){}
@@ -17,6 +22,9 @@ public enum HomeAction: Equatable {
     case onDisappear
     case receivedSessionDate(Result<SessionDay, ErrorModel>)
     case buttonTapped
+    case departmentListAction(DepartmentListAction)
+    case buildingListAction(BuildingListAction)
+    case scienceClubListAction(ScienceClubListAction)
 }
 
 //MARK: - ENVIRONMENT
@@ -58,8 +66,44 @@ public let homeReducer = Reducer<
       return .none
   case .buttonTapped:
     return .none
+  case .departmentListAction:
+      return .none
+  case .buildingListAction:
+      return .none
+  case .scienceClubListAction:
+      return .none
   }
 }
+.combined(
+    with: departmentListReducer
+        .pullback(
+            state: \.departmentListState,
+            action: /HomeAction.departmentListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
+.combined(
+    with: buildingListReducer
+        .pullback(
+            state: \.buildingListState,
+            action: /HomeAction.buildingListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
+.combined(
+    with: scienceClubListReducer
+        .pullback(
+            state: \.scienceClubListState,
+            action: /HomeAction.scienceClubListAction,
+            environment: { env in
+                    .init(mainQueue: env.mainQueue)
+            }
+        )
+)
 
 //MARK: - VIEW
 public struct HomeView: View {
@@ -74,7 +118,7 @@ public struct HomeView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             ScrollView {
-                VStack {
+                VStack(alignment: .leading) {
                     ZStack {
                         //Logo View - TODO
                         HStack {
@@ -90,7 +134,6 @@ public struct HomeView: View {
                             Spacer()
                         }
                     }
-                    .padding(.leading, 20)
                     .padding([.top, .bottom], 35)
                     
                     HStack {
@@ -98,14 +141,45 @@ public struct HomeView: View {
                         Spacer()
                     }
                     DaysToSessionView(session: viewStore.sessionDay)
+                        .padding(.bottom, 30)
+                    
+                    // OSTATNIO WYSZUKIWANE
+                    BuildingListView(
+                        store:  self.store.scope(
+                            state: \.buildingListState,
+                            action: HomeAction.buildingListAction
+                        )
+                    )
+                    
+                    // WYDZIAŁY
+                    DepartmentListView(
+                        store: self.store.scope(
+                            state: \.departmentListState,
+                            action: HomeAction.departmentListAction
+                        )
+                    )
+
+                    
+                    // SCIENCE CLUBS
+                    ScienceClubListView(
+                        store: self.store.scope(
+                            state: \.scienceClubListState,
+                            action: HomeAction.scienceClubListAction
+                        )
+                    )
+                    
+                    
+                    Text("Co słychać?")
+                        .bold()
+                    }
                 }
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
             }
+            .padding(.leading)
         }
     }
-}
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
