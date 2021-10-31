@@ -1,5 +1,9 @@
 import ComposableArchitecture
 import SplashFeature
+import CoreLogic
+import Common
+
+private let coreLogic: CoreLogic = CoreLogic()
 
 private let store = Store(
     initialState: SplashState(),
@@ -13,6 +17,7 @@ public let splashView: SplashView = SplashView(
 
 private func env() -> SplashEnvironment {
     .init(
-        mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+        mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
+        getSessionDate: coreLogic.getSessionDate
     )
 }
