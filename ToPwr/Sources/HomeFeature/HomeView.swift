@@ -21,6 +21,7 @@ public enum HomeAction: Equatable {
     case onAppear
     case onDisappear
     case receivedSessionDate(Result<SessionDay, ErrorModel>)
+    case receivedDepartments(Result<[Department], ErrorModel>)
     case buttonTapped
     case departmentListAction(DepartmentListAction)
     case buildingListAction(BuildingListAction)
@@ -31,13 +32,16 @@ public enum HomeAction: Equatable {
 public struct HomeEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
+        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
+        self.getDepartments = getDepartments
     }
 }
 
@@ -50,10 +54,21 @@ public let homeReducer = Reducer<
   switch action {
   case .onAppear:
       if state.sessionDay == nil {
-          return env.getSessionDate()
-              .receive(on: env.mainQueue)
-              .catchToEffect()
-              .map(HomeAction.receivedSessionDate)
+          return .merge(
+            env.getSessionDate()
+                .receive(on: env.mainQueue)
+                .catchToEffect()
+                .map(HomeAction.receivedSessionDate),
+            env.getDepartments()
+                .receive(on: env.mainQueue)
+                .catchToEffect()
+                .map(HomeAction.receivedDepartments)
+
+          )
+//          return env.getSessionDate()
+//              .receive(on: env.mainQueue)
+//              .catchToEffect()
+//              .map(HomeAction.receivedSessionDate)
       } else {
           return .none
       }
@@ -63,6 +78,19 @@ public let homeReducer = Reducer<
       state.sessionDay = sessionDate
       return .none
   case .receivedSessionDate(.failure):
+      return .none
+  case .receivedDepartments(.success(let departments)):
+
+      state.departmentListState = .init(
+        departments: departments.map {
+            DepartmentCellState(department: $0)
+        }
+      )
+      
+      print(departments)
+      return .none
+  case .receivedDepartments(.failure(let error)):
+      print(error)
       return .none
   case .buttonTapped:
     return .none
@@ -134,12 +162,10 @@ public struct HomeView: View {
                             Spacer()
                         }
                     }
-                    .padding([.top, .bottom], 35)
+                    .padding(20)
                     
-                    HStack {
-                        WelcomeView()
-                        Spacer()
-                    }
+                    WelcomeView()
+                    
                     DaysToSessionView(session: viewStore.sessionDay)
                         .padding(.bottom, 30)
                     
@@ -158,7 +184,6 @@ public struct HomeView: View {
                             action: HomeAction.departmentListAction
                         )
                     )
-
                     
                     // SCIENCE CLUBS
                     ScienceClubListView(
@@ -171,13 +196,14 @@ public struct HomeView: View {
                     
                     Text("Co słychać?")
                         .bold()
-                    }
+                        .padding(.leading, 10)
+                }
+                
                 }
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
             }
-            .padding(.leading)
         }
     }
 
@@ -198,7 +224,8 @@ struct HomeView_Previews: PreviewProvider {
 public extension HomeEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getSessionDate: failing0
+        getSessionDate: failing0,
+        getDepartments: failing0
     )
 }
 #endif

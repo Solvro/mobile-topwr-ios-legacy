@@ -18,6 +18,7 @@ public let splashView: SplashView = SplashView(
 private func env() -> SplashEnvironment {
     .init(
         mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-        getSessionDate: coreLogic.getSessionDate
+        getSessionDate: coreLogic.getSessionDate,
+        getDepartments: coreLogic.getDepartments
     )
 }

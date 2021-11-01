@@ -22,13 +22,16 @@ public enum SplashAction: Equatable {
 public struct SplashEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
+        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
+        self.getDepartments = getDepartments
     }
 }
 
@@ -54,7 +57,8 @@ public let splashReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getSessionDate: env.getSessionDate
+                        getSessionDate: env.getSessionDate,
+                        getDepartments: env.getDepartments
                     )
             }
         )
@@ -96,7 +100,8 @@ struct SplashView_Previews: PreviewProvider {
                 reducer: splashReducer,
                 environment: .init(
                     mainQueue: .immediate,
-                    getSessionDate: failing0
+                    getSessionDate: failing0,
+                    getDepartments: failing0
                 )
             )
         )

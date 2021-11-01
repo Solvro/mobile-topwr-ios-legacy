@@ -77,12 +77,12 @@ public struct ScienceClubListView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            HStack() {
+            HStack {
                 Text(viewStore.title)
                     .bold()
                 Spacer()
             }
-            .padding(.trailing)
+            .padding()
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack() {
                     ForEachStore(
@@ -94,6 +94,7 @@ public struct ScienceClubListView: View {
                         ScienceClubCellView(store: store)
                     }
                 }
+                .padding(.leading, 10)
             }
             .padding(.bottom, 30)
         }

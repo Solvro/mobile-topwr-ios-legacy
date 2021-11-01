@@ -5,21 +5,16 @@ import ComposableArchitecture
 public struct DepartmentListState: Equatable {
     let title: String = "Wydziały"
     let buttonText: String = "Lista"
-    var departments: IdentifiedArrayOf<DepartmentCellState> = []
+    var departments: IdentifiedArrayOf<DepartmentCellState>
     
     var isLoading: Bool {
         departments.isEmpty ? true : false
     }
     
-    public init(){
-        #warning("MOCKS! TODO: API CONNECT")
-        self.departments = [
-            .mocks(id: 1),
-            .mocks(id: 2),
-            .mocks(id: 3),
-            .mocks(id: 4),
-            .mocks(id: 5)
-        ]
+    public init(
+        departments: [DepartmentCellState] = []
+    ){
+        self.departments = .init(uniqueElements: departments)
     }
 }
 
@@ -96,8 +91,9 @@ public struct DepartmentListView: View {
                                 .foregroundColor(.gray)
                         }
                     )
-                        .padding(.trailing, 10)
                 }
+                .padding([.leading, .trailing], 10)
+                
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack {
                         ForEachStore(
@@ -109,6 +105,7 @@ public struct DepartmentListView: View {
                             DepartmentCellView(store: store)
                         }
                     }
+                    .padding(.leading, 10)
                 }
             }
             .padding(.bottom, 30)

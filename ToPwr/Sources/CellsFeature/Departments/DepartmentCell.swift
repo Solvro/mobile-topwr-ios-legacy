@@ -1,23 +1,17 @@
 import SwiftUI
 import ComposableArchitecture
+import Common
 
 //MARK: - STATE
 public struct DepartmentCellState: Equatable, Identifiable {
     public let id: Int
-    let imageURL: String
-    let name: String
-    let fullName: String
-    
+    let department: Department
+
     public init(
-        id: Int,
-        imageURL: String,
-        name: String,
-        fullName: String
+        department: Department
     ){
-        self.id = id
-        self.imageURL = imageURL
-        self.name = name
-        self.fullName = fullName
+        self.id = department.id
+        self.department = department
     }
 }
 //MARK: - ACTION
@@ -65,21 +59,36 @@ public struct DepartmentCellView: View {
                 viewStore.send(.buttonTapped)
             }, label: {
                 ZStack(alignment: .bottomLeading) {
-                #warning("Replace with an ImageURL")
-                    Image(viewStore.imageURL)
-                        .resizable()
-                        .scaledToFill()
+                    
+                    ImageView(
+                        url: URL(string: viewStore.department.photo?.url ?? ""),
+                        contentMode: .aspectFill
+                    )
                         .frame(width: 183, height: 162)
-                        .cornerRadius(8)
+                        
+                    LinearGradient(
+                        gradient: Gradient(
+                            colors: [.gray, .clear]
+                        ),
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                    
                     VStack(alignment: .leading) {
-                        Text(viewStore.name)
+                        Text(viewStore.department.code ?? "")
                             .bold()
-                            .padding(.bottom, 10)
-                        Text(viewStore.fullName)
+                            .font(.system(size: 20))
+//                            .padding(.bottom, 5)
+                        Text(viewStore.department.name ?? "")
+                            .multilineTextAlignment(.leading)
                     }
                     .foregroundColor(.white)
-                    .padding()
+                    .padding(10)
                 }
+
+                .frame(width: 183, height: 162)
+                .cornerRadius(8)
+                
             })
         }
     }
@@ -89,18 +98,12 @@ public struct DepartmentCellView: View {
 #if DEBUG
 public extension DepartmentCellState {
     static let mock: Self = .init(
-        id: 1,
-        imageURL: "tree",
-        name: "WZD",
-        fullName: "Wydział z Dupy"
+        department: .mock
     )
     
     static func mocks(id: Int) -> Self {
         .init(
-            id: id,
-            imageURL: "tree",
-            name: "W-\(id)",
-            fullName: "Wydział Kosmosu \(id)"
+            department: .mock(id: id)
         )
     }
     

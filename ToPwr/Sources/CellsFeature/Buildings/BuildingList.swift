@@ -89,7 +89,8 @@ public struct BuildingListView: View {
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
             }
-            .padding(.trailing)
+            .padding()
+            
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
                     ForEachStore(
@@ -101,6 +102,7 @@ public struct BuildingListView: View {
                         BuildingCellView(store: store)
                     }
                 }
+                .padding(.leading, 10)
             }
             .padding(.bottom, 30)
         }
