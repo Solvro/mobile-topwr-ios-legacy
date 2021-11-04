@@ -19,3 +19,16 @@ public struct K {
 //        public static let blackPropeller = Image("propeller_black", bundle: .module)
     }
 }
+
+//MARK: - FONTS
+public extension Font {
+    static let appTitle1 = Font.system(size: 25, weight: .bold)
+    static let appTitle2 = Font.system(size: 22, weight: .bold)
+    static let appTitle3 = Font.system(size: 19, weight: .bold)
+    static let appNormal1 = Font.system(size: 19, weight: .regular)
+    static let appNormal2 = Font.system(size: 18, weight: .regular)
+    
+    //USAGE:
+    ///Text("Example")
+    ///    .font(.appFont)
+}

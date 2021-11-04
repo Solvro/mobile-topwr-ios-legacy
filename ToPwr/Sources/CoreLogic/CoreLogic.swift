@@ -38,4 +38,24 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
+    public func getBuildings() -> AnyPublisher<[Map], ErrorModel> {
+        let path: String = "/maps"
+        return api.fetch(path: path)
+            .decode(type: [Map].self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func getScienceClubs() -> AnyPublisher<[ScienceClub], ErrorModel> {
+        let path: String = "/scientific-Circles"
+        return api.fetch(path: path)
+            .decode(type: [ScienceClub].self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }

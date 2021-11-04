@@ -16,8 +16,9 @@ public struct WelcomeView: View {
         HStack {
             VStack(alignment: .leading) {
                 Text("Cześć, miło Cię widzieć")
+                    .font(.appNormal1)
                 Text(dayString())
-                    .fontWeight(.bold)
+                    .font(.appTitle3)
             }
             .padding()
             Spacer()

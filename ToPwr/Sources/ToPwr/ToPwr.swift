@@ -19,6 +19,8 @@ private func env() -> SplashEnvironment {
     .init(
         mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
         getSessionDate: coreLogic.getSessionDate,
-        getDepartments: coreLogic.getDepartments
+        getDepartments: coreLogic.getDepartments,
+        getBuildings: coreLogic.getBuildings,
+        getScienceClubs: coreLogic.getScienceClubs
     )
 }

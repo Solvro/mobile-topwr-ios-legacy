@@ -159,19 +159,19 @@ public struct SocialMedia: Codable, Equatable {
 public struct ScienceClub: Codable, Equatable {
     public let id: Int
     public let name: String?
-    public let department: Int?
+//    public let department: Department?
     public let description: String?
     public let locale: String
-    public let contact: [Contact?]
-    public let socialMedia: [SocialMedia?]
-    public let tag: [Tag?]
+    public let contact: [Contact]
+    public let socialMedia: [SocialMedia]
+    public let tag: [Tag]
     public let photo: Photo?
     
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "Name"
-        case department = "department"
+//        case department = "department"
         case description = "Description"
         case locale = "locale"
         case contact = "Contact"
@@ -200,6 +200,29 @@ public struct Contact: Codable, Equatable {
         case id = "id"
         case name = "Name"
         case number = "Number"
+    }
+}
+
+//MARK: - MAPS
+public struct Map: Codable, Equatable {
+    public let id: Int
+    public let name: String?
+    public let code: String?
+    public let latitude: Double?
+    public let longitude: Double?
+    public let description: String?
+    public let address: Address?
+    public let photo: Photo?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case name = "Name"
+        case code = "Code"
+        case latitude = "Latitude"
+        case longitude = "Longitude"
+        case description = "Description"
+        case address = "Address"
+        case photo = "Photo"
     }
 }
 
@@ -239,5 +262,29 @@ public extension Department {
     }
 }
 
+public extension Map {
+    static let mock: Self = .init(
+        id: 1,
+        name: "Test Name",
+        code: "B4",
+        latitude: 15.6,
+        longitude: 16.3,
+        description: "Test description",
+        address: nil,
+        photo: nil
+    )
+}
 
+public extension ScienceClub {
+    static let mock: Self = .init(
+        id: 1,
+        name: "SOLVRO",
+        description: "TEST",
+        locale: "",
+        contact: [],
+        socialMedia: [],
+        tag: [],
+        photo: nil
+    )
+}
 #endif

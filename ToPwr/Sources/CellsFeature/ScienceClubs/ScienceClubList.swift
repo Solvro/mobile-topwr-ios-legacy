@@ -1,25 +1,21 @@
 import SwiftUI
 import ComposableArchitecture
 import CoreMedia
+import Common
 
 //MARK: - STATE
 public struct ScienceClubListState: Equatable {
     let title: String = "Koła naukowe"
-    var scienceClubs: IdentifiedArrayOf<ScienceClubCellState> = []
+    var scienceClubs: IdentifiedArrayOf<ScienceClubCellState>
     
     var isLoading: Bool {
         scienceClubs.isEmpty ? true : false
     }
     
-    public init(){
-        #warning("MOCKS! TODO: API CONNECT")
-        self.scienceClubs = [
-            .mocks(id: 1),
-            .mocks(id: 2),
-            .mocks(id: 3),
-            .mocks(id: 4),
-            .mocks(id: 5)
-        ]
+    public init(
+        scienceClubs: [ScienceClubCellState] = []
+    ){
+        self.scienceClubs = .init(uniqueElements: scienceClubs)
     }
 }
 
@@ -79,7 +75,7 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack {
                 Text(viewStore.title)
-                    .bold()
+                    .font(.appTitle1)
                 Spacer()
             }
             .padding()

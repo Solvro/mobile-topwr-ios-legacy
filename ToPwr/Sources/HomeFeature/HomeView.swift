@@ -20,8 +20,15 @@ public struct HomeState: Equatable {
 public enum HomeAction: Equatable {
     case onAppear
     case onDisappear
+    case loadApiData
+    case loadSessionDate
+    case loadDepartments
+    case loadBuildings
+    case loadScienceClubs
     case receivedSessionDate(Result<SessionDay, ErrorModel>)
     case receivedDepartments(Result<[Department], ErrorModel>)
+    case receivedBuildings(Result<[Map], ErrorModel>)
+    case receivedScienceClubs(Result<[ScienceClub], ErrorModel>)
     case buttonTapped
     case departmentListAction(DepartmentListAction)
     case buildingListAction(BuildingListAction)
@@ -33,15 +40,21 @@ public struct HomeEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
+    var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
-        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>
+        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
+        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
+        self.getBuildings = getBuildings
+        self.getScienceClubs = getScienceClubs
     }
 }
 
@@ -54,42 +67,74 @@ public let homeReducer = Reducer<
   switch action {
   case .onAppear:
       if state.sessionDay == nil {
-          return .merge(
-            env.getSessionDate()
-                .receive(on: env.mainQueue)
-                .catchToEffect()
-                .map(HomeAction.receivedSessionDate),
-            env.getDepartments()
-                .receive(on: env.mainQueue)
-                .catchToEffect()
-                .map(HomeAction.receivedDepartments)
-
-          )
-//          return env.getSessionDate()
-//              .receive(on: env.mainQueue)
-//              .catchToEffect()
-//              .map(HomeAction.receivedSessionDate)
+          return .init(value: .loadApiData)
       } else {
           return .none
       }
   case .onDisappear:
       return .none
+      
+      //api load
+  case .loadApiData:
+      return .merge(
+        .init(value: .loadSessionDate),
+        .init(value: .loadDepartments),
+        .init(value: .loadBuildings),
+        .init(value: .loadScienceClubs)
+      )
+  case .loadSessionDate:
+      return env.getSessionDate()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedSessionDate)
+  case .loadDepartments:
+      return env.getDepartments()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedDepartments)
+  case .loadBuildings:
+      return env.getBuildings()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedBuildings)
+  case .loadScienceClubs:
+      return env.getScienceClubs()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedScienceClubs)
+      
+      //api success
   case .receivedSessionDate(.success(let sessionDate)):
       state.sessionDay = sessionDate
       return .none
-  case .receivedSessionDate(.failure):
-      return .none
   case .receivedDepartments(.success(let departments)):
-
       state.departmentListState = .init(
         departments: departments.map {
             DepartmentCellState(department: $0)
         }
       )
-      
-      print(departments)
+      return .none
+  case .receivedBuildings(.success(let buildings)):
+      state.buildingListState = .init(
+        buildings: buildings.map {
+            BuildingCellState(building: $0)
+        }
+      )
+      return .none
+  case .receivedScienceClubs(.success(let clubs)):
+      state.scienceClubListState = .init(
+        scienceClubs: clubs.map {
+            ScienceClubCellState(scienceClub: $0)
+        }
+      )
+      return .none
+  case .receivedSessionDate(.failure(let error)):
       return .none
   case .receivedDepartments(.failure(let error)):
+      return .none
+  case .receivedBuildings(.failure(let error)):
+      return .none
+  case .receivedScienceClubs(.failure(let error)):
       print(error)
       return .none
   case .buttonTapped:
@@ -225,7 +270,9 @@ public extension HomeEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
         getSessionDate: failing0,
-        getDepartments: failing0
+        getDepartments: failing0,
+        getBuildings: failing0,
+        getScienceClubs: failing0
     )
 }
 #endif

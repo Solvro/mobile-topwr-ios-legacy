@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import Common
 
 //MARK: - STATE
 public struct DepartmentListState: Equatable {
@@ -78,7 +79,7 @@ public struct DepartmentListView: View {
             VStack {
                 HStack {
                     Text(viewStore.title)
-                        .fontWeight(.bold)
+                        .font(.appTitle1)
                     Spacer()
                     Button(
                         action: {
@@ -87,6 +88,7 @@ public struct DepartmentListView: View {
                         label: {
                             Text(viewStore.buttonText)
                                 .foregroundColor(.gray)
+                                .font(.appNormal1)
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
                         }

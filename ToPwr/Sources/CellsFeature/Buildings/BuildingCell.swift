@@ -1,20 +1,17 @@
 import SwiftUI
 import ComposableArchitecture
+import Common
 
 //MARK: - STATE
 public struct BuildingCellState: Equatable, Identifiable {
     public let id: Int
-    let imageURL: String
-    let name: String
+    let building: Map
     
     public init(
-        id: Int,
-        imageURL: String,
-        name: String
-    ){
-        self.id = id
-        self.imageURL = imageURL
-        self.name = name
+        building: Map
+    ) {
+        self.id = building.id
+        self.building = building
     }
 }
 //MARK: - ACTION
@@ -59,17 +56,18 @@ public struct BuildingCellView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             Button(action: {
-                print("BUILDING CELL TAPPED")
+                viewStore.send(.buttonTapped)
             }, label: {
-                #warning("Replace with an ImageURL")
                 ZStack(alignment: .bottomLeading) {
-                    Image(viewStore.imageURL)
-                        .resizable()
-                        .scaledToFill()
+                    ImageView(
+                        url: URL(string: viewStore.building.photo?.url ?? ""),
+                        contentMode: .aspectFill
+                    )
                         .frame(width: 120, height: 120)
                         .cornerRadius(8)
-                    Text(viewStore.name)
-                        .bold()
+
+                    Text(viewStore.building.code ?? "")
+                        .font(.appTitle2)
                         .foregroundColor(.white)
                         .padding()
                 }
@@ -82,17 +80,7 @@ public struct BuildingCellView: View {
 #if DEBUG
 public extension BuildingCellState {
     static let mock: Self = .init(
-        id: 1,
-        imageURL: "tree",
-        name: "B-4"
+        building: .mock
     )
-    
-    static func mocks(id: Int) -> Self {
-        .init(
-            id: id,
-            imageURL: "tree",
-            name: "B-\(id)"
-        )
-    }
 }
 #endif

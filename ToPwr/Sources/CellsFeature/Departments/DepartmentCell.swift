@@ -77,10 +77,10 @@ public struct DepartmentCellView: View {
                     VStack(alignment: .leading) {
                         Text(viewStore.department.code ?? "")
                             .bold()
-                            .font(.system(size: 20))
-//                            .padding(.bottom, 5)
+                            .font(.appTitle1)
                         Text(viewStore.department.name ?? "")
                             .multilineTextAlignment(.leading)
+                            .font(.appNormal2)
                     }
                     .foregroundColor(.white)
                     .padding(10)
