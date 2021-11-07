@@ -67,7 +67,7 @@ public struct BuildingCellView: View {
                         .cornerRadius(8)
 
                     Text(viewStore.building.code ?? "")
-                        .font(.appTitle2)
+                        .font(.appBoldTitle2)
                         .foregroundColor(.white)
                         .padding()
                 }

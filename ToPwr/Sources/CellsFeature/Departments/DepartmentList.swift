@@ -79,7 +79,7 @@ public struct DepartmentListView: View {
             VStack {
                 HStack {
                     Text(viewStore.title)
-                        .font(.appTitle1)
+                        .font(.appBoldTitle1)
                     Spacer()
                     Button(
                         action: {
@@ -88,7 +88,7 @@ public struct DepartmentListView: View {
                         label: {
                             Text(viewStore.buttonText)
                                 .foregroundColor(.gray)
-                                .font(.appNormal1)
+                                .font(.appRegular1)
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
                         }

@@ -75,7 +75,7 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack {
                 Text(viewStore.title)
-                    .font(.appTitle1)
+                    .font(.appBoldTitle1)
                 Spacer()
             }
             .padding()

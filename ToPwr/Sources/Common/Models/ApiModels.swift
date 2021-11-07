@@ -145,7 +145,6 @@ public struct SocialMedia: Codable, Equatable {
     public let link: String?
     public let icon: Photo?
     
-    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "Name"
@@ -166,7 +165,6 @@ public struct ScienceClub: Codable, Equatable {
     public let socialMedia: [SocialMedia]
     public let tag: [Tag]
     public let photo: Photo?
-    
     
     enum CodingKeys: String, CodingKey {
         case id = "id"

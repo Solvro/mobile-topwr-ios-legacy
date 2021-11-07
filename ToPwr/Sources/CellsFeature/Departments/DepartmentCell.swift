@@ -55,41 +55,40 @@ public struct DepartmentCellView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.buttonTapped)
-            }, label: {
-                ZStack(alignment: .bottomLeading) {
-                    
-                    ImageView(
-                        url: URL(string: viewStore.department.photo?.url ?? ""),
-                        contentMode: .aspectFill
-                    )
-                        .frame(width: 183, height: 162)
+            Button(
+                action: {
+                    viewStore.send(.buttonTapped)
+                },
+                label: {
+                    ZStack(alignment: .bottomLeading) {
+                        ImageView(
+                            url: URL(string: viewStore.department.photo?.url ?? ""),
+                            contentMode: .aspectFill
+                        )
+                            .frame(width: 183, height: 162)
                         
-                    LinearGradient(
-                        gradient: Gradient(
-                            colors: [.gray, .clear]
-                        ),
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                    
-                    VStack(alignment: .leading) {
-                        Text(viewStore.department.code ?? "")
-                            .bold()
-                            .font(.appTitle1)
-                        Text(viewStore.department.name ?? "")
-                            .multilineTextAlignment(.leading)
-                            .font(.appNormal2)
+                        LinearGradient(
+                            gradient: Gradient(
+                                colors: [.gray, .clear]
+                            ),
+                            startPoint: .bottom,
+                            endPoint: .top
+                        )
+                        VStack(alignment: .leading) {
+                            Text(viewStore.department.code ?? "")
+                                .bold()
+                                .font(.appBoldTitle1)
+                            Text(viewStore.department.name ?? "")
+                                .multilineTextAlignment(.leading)
+                                .font(.appRegular2)
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
                     }
-                    .foregroundColor(.white)
-                    .padding(10)
+                    .frame(width: 183, height: 162)
+                    .cornerRadius(8)
                 }
-
-                .frame(width: 183, height: 162)
-                .cornerRadius(8)
-                
-            })
+            )
         }
     }
 }

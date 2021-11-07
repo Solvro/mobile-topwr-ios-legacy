@@ -34,7 +34,6 @@ public struct ImageView<Placeholder: View>: View {
             if let placeholder = placeholder {
                 placeholder
             } else {
-//                Image("placeholder", bundle: Bundle.module)
                 Image("placeholder", bundle: Bundle.module)
                     .resizable()
                     .aspectRatio(contentMode: .fill)

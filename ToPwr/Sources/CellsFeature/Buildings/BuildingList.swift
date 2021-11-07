@@ -77,7 +77,7 @@ public struct BuildingListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 Text(viewStore.title)
-                    .font(.appTitle1)
+                    .font(.appBoldTitle1)
                 Spacer()
                 Button(
                     action: {
@@ -85,11 +85,12 @@ public struct BuildingListView: View {
                     },
                     label: {
                         Text(viewStore.buttonText)
+                            .font(.appRegular1)
                             .foregroundColor(.gray)
-                            .font(.appNormal1)
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
                     }
+                        
                 )
             }
             .padding([.leading, .trailing], 10)
