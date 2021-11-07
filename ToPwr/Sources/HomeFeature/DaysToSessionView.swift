@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Common
+import Strings
 
 //MARK: - View
 public struct DaysToSessionView: View {
@@ -64,8 +65,8 @@ public struct DaysToSessionView: View {
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("dni")
-                        Text("do rozpoczęcia sesji")
+                        Strings.DaysToSessionView.days
+                        Strings.DaysToSessionView.tillStart
                     }
                     .foregroundColor(K.Colors.white)
                 }

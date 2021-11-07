@@ -167,10 +167,6 @@ public struct HomeView: View {
                             action: HomeAction.scienceClubListAction
                         )
                     )
-                    
-                    
-                    Text("Co słychać?")
-                        .bold()
                     }
                 }
                 .onAppear {
