@@ -5,17 +5,13 @@ import Common
 //MARK: - STATE
 public struct ScienceClubCellState: Equatable, Identifiable {
     public let id: Int
-    public let imageURL: String
-    public let fullName: String
+    var scienceClub: ScienceClub
 
     public init(
-        id: Int,
-        imageURL: String,
-        fullName: String
+        scienceClub: ScienceClub
     ){
-        self.id = id
-        self.imageURL = imageURL
-        self.fullName = fullName
+        self.id = scienceClub.id
+        self.scienceClub = scienceClub
     }
 }
 //MARK: - ACTION
@@ -70,20 +66,20 @@ public struct ScienceClubCellView: View {
                         HStack() {
                             Spacer()
                             ZStack() {
-                                #warning("Replace with an ImageURL")
                                 Rectangle()
                                     .frame(width: 48, height: 48)
                                     .foregroundColor(.white)
                                     .cornerRadius(5)
-                                Image(viewStore.imageURL)
-                                    .resizable()
-                                    .scaledToFill()
+                                ImageView(
+                                    url: URL(string: viewStore.scienceClub.photo?.url ?? ""),
+                                    contentMode: .aspectFill
+                                )
                                     .frame(width: 20, height: 20)
                             }
                         }
                         Spacer()
                         HStack() {
-                            Text(viewStore.fullName)
+                            Text(viewStore.scienceClub.name ?? "")
                                 .fontWeight(.medium)
                                 .foregroundColor(.black)
                             Spacer()
@@ -100,17 +96,7 @@ public struct ScienceClubCellView: View {
 #if DEBUG
 public extension ScienceClubCellState {
     static let mock: Self = .init(
-        id: 1,
-        imageURL: "tree",
-        fullName: "Solvro"
+        scienceClub: .mock
     )
-    
-    static func mocks(id: Int) -> Self {
-        .init(
-            id: id,
-            imageURL: "tree",
-            fullName: "Solvro \(id)"
-        )
-    }
 }
 #endif
