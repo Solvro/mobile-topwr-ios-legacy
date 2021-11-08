@@ -33,13 +33,22 @@ public enum MenuAction: Equatable, BindableAction {
 public struct MenuEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
+    var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>
+        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
+        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
+        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
+        self.getDepartments = getDepartments
+        self.getBuildings = getBuildings
+        self.getScienceClubs = getScienceClubs
     }
 }
 
@@ -73,7 +82,10 @@ public let menuReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getSessionDate: env.getSessionDate
+                        getSessionDate: env.getSessionDate,
+                        getDepartments: env.getDepartments,
+                        getBuildings: env.getBuildings,
+                        getScienceClubs: env.getScienceClubs
                     )
             }
         )
@@ -198,7 +210,10 @@ struct MenuView_Previews: PreviewProvider {
                 reducer: menuReducer,
                 environment: .init(
                     mainQueue: .immediate,
-                    getSessionDate: failing0
+                    getSessionDate: failing0,
+                    getDepartments: failing0,
+                    getBuildings: failing0,
+                    getScienceClubs: failing0
                 )
             )
         )

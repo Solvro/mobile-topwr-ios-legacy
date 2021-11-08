@@ -13,13 +13,15 @@ public struct WelcomeView: View {
     }
     
     public var body: some View {
-        ZStack {
+        HStack {
             VStack(alignment: .leading) {
                 Text("Cześć, miło Cię widzieć")
+                    .font(.appRegular1)
                 Text(dayString())
-                    .fontWeight(.bold)
+                    .font(.appBoldTitle3)
             }
-            .padding([.top, .bottom])
+            .padding()
+            Spacer()
         }
     }
     
