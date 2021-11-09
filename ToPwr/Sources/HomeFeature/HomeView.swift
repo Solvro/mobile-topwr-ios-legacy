@@ -190,67 +190,63 @@ public struct HomeView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            ScrollView {
-                VStack(alignment: .leading) {
-                    ZStack {
-                        //Logo View - TODO
-                        HStack {
-                            Text("#")
-                                .foregroundColor(K.Colors.firstColorDark)
-                                .fontWeight(.bold)
-                            Text("TO")
-                                .foregroundColor(.black)
-                                .fontWeight(.bold)
-                            Text("PWR")
-                                .foregroundColor(K.Colors.firstColorDark)
-                                .fontWeight(.bold)
-                            Spacer()
-                        }
+            NavigationView {
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        WelcomeView()
+                        
+                        DaysToSessionView(session: viewStore.sessionDay)
+                            .padding(.bottom, 30)
+                        
+                        // OSTATNIO WYSZUKIWANE
+                        BuildingListView(
+                            store:  self.store.scope(
+                                state: \.buildingListState,
+                                action: HomeAction.buildingListAction
+                            )
+                        )
+                        
+                        // WYDZIAŁY
+                        DepartmentListView(
+                            store: self.store.scope(
+                                state: \.departmentListState,
+                                action: HomeAction.departmentListAction
+                            )
+                        )
+                        
+                        // SCIENCE CLUBS
+                        ScienceClubListView(
+                            store: self.store.scope(
+                                state: \.scienceClubListState,
+                                action: HomeAction.scienceClubListAction
+                            )
+                        )
+                        
+                        
+                        Text("Co słychać?")
+                            .bold()
+                            .padding(.leading, 10)
                     }
-                    .padding(20)
                     
-                    WelcomeView()
-                    
-                    DaysToSessionView(session: viewStore.sessionDay)
-                        .padding(.bottom, 30)
-                    
-                    // OSTATNIO WYSZUKIWANE
-                    BuildingListView(
-                        store:  self.store.scope(
-                            state: \.buildingListState,
-                            action: HomeAction.buildingListAction
-                        )
-                    )
-                    
-                    // WYDZIAŁY
-                    DepartmentListView(
-                        store: self.store.scope(
-                            state: \.departmentListState,
-                            action: HomeAction.departmentListAction
-                        )
-                    )
-                    
-                    // SCIENCE CLUBS
-                    ScienceClubListView(
-                        store: self.store.scope(
-                            state: \.scienceClubListState,
-                            action: HomeAction.scienceClubListAction
-                        )
-                    )
-                    
-                    
-                    Text("Co słychać?")
-                        .bold()
-                        .padding(.leading, 10)
-                }
-                
                 }
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        HStack {
+                            LogoView()
+                                .aspectRatio(contentMode: .fit)
+                            Spacer()
+                        }
+                        .frame(height: 30)
+                        .padding(.bottom, 5)
+                    }
+                }
             }
         }
     }
+}
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
