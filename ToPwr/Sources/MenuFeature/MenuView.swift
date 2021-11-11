@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Combine
 import HomeFeature
 import MapFeature
-import FacultiesFeature
+import DepartmentsFeature
 import ClubsFeature
 import InfoFeature
 import Common
@@ -12,7 +12,7 @@ import Common
 public struct MenuState: Equatable {
     var homeState = HomeState()
     var mapState = MapState()
-    var facultiesState = FacultiesState()
+    var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
     
@@ -23,7 +23,7 @@ public struct MenuState: Equatable {
 public enum MenuAction: Equatable, BindableAction {
     case homeAction(HomeAction)
     case mapAction(MapAction)
-    case facultiesAction(FacultiesAction)
+    case DepartmentsAction(DepartmentsAction)
     case clubsAction(ClubsAction)
     case infoAction(InfoAction)
     case binding(BindingAction<MenuState>)
@@ -63,7 +63,7 @@ public let menuReducer = Reducer<
         return .none
     case .mapAction:
         return .none
-    case .facultiesAction:
+    case .DepartmentsAction:
         return .none
     case .clubsAction:
         return .none
@@ -101,12 +101,15 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: facultiesReducer
+    with: DepartmentsReducer
         .pullback(
-            state: \.facultiesState,
-            action: /MenuAction.facultiesAction,
+            state: \.departmentsState,
+            action: /MenuAction.DepartmentsAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getDepartments: env.getDepartments
+                    )
             }
         )
 )
@@ -164,15 +167,15 @@ public struct MenuView: View {
                     Text("Map")
                 }
             
-            FacultiesView(
+            DepartmentsView(
                 store: self.store.scope(
-                    state: \.facultiesState,
-                    action: MenuAction.facultiesAction
+                    state: \.departmentsState,
+                    action: MenuAction.DepartmentsAction
                 )
             )
                 .tabItem {
                     Image(systemName: "arrowshape.turn.up.left.circle.fill")
-                    Text("Faculties")
+                    Text("Departments")
                 }
             
             ClubsView(

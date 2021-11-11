@@ -2,7 +2,6 @@ import SwiftUI
 import ComposableArchitecture
 import Combine
 import Common
-import CellsFeature
 import CryptoKit
 
 //MARK: - STATE
