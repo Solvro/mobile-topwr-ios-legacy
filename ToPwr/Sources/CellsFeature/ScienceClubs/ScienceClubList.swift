@@ -12,15 +12,10 @@ public struct ScienceClubListState: Equatable {
         scienceClubs.isEmpty ? true : false
     }
     
-    public init(){
-        #warning("MOCKS! TODO: API CONNECT")
-        self.scienceClubs = [
-            .mocks(id: 1),
-            .mocks(id: 2),
-            .mocks(id: 3),
-            .mocks(id: 4),
-            .mocks(id: 5)
-        ]
+    public init(
+        scienceClubs: [ScienceClubCellState] = []
+    ){
+        self.scienceClubs = .init(uniqueElements: scienceClubs)
     }
 }
 
@@ -80,10 +75,10 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .bold()
+                    .font(.appBoldTitle1)
                 Spacer()
             }
-            .padding(.trailing)
+            .padding()
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack() {
                     ForEachStore(
@@ -95,6 +90,7 @@ public struct ScienceClubListView: View {
                         ScienceClubCellView(store: store)
                     }
                 }
+                .padding(.leading, 10)
             }
             .padding(.bottom, 30)
         }

@@ -53,43 +53,48 @@ public struct DaysToSessionView: View {
     }
  
     public var body: some View {
-        ZStack {
-            if sessionDay != nil {
-                HStack {
-                    ZStack {
-                        CounterView(
-                            first: first,
-                            second: second,
-                            third: third
-                        )
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Strings.DaysToSessionView.days
-                        Strings.DaysToSessionView.tillStart
-                    }
-                    .foregroundColor(K.Colors.white)
-                }
-                .padding()
-            } else {
-                ProgressView()
-            }
-        }
-        .frame(width: 340, height: 80)
-        .background(
-            LinearGradient(
-                gradient: Gradient(
-                    colors: [
-                        K.Colors.firstColorLight,
-                        K.Colors.firstColorDark
-                    ]
-                ),
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
-        .cornerRadius(10)
-    }
+           HStack {
+               Spacer()
+               ZStack {
+                   if sessionDay != nil {
+                       HStack {
+                           ZStack {
+                               CounterView(
+                                   first: first,
+                                   second: second,
+                                   third: third
+                               )
+                           }
+                           
+                           VStack(alignment: .leading) {
+                               Strings.DaysToSessionView.days
+                               Strings.DaysToSessionView.tillStart
+                           }
+                           .foregroundColor(K.Colors.white)
+                       }
+                       .padding()
+                   } else {
+                       ProgressView()
+                   }
+               }
+               .frame(width: 360, height: 80)
+               .background(
+                   LinearGradient(
+                       gradient: Gradient(
+                           colors: [
+                               K.Colors.firstColorLight,
+                               K.Colors.firstColorDark
+                           ]
+                       ),
+                       startPoint: .leading,
+                       endPoint: .trailing
+                   )
+               )
+               .cornerRadius(10)
+               Spacer()
+           }
+       }
+
 }
 
 extension DaysToSessionView {

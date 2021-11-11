@@ -12,15 +12,10 @@ public struct BuildingListState: Equatable {
         buildings.isEmpty ? true : false
     }
     
-    public init(){
-        #warning("MOCKS! TODO: API CONNECT")
-        self.buildings = [
-            .mocks(id: 1),
-            .mocks(id: 2),
-            .mocks(id: 3),
-            .mocks(id: 4),
-            .mocks(id: 5)
-        ]
+    public init(
+        buildings: [BuildingCellState] = []
+    ){
+        self.buildings = .init(uniqueElements: buildings)
     }
 }
 //MARK: - ACTION
@@ -80,17 +75,17 @@ public struct BuildingListView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            
             HStack() {
                 viewStore.title
-                    .bold()
+                    .font(.appBoldTitle1)
                 Spacer()
                 viewStore.buttonText
                     .foregroundColor(.gray)
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
             }
-            .padding(.trailing)
+            .padding([.leading, .trailing], 10)
+            
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
                     ForEachStore(
@@ -102,6 +97,7 @@ public struct BuildingListView: View {
                         BuildingCellView(store: store)
                     }
                 }
+                .padding(.leading, 10)
             }
             .padding(.bottom, 30)
         }
