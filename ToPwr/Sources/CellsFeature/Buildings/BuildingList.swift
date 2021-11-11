@@ -1,11 +1,11 @@
 import SwiftUI
 import ComposableArchitecture
-import Common
+import Strings
 
 //MARK: - STATE
 public struct BuildingListState: Equatable {
-    let title: String = "Ostatnio wyszukiwane"
-    let buttonText: String = "Mapa"
+    let title: Text = Strings.BuildingList.title
+    let buttonText: Text = Strings.BuildingList.button
     var buildings: IdentifiedArrayOf<BuildingCellState> = []
     
     var isLoading: Bool {
@@ -76,22 +76,13 @@ public struct BuildingListView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             HStack() {
-                Text(viewStore.title)
+                viewStore.title
                     .font(.appBoldTitle1)
                 Spacer()
-                Button(
-                    action: {
-                        viewStore.send(.buttonTapped)
-                    },
-                    label: {
-                        Text(viewStore.buttonText)
-                            .font(.appRegular1)
-                            .foregroundColor(.gray)
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                    }
-                        
-                )
+                viewStore.buttonText
+                    .foregroundColor(.gray)
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
             }
             .padding([.leading, .trailing], 10)
             

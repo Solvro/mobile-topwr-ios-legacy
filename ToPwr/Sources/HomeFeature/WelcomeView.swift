@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Common
+import Strings
 
 public struct WelcomeView: View {
     let date: Date
@@ -15,8 +16,7 @@ public struct WelcomeView: View {
     public var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("Cześć, miło Cię widzieć")
-                    .font(.appRegular1)
+                Strings.WelcomeView.welcomeText
                 Text(dayString())
                     .font(.appBoldTitle3)
             }
