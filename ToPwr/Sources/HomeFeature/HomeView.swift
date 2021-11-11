@@ -210,7 +210,7 @@ public struct HomeView: View {
                     .padding(20)
                     
                     WelcomeView()
-                    
+
                     DaysToSessionView(session: viewStore.sessionDay)
                         .padding(.bottom, 30)
                     
@@ -237,13 +237,7 @@ public struct HomeView: View {
                             action: HomeAction.scienceClubListAction
                         )
                     )
-                    
-                    
-                    Text("Co słychać?")
-                        .bold()
-                        .padding(.leading, 10)
-                }
-                
+                    }
                 }
                 .onAppear {
                     viewStore.send(.onAppear)

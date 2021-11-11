@@ -1,0 +1,24 @@
+// TabBar strings
+"Home" = "Dom";
+"Map" = "Mapa";
+"Faculties" = "Wydziały";
+"Clubs" = "Koła";
+"Calculator" = "Kalkulator";
+
+// DaysToSessionView strings
+"days" = "dni";
+"before the session starts" = "do rozpoczęcia sesji";
+
+// WelcomeView strings
+"Hi, good to see you!" = "Cześć, miło Cię widzieć";
+
+// BuildingList strings
+"Last searched" = "Ostatnio wyszukiwane";
+"Map" = "Mapa";
+
+// DepartmentList strings
+"Faculties" = "Wydziały";
+"List" = "Lista";
+
+// ScienceClubList strings
+"Science Clubs" = "Koła naukowe";
