@@ -79,6 +79,7 @@ let package = Package(
                 "SplashFeature",
                 "Common",
                 "CoreLogic",
+                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -144,7 +145,6 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
-                "CellsFeature",
                 "Strings",
                 .product(
                     name: "ComposableArchitecture",
@@ -254,21 +254,6 @@ let package = Package(
         .testTarget(
             name: "ApiTests",
             dependencies: ["Api"]
-        ),
-        .target(
-            name: "CellsFeature",
-            dependencies: [
-                "Common",
-                "Strings",
-                .product(
-                    name: "ComposableArchitecture",
-                    package: "swift-composable-architecture"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "CellsFeatureTests",
-            dependencies: ["CellsFeature"]
         ),
         .target(
             name: "Strings",

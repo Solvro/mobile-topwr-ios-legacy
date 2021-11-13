@@ -60,7 +60,7 @@ public struct DepartmentCellView: View {
                     viewStore.send(.buttonTapped)
                 },
                 label: {
-                    ZStack(alignment: .bottomLeading) {
+                    ZStack(alignment: .leading) {
                         ImageView(
                             url: URL(string: viewStore.department.photo?.url ?? ""),
                             contentMode: .aspectFill
@@ -71,19 +71,25 @@ public struct DepartmentCellView: View {
                             gradient: Gradient(
                                 colors: [.gray, .clear]
                             ),
-                            startPoint: .bottom,
-                            endPoint: .top
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
+                        .opacity(0.4)
                         VStack(alignment: .leading) {
-                            Text(viewStore.department.code ?? "")
-                                .bold()
-                                .font(.appBoldTitle1)
-                            Text(viewStore.department.name ?? "")
-                                .multilineTextAlignment(.leading)
-                                .font(.appRegular2)
+                                Text(viewStore.department.code ?? "")
+                                    .bold()
+                                    .font(.appBoldTitle1)
+
+                                Text(viewStore.department.name ?? "")
+                                    .font(.appRegular2)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
                         }
+                        .frame(width: 220)
                         .foregroundColor(.white)
-                        .padding(10)
+                        .padding([.top, .bottom], 15)
                     }
                     .frame(width: 360, height: 120)
                     .cornerRadius(8)

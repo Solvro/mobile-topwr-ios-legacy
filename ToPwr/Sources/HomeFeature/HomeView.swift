@@ -232,7 +232,9 @@ public struct HomeView: View {
                     viewStore.send(.onAppear)
                 }
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(
+                        placement: .navigationBarLeading
+                    ) {
                         HStack {
                             LogoView()
                                 .aspectRatio(contentMode: .fit)

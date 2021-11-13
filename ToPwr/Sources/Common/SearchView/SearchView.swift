@@ -1,14 +1,14 @@
 import SwiftUI
 import ComposableArchitecture
+import Strings
 
 //MARK: - STATE
 public struct SearchState: Equatable {
     var search: String = ""
     let placeholder: String
-    #warning("TODO: Strings")
 
     public init(
-        placeholder: String = "Szukaj..."
+        placeholder: String = Strings.Search.searching
     ){
         self.placeholder = placeholder
     }
@@ -39,7 +39,6 @@ public let searchReducer = Reducer<
     switch action {
     case .update(let text):
         state.search = text
-        print(text)
         return .none
     case .clearSearch:
         state.search = ""
@@ -74,7 +73,7 @@ public struct SearchView: View {
                 .foregroundColor(K.SearchColors.textColor)
                 .padding(.trailing, 5)
                 
-                if viewStore.search.count > 0 {
+                if !viewStore.search.isEmpty {
                     Button(
                         action: {
                             viewStore.send(.clearSearch)

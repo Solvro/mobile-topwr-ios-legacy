@@ -102,28 +102,43 @@ public struct DepartmentListView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            VStack {
-                ScrollView(.vertical, showsIndicators: false) {
-                    SearchView(
-                        store: self.store.scope(
-                            state: \.searchState,
-                            action: DepartmentListAction.searchAction
-                        )
-                    )
-                    
-                    LazyVStack {
-                        ForEachStore(
-                            self.store.scope(
-                                state: \.filtered,
-                                action: DepartmentListAction.cellAction(id:action:)
+            NavigationView {
+                VStack {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        SearchView(
+                            store: self.store.scope(
+                                state: \.searchState,
+                                action: DepartmentListAction.searchAction
                             )
-                        ) { store in
-                            DepartmentCellView(store: store)
+                        )
+                        
+                        LazyVStack {
+                            ForEachStore(
+                                self.store.scope(
+                                    state: \.filtered,
+                                    action: DepartmentListAction.cellAction(id:action:)
+                                )
+                            ) { store in
+                                DepartmentCellView(store: store)
+                            }
                         }
                     }
                 }
+                .padding(.bottom, 30)
+                .toolbar {
+                    ToolbarItem(
+                        placement: .navigationBarLeading
+                    ) {
+                        HStack {
+                            LogoView()
+                                .aspectRatio(contentMode: .fit)
+                            Spacer()
+                        }
+                        .frame(height: 30)
+                        .padding(.bottom, 5)
+                    }
+                }
             }
-            .padding(.bottom, 30)
         }
     }
 }

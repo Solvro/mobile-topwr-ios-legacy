@@ -15,6 +15,7 @@ public enum DepartmentsAction: Equatable {
     case loadDepartments
     case receivedDepartments(Result<[Department], ErrorModel>)
     case listAction(DepartmentListAction)
+    case dismissKeyboard
 }
 
 //MARK: - ENVIRONMENT
@@ -60,6 +61,9 @@ public let DepartmentsReducer = Reducer<
         return .none
     case .receivedDepartments:
         return .none
+    case .dismissKeyboard:
+        UIApplication.shared.dismissKeyboard()
+        return .none
     }
 }
 .combined(
@@ -92,6 +96,9 @@ public struct DepartmentsView: View {
                         action: DepartmentsAction.listAction
                     )
                 )
+            }
+            .onTapGesture {
+                viewStore.send(.dismissKeyboard)
             }
             .onAppear {
                 viewStore.send(.onAppear)
