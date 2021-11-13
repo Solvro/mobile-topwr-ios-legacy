@@ -7,6 +7,7 @@ import DepartmentsFeature
 import ClubsFeature
 import InfoFeature
 import Common
+import Strings
 
 //MARK: - STATE
 public struct MenuState: Equatable {
@@ -153,7 +154,7 @@ public struct MenuView: View {
             )
                 .tabItem {
                     Image(systemName: "house.fill")
-                    Text("Home")
+                    Strings.TabBar.home
                 }
             
             MapView(
@@ -164,7 +165,7 @@ public struct MenuView: View {
             )
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Text("Map")
+                    Strings.TabBar.map
                 }
             
             DepartmentsView(
@@ -175,7 +176,7 @@ public struct MenuView: View {
             )
                 .tabItem {
                     Image(systemName: "arrowshape.turn.up.left.circle.fill")
-                    Text("Departments")
+                    Strings.TabBar.faculties
                 }
             
             ClubsView(
@@ -186,7 +187,7 @@ public struct MenuView: View {
             )
                 .tabItem {
                     Image(systemName: "suit.club.fill")
-                    Text("Clubs")
+                    Strings.TabBar.clubs
                 }
             InfoView(
                 store: self.store.scope(
@@ -196,7 +197,7 @@ public struct MenuView: View {
             )
                 .tabItem {
                     Image(systemName: "info.circle.fill")
-                    Text("Calculator")
+                    Strings.TabBar.calculator
                 }
         }
         .accentColor(K.Colors.firstColorDark)

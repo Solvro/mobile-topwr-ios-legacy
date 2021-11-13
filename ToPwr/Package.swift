@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "ToPwr",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v14),
     ],
@@ -54,6 +55,10 @@ let package = Package(
         ),
         .library(
             name: "CoreLogic",
+            targets: ["ToPwr"]
+        ),
+        .library(
+            name: "Strings",
             targets: ["ToPwr"]
         ),
     ],
@@ -124,6 +129,7 @@ let package = Package(
                 "ClubsFeature",
                 "InfoFeature",
                 "Common",
+                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -138,6 +144,8 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
+                "CellsFeature",
+                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -246,6 +254,34 @@ let package = Package(
         .testTarget(
             name: "ApiTests",
             dependencies: ["Api"]
+        ),
+        .target(
+            name: "CellsFeature",
+            dependencies: [
+                "Common",
+                "Strings",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "CellsFeatureTests",
+            dependencies: ["CellsFeature"]
+        ),
+        .target(
+            name: "Strings",
+            dependencies: [
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "StringsTests",
+            dependencies: ["Strings"]
         ),
     ]
 )
