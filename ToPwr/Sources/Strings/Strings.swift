@@ -32,4 +32,17 @@ public struct Strings {
     public struct ScienceClubList {
         public static let title = Text("Science Clubs", bundle: .module)
     }
+    
+    public struct Search {
+        public static let searching = translation(from: "searching")
+        
+    }
+}
+
+import Foundation
+
+func translation(
+    from key: String
+) -> String {
+    NSLocalizedString(key, comment: "")
 }
