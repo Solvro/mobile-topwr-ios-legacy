@@ -61,19 +61,14 @@ public struct DepartmentCellView: View {
                 },
                 label: {
                     ZStack(alignment: .bottomLeading) {
-                        ImageView(
-                            url: URL(string: viewStore.department.photo?.url ?? ""),
-                            contentMode: .aspectFill
+                        BanerView(
+                            url: URL(string: viewStore.department.logo?.url ?? ""),
+                            color: viewStore.department.color,
+                            isSquare: true
                         )
-                            .frame(width: 183, height: 162)
+                        .frame(width: 183, height: 162)
+                        .cornerRadius(8)
                         
-                        LinearGradient(
-                            gradient: Gradient(
-                                colors: [.gray, .clear]
-                            ),
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
                         VStack(alignment: .leading) {
                             Text(viewStore.department.code ?? "")
                                 .bold()
@@ -85,8 +80,7 @@ public struct DepartmentCellView: View {
                         .foregroundColor(.white)
                         .padding(10)
                     }
-                    .frame(width: 183, height: 162)
-                    .cornerRadius(8)
+                    .frame(width: 183)
                 }
             )
         }
@@ -99,12 +93,11 @@ public extension DepartmentCellState {
     static let mock: Self = .init(
         department: .mock
     )
-    
+
     static func mocks(id: Int) -> Self {
         .init(
             department: .mock(id: id)
         )
     }
-    
 }
 #endif

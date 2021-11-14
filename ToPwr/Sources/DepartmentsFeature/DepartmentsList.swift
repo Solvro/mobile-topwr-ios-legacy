@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Common
+import Strings
 
 //MARK: - STATE
 public struct DepartmentListState: Equatable {
@@ -112,7 +113,7 @@ public struct DepartmentListView: View {
                             )
                         )
                         
-                        LazyVStack {
+                        LazyVStack(spacing: 10) {
                             ForEachStore(
                                 self.store.scope(
                                     state: \.filtered,
@@ -138,6 +139,7 @@ public struct DepartmentListView: View {
                         .padding(.bottom, 5)
                     }
                 }
+                .navigationTitle(Strings.DepartmentList.welcomeText)
             }
         }
     }
