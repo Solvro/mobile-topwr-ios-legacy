@@ -34,7 +34,7 @@ let package = Package(
             targets: ["ToPwr"]
         ),
         .library(
-            name: "FacultiesFeature",
+            name: "DepartmentsFeature",
             targets: ["ToPwr"]
         ),
         .library(
@@ -43,10 +43,6 @@ let package = Package(
         ),
         .library(
             name: "InfoFeature",
-            targets: ["ToPwr"]
-        ),
-        .library(
-            name: "CellsFeature",
             targets: ["ToPwr"]
         ),
         .library(
@@ -83,6 +79,7 @@ let package = Package(
                 "SplashFeature",
                 "Common",
                 "CoreLogic",
+                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -129,7 +126,7 @@ let package = Package(
             dependencies: [
                 "HomeFeature",
                 "MapFeature",
-                "FacultiesFeature",
+                "DepartmentsFeature",
                 "ClubsFeature",
                 "InfoFeature",
                 "Common",
@@ -148,7 +145,6 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
-                "CellsFeature",
                 "Strings",
                 .product(
                     name: "ComposableArchitecture",
@@ -175,7 +171,7 @@ let package = Package(
             dependencies: ["MapFeature"]
         ),
         .target(
-            name: "FacultiesFeature",
+            name: "DepartmentsFeature",
             dependencies: [
                 "Common",
                 .product(
@@ -185,8 +181,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "FacultiesFeatureTests",
-            dependencies: ["FacultiesFeature"]
+            name: "DepartmentsFeatureTests",
+            dependencies: ["DepartmentsFeature"]
         ),
         .target(
             name: "ClubsFeature",
@@ -258,21 +254,6 @@ let package = Package(
         .testTarget(
             name: "ApiTests",
             dependencies: ["Api"]
-        ),
-        .target(
-            name: "CellsFeature",
-            dependencies: [
-                "Common",
-                "Strings",
-                .product(
-                    name: "ComposableArchitecture",
-                    package: "swift-composable-architecture"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "CellsFeatureTests",
-            dependencies: ["CellsFeature"]
         ),
         .target(
             name: "Strings",

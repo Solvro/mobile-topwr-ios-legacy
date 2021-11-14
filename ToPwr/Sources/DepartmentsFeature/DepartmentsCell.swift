@@ -60,33 +60,30 @@ public struct DepartmentCellView: View {
                     viewStore.send(.buttonTapped)
                 },
                 label: {
-                    ZStack(alignment: .bottomLeading) {
-                        ImageView(
-                            url: URL(string: viewStore.department.photo?.url ?? ""),
-                            contentMode: .aspectFill
+                    ZStack(alignment: .leading) {
+                        BanerView(
+                            url: URL(string: viewStore.department.logo?.url ?? ""),
+                            color: viewStore.department.color
                         )
-                            .frame(width: 183, height: 162)
+                        .frame(width: 360, height: 120)
+                        .cornerRadius(8)
                         
-                        LinearGradient(
-                            gradient: Gradient(
-                                colors: [.gray, .clear]
-                            ),
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
                         VStack(alignment: .leading) {
-                            Text(viewStore.department.code ?? "")
-                                .bold()
-                                .font(.appBoldTitle1)
-                            Text(viewStore.department.name ?? "")
-                                .multilineTextAlignment(.leading)
-                                .font(.appRegular2)
+                                Text(viewStore.department.code ?? "")
+                                    .bold()
+                                    .font(.appBoldTitle1)
+
+                                Text(viewStore.department.name ?? "")
+                                    .font(.appRegular2)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
                         }
+                        .frame(width: 220)
                         .foregroundColor(.white)
-                        .padding(10)
+                        .padding([.top, .bottom], 15)
                     }
-                    .frame(width: 183, height: 162)
-                    .cornerRadius(8)
                 }
             )
         }
@@ -105,6 +102,5 @@ public extension DepartmentCellState {
             department: .mock(id: id)
         )
     }
-    
 }
 #endif
