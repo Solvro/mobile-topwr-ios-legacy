@@ -1,68 +1,50 @@
+import MapKit
+import UIKit
 import SwiftUI
-import ComposableArchitecture
+import Common
 
-//MARK: - STATE
-public struct MapState: Equatable {
-    var text: String = "Hello World ToPwr"
-    public init(){}
-}
-//MARK: - ACTION
-public enum MapAction: Equatable {
-    case buttonTapped
-}
-
-//MARK: - ENVIRONMENT
-public struct MapEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
+struct MapView: UIViewRepresentable {
+    let mapViewDelegate = MapViewDelegate()
     
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
-    ) {
-        self.mainQueue = mainQueue
+    func makeUIView(context: Context) -> MKMapView {
+        MKMapView(frame: .zero)
     }
-}
 
-//MARK: - REDUCER
-public let mapReducer = Reducer<
-    MapState,
-    MapAction,
-    MapEnvironment
-> { state, action, environment in
-  switch action {
-  case .buttonTapped:
-    return .none
-  }
-}
-
-//MARK: - VIEW
-public struct MapView: View {
-    let store: Store<MapState, MapAction>
-    
-    public init(
-        store: Store<MapState, MapAction>
-    ) {
-        self.store = store
-    }
-    
-    public var body: some View {
-        WithViewStore(store) { viewStore in
-            ZStack {
-                Text("MenuView")
-            }
-        }
-    }
-}
-
-#if DEBUG
-struct MapView_Previews: PreviewProvider {
-    static var previews: some View {
-        MapView(
-            store: Store(
-                initialState: .init(),
-                reducer: mapReducer,
-                environment: .init(mainQueue: .immediate)
+    func updateUIView(_ view: MKMapView, context: Context) {
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: 51.108981,
+                longitude: 17.059370
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005
             )
         )
+        
+        view.addOverlays(MapCoordinator().parseGeoJSON())
+        view.region = region
+        view.pointOfInterestFilter = .excludingAll
+        view.delegate = mapViewDelegate
+        view.translatesAutoresizingMaskIntoConstraints = false
     }
 }
-#endif
+
+class MapViewDelegate: NSObject, MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        print(overlay.description)
+        
+        if let polygon = overlay as? MKPolygon {
+            if polygon.title == "buildings" {
+                let render = MKPolygonRenderer(polygon: polygon)
+                render.fillColor = UIColor(K.MapColors.buildings1).withAlphaComponent(0.8)
+                return render
+            }
+        }
+        
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        return renderer
+    }
+}
+
+

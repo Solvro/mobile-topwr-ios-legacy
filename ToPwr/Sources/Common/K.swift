@@ -3,7 +3,6 @@ import SwiftUI
 public struct K {
 // MARK: - COLORS
     public struct Colors {
-//      public static let background = Color("backgroundGray", bundle: .module)
         public static let background = Color.white
         public static let white = Color.white
         public static let firstColorDark = Color(hex: "#e56353")
@@ -14,9 +13,9 @@ public struct K {
         public static let scienceBackground = Color(hex: "#F7F7F8")
     }
     
-//MARK: - IMAGES
-    public struct Images {
-//        public static let blackPropeller = Image("propeller_black", bundle: .module)
+    public struct MapColors {
+        public static let buildings1 = Color(hex: "#eae9e8")
+        public static let buildings2 = Color(hex: "#f5e9d3")
     }
 }
 
@@ -27,8 +26,4 @@ public extension Font {
     static let appBoldTitle3 = Font.system(size: 19, weight: .bold)
     static let appRegular1 = Font.system(size: 19, weight: .regular)
     static let appRegular2 = Font.system(size: 18, weight: .regular)
-    
-    //USAGE:
-    ///Text("Example")
-    ///    .font(.appFont)
 }

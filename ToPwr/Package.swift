@@ -168,6 +168,9 @@ let package = Package(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
                 ),
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

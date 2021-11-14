@@ -12,7 +12,7 @@ import Strings
 //MARK: - STATE
 public struct MenuState: Equatable {
     var homeState = HomeState()
-    var mapState = MapState()
+    var mapState = MapFeatureState()
     var facultiesState = FacultiesState()
     var clubsState = ClubsState()
     var infoState = InfoState()
@@ -23,7 +23,7 @@ public struct MenuState: Equatable {
 //MARK: - ACTION
 public enum MenuAction: Equatable, BindableAction {
     case homeAction(HomeAction)
-    case mapAction(MapAction)
+    case mapAction(MapFeatureAction)
     case facultiesAction(FacultiesAction)
     case clubsAction(ClubsAction)
     case infoAction(InfoAction)
@@ -92,7 +92,7 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: mapReducer
+    with: mapFeatureReducer
         .pullback(
             state: \.mapState,
             action: /MenuAction.mapAction,
@@ -154,7 +154,7 @@ public struct MenuView: View {
                     Strings.TabBar.home
                 }
             
-            MapView(
+            MapFeatureView(
                 store: self.store.scope(
                     state: \.mapState,
                     action: MenuAction.mapAction
