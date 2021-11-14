@@ -2,7 +2,6 @@ import SwiftUI
 import ComposableArchitecture
 import Combine
 import Common
-import CellsFeature
 import CryptoKit
 
 //MARK: - STATE
@@ -233,7 +232,9 @@ public struct HomeView: View {
                     viewStore.send(.onAppear)
                 }
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(
+                        placement: .navigationBarLeading
+                    ) {
                         HStack {
                             LogoView()
                                 .aspectRatio(contentMode: .fit)

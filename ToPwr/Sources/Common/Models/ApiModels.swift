@@ -1,6 +1,7 @@
 import Foundation
 import ComposableArchitecture
 import AVFoundation
+import SwiftUI
 
 // MARK: - Session day
 public struct SessionDay: Codable, Equatable {
@@ -30,6 +31,7 @@ public struct Department: Codable, Equatable {
     public var socialMedia: [SocialMedia?]
     public var adress: Address?
     public var fieldOfStudy: [FieldOfStudy]
+    public var color: GradientColor?
     public var photo: Photo?
     public var logo: Photo?
     public var clubs: [ScienceClub?]
@@ -44,6 +46,7 @@ public struct Department: Codable, Equatable {
         case socialMedia = "SocialMedia"
         case adress = "Address"
         case fieldOfStudy = "FieldOfStudy"
+        case color = "Color"
         case photo = "Photo"
         case logo = "Logo"
         case clubs = "scientific_circles"
@@ -201,7 +204,7 @@ public struct Contact: Codable, Equatable {
     }
 }
 
-//MARK: - MAPS
+//MARK: - Maps
 public struct Map: Codable, Equatable {
     public let id: Int
     public let name: String?
@@ -224,6 +227,28 @@ public struct Map: Codable, Equatable {
     }
 }
 
+//MARK: - GradientColor
+public struct GradientColor: Codable, Equatable {
+    public let id: Int
+    public let gradientFirst: String?
+    public let gradientSecond: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case gradientFirst = "GradientFirst"
+        case gradientSecond = "GradientSecond"
+    }
+}
+
+public extension GradientColor {
+    var firstColor: Color {
+        Color(hex: gradientFirst ?? "")
+    }
+    var secondColor: Color {
+        Color(hex: gradientSecond ?? "")
+    }
+}
+
 #if DEBUG
 //MARK: - MOCKS
 public extension Department {
@@ -237,6 +262,7 @@ public extension Department {
         socialMedia: [],
         adress: nil,
         fieldOfStudy: [],
+        color: nil,
         photo: nil,
         logo: nil,
         clubs: []
@@ -253,6 +279,7 @@ public extension Department {
             socialMedia: [],
             adress: nil,
             fieldOfStudy: [],
+            color: nil,
             photo: nil,
             logo: nil,
             clubs: []
