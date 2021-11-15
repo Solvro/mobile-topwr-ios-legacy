@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Combine
 import HomeFeature
 import MapFeature
-import FacultiesFeature
+import DepartmentsFeature
 import ClubsFeature
 import InfoFeature
 import Common
@@ -64,7 +64,7 @@ public let menuReducer = Reducer<
         return .none
     case .mapAction:
         return .none
-    case .facultiesAction:
+    case .DepartmentsAction:
         return .none
     case .clubsAction:
         return .none
@@ -102,12 +102,15 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: facultiesReducer
+    with: DepartmentsReducer
         .pullback(
-            state: \.facultiesState,
-            action: /MenuAction.facultiesAction,
+            state: \.departmentsState,
+            action: /MenuAction.DepartmentsAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getDepartments: env.getDepartments
+                    )
             }
         )
 )
@@ -165,10 +168,10 @@ public struct MenuView: View {
                     Strings.TabBar.map
                 }
             
-            FacultiesView(
+            DepartmentsView(
                 store: self.store.scope(
-                    state: \.facultiesState,
-                    action: MenuAction.facultiesAction
+                    state: \.departmentsState,
+                    action: MenuAction.DepartmentsAction
                 )
             )
                 .tabItem {
