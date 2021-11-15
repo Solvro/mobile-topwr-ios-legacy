@@ -93,6 +93,7 @@ let package = Package(
         .target(
             name: "Common",
             dependencies: [
+                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -187,6 +188,7 @@ let package = Package(
         .target(
             name: "ClubsFeature",
             dependencies: [
+                "Common",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"

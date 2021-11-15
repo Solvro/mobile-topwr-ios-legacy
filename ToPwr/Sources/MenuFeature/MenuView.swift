@@ -115,12 +115,13 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: clubsReducer
+    with: ClubsReducer
         .pullback(
             state: \.clubsState,
             action: /MenuAction.clubsAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(mainQueue: env.mainQueue,
+                          getClubs: env.getScienceClubs)
             }
         )
 )
