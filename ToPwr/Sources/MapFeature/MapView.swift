@@ -32,19 +32,15 @@ struct MapView: UIViewRepresentable {
 
 class MapViewDelegate: NSObject, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        print(overlay.description)
-        
         if let polygon = overlay as? MKPolygon {
             if polygon.title == "buildings" {
+                #warning("TODO: string builings, Annotation (titles for builidngs")
                 let render = MKPolygonRenderer(polygon: polygon)
                 render.fillColor = UIColor(K.MapColors.buildings1).withAlphaComponent(0.8)
                 return render
             }
         }
-        
         let renderer = MKPolylineRenderer(overlay: overlay)
         return renderer
     }
 }
-
-
