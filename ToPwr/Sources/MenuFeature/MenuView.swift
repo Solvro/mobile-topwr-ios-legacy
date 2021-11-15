@@ -12,7 +12,7 @@ import Strings
 //MARK: - STATE
 public struct MenuState: Equatable {
     var homeState = HomeState()
-    var mapState = MapState()
+    var mapState = MapFeatureState()
     var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
@@ -23,8 +23,8 @@ public struct MenuState: Equatable {
 //MARK: - ACTION
 public enum MenuAction: Equatable, BindableAction {
     case homeAction(HomeAction)
-    case mapAction(MapAction)
-    case DepartmentsAction(DepartmentsAction)
+    case mapAction(MapFeatureAction)
+    case departmentsAction(DepartmentsAction)
     case clubsAction(ClubsAction)
     case infoAction(InfoAction)
     case binding(BindingAction<MenuState>)
@@ -64,7 +64,7 @@ public let menuReducer = Reducer<
         return .none
     case .mapAction:
         return .none
-    case .DepartmentsAction:
+    case .departmentsAction:
         return .none
     case .clubsAction:
         return .none
@@ -92,7 +92,7 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: mapReducer
+    with: mapFeatureReducer
         .pullback(
             state: \.mapState,
             action: /MenuAction.mapAction,
@@ -105,7 +105,7 @@ public let menuReducer = Reducer<
     with: DepartmentsReducer
         .pullback(
             state: \.departmentsState,
-            action: /MenuAction.DepartmentsAction,
+            action: /MenuAction.departmentsAction,
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
@@ -157,7 +157,7 @@ public struct MenuView: View {
                     Strings.TabBar.home
                 }
             
-            MapView(
+            MapFeatureView(
                 store: self.store.scope(
                     state: \.mapState,
                     action: MenuAction.mapAction
@@ -171,7 +171,7 @@ public struct MenuView: View {
             DepartmentsView(
                 store: self.store.scope(
                     state: \.departmentsState,
-                    action: MenuAction.DepartmentsAction
+                    action: MenuAction.departmentsAction
                 )
             )
                 .tabItem {
