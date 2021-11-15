@@ -88,10 +88,7 @@ public struct SearchView: View {
                 }
             }
             .background(K.SearchColors.lightGray)
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(Color.white, lineWidth: 8)
-            )
+            .cornerRadius(8)
             .padding(.horizontal, 15)
         }
     }
