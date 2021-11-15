@@ -55,7 +55,7 @@ public struct SearchView: View {
     ) {
         self.store = store
     }
-    
+#warning("Implement rounded search field in the better way")
     public var body: some View {
         WithViewStore(store) { viewStore in
             HStack {
@@ -87,9 +87,12 @@ public struct SearchView: View {
 
                 }
             }
-            .cornerRadius(15)
             .background(K.SearchColors.lightGray)
-            .padding(15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.white, lineWidth: 8)
+            )
+            .padding(.horizontal, 15)
         }
     }
 }

@@ -4,33 +4,33 @@ import Common
 import Strings
 
 //MARK: - STATE
-public struct DepartmentListState: Equatable {
-    var departments: IdentifiedArrayOf<DepartmentCellState>
-    var filtered: IdentifiedArrayOf<DepartmentCellState>
+public struct ClubListState: Equatable {
+    var clubs: IdentifiedArrayOf<ClubCellState>
+    var filtered: IdentifiedArrayOf<ClubCellState>
     var searchState = SearchState()
     var text: String = ""
     
     var isLoading: Bool {
-        departments.isEmpty ? true : false
+        clubs.isEmpty ? true : false
     }
     
     public init(
-        departments: [DepartmentCellState] = []
+        clubs: [ClubCellState] = []
     ) {
-        self.departments = .init(uniqueElements: departments)
-        self.filtered = self.departments
+        self.clubs = .init(uniqueElements: clubs)
+        self.filtered = self.clubs
     }
 }
 
 //MARK: - ACTION
-public enum DepartmentListAction: Equatable {
+public enum ClubListAction: Equatable {
     case listButtonTapped
     case searchAction(SearchAction)
-    case cellAction(id: DepartmentCellState.ID, action: DepartmentCellAction)
+    case cellAction(id: ClubCellState.ID, action: ClubCellAction)
 }
 
 //MARK: - ENVIRONMENT
-public struct DepartmentListEnvironment {
+public struct ClubListEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     
     public init (
@@ -39,17 +39,16 @@ public struct DepartmentListEnvironment {
         self.mainQueue = mainQueue
     }
 }
-
 //MARK: - REDUCER
-public let departmentListReducer = Reducer<
-    DepartmentListState,
-    DepartmentListAction,
-    DepartmentListEnvironment
+public let clubListReducer = Reducer<
+    ClubListState,
+    ClubListAction,
+    ClubListEnvironment
 >
     .combine(
-        departmentCellReducer.forEach(
-            state: \.departments,
-            action: /DepartmentListAction.cellAction(id:action:),
+        ClubCellReducer.forEach(
+            state: \.clubs,
+            action: /ClubListAction.cellAction(id:action:),
             environment: { env in
                     .init(mainQueue: env.mainQueue)
             }
@@ -62,13 +61,12 @@ public let departmentListReducer = Reducer<
                 state.text = text
                 
                 if text.count == 0 {
-                    state.filtered = state.departments
+                    state.filtered = state.clubs
                 } else {
                     state.filtered = .init(
-                        uniqueElements: state.departments.filter {
-                            $0.department.name?.contains(text) ?? false ||
-                            $0.department.description?.contains(text) ?? false ||
-                            $0.department.code?.contains(text) ?? false
+                        uniqueElements: state.clubs.filter {
+                            $0.club.name?.contains(text) ?? false ||
+                            $0.club.description?.contains(text) ?? false
                         }
                     )
                 }
@@ -84,19 +82,18 @@ public let departmentListReducer = Reducer<
         with: searchReducer
             .pullback(
                 state: \.searchState,
-                action: /DepartmentListAction.searchAction,
+                action: /ClubListAction.searchAction,
                 environment: { env in
                         .init(mainQueue: env.mainQueue)
                 }
             )
     )
-
 //MARK: - VIEW
-public struct DepartmentListView: View {
-    let store: Store<DepartmentListState, DepartmentListAction>
+public struct ClubListView: View {
+    let store: Store<ClubListState, ClubListAction>
     
     public init(
-        store: Store<DepartmentListState, DepartmentListAction>
+        store: Store<ClubListState, ClubListAction>
     ) {
         self.store = store
     }
@@ -109,7 +106,7 @@ public struct DepartmentListView: View {
                         SearchView(
                             store: self.store.scope(
                                 state: \.searchState,
-                                action: DepartmentListAction.searchAction
+                                action: ClubListAction.searchAction
                             )
                         )
                         
@@ -117,10 +114,10 @@ public struct DepartmentListView: View {
                             ForEachStore(
                                 self.store.scope(
                                     state: \.filtered,
-                                    action: DepartmentListAction.cellAction(id:action:)
+                                    action: ClubListAction.cellAction(id:action:)
                                 )
                             ) { store in
-                                DepartmentCellView(store: store)
+                                ClubCellView(store: store)
                             }
                         }
                     }
@@ -138,7 +135,7 @@ public struct DepartmentListView: View {
                         .padding(.bottom, 5)
                     }
                 }
-                .navigationTitle(Strings.DepartmentList.welcomeText)
+                .navigationTitle(Strings.ScienceClubList.title)
             }
         }
     }

@@ -78,7 +78,7 @@ public struct ScienceClubListView: View {
                     .font(.appBoldTitle1)
                 Spacer()
             }
-            .padding()
+            .padding([.leading, .trailing], 10)
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack() {
                     ForEachStore(

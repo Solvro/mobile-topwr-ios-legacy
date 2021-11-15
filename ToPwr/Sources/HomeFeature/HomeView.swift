@@ -228,6 +228,7 @@ public struct HomeView: View {
                     }
                     
                 }
+                .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
