@@ -68,16 +68,21 @@ public struct DaysToSessionView: View {
                            
                            VStack(alignment: .leading) {
                                Strings.DaysToSessionView.days
+                                   .font(.appRegularBold3)
                                Strings.DaysToSessionView.tillStart
+                                   .font(.appRegular3)
                            }
                            .foregroundColor(K.Colors.white)
+                           .padding(5)
+                           
+                           Spacer()
                        }
                        .padding()
                    } else {
                        ProgressView()
                    }
                }
-               .frame(width: 360, height: 80)
+               .frame(width: 360, height: 72)
                .background(
                    LinearGradient(
                        gradient: Gradient(
@@ -93,6 +98,7 @@ public struct DaysToSessionView: View {
                .cornerRadius(10)
                Spacer()
            }
+//           .padding([.leading, .trailing], 25)
        }
 
 }
@@ -117,9 +123,9 @@ private struct CounterView: View {
     var second: String
     var third: String
     
-    var width: CGFloat = 37
-    var height: CGFloat = 47
-    var fontSize: CGFloat = 24
+    var width: CGFloat = 31
+    var height: CGFloat = 42
+    var fontSize: CGFloat = 20
     
     public var body: some View {
         HStack {

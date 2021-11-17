@@ -77,17 +77,18 @@ public struct BuildingListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appBoldTitle1)
+                    .font(.appRegularBold1)
                 Spacer()
                 viewStore.buttonText
                     .foregroundColor(.gray)
+                    .font(.appRegular3)
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
             }
-            .padding([.leading, .trailing], 10)
+            .padding([.leading, .trailing], 25)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
+                LazyHStack(spacing: 18) {
                     ForEachStore(
                         self.store.scope(
                             state: \.buildings,
@@ -97,9 +98,8 @@ public struct BuildingListView: View {
                         BuildingCellView(store: store)
                     }
                 }
-                .padding(.leading, 10)
+                .padding(.leading, 25)
             }
-            .padding(.bottom, 30)
         }
     }
 }

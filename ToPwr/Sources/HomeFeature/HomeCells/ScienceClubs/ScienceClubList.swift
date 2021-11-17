@@ -75,12 +75,13 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appBoldTitle1)
+                    .font(.appRegularBold1)
                 Spacer()
             }
-            .padding([.leading, .trailing], 10)
+            .padding([.leading, .trailing], 25)
+            
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack() {
+                LazyHStack(spacing: 18) {
                     ForEachStore(
                         self.store.scope(
                             state: \.scienceClubs,
@@ -90,9 +91,8 @@ public struct ScienceClubListView: View {
                         ScienceClubCellView(store: store)
                     }
                 }
-                .padding(.leading, 10)
+                .padding(.leading, 25)
             }
-            .padding(.bottom, 30)
         }
     }
 }

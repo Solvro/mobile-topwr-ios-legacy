@@ -191,13 +191,12 @@ public struct HomeView: View {
         WithViewStore(store) { viewStore in
             NavigationView {
                 ScrollView {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 10) {
                         WelcomeView()
                         
                         DaysToSessionView(session: viewStore.sessionDay)
-                            .padding(.bottom, 30)
                         
-                        // OSTATNIO WYSZUKIWANE
+                        /// Buildings
                         BuildingListView(
                             store:  self.store.scope(
                                 state: \.buildingListState,
@@ -205,7 +204,7 @@ public struct HomeView: View {
                             )
                         )
                         
-                        // WYDZIAŁY
+                        /// Departments
                         DepartmentListView(
                             store: self.store.scope(
                                 state: \.departmentListState,
@@ -213,20 +212,15 @@ public struct HomeView: View {
                             )
                         )
                         
-                        // SCIENCE CLUBS
-                        ScienceClubListView(
-                            store: self.store.scope(
-                                state: \.scienceClubListState,
-                                action: HomeAction.scienceClubListAction
-                            )
-                        )
-                        
-                        
-                        Text("Co słychać?")
-                            .bold()
-                            .padding(.leading, 10)
+                        /// Science Clubs
+                        //TO ASK: Graphics delete this view from design ¯\_( ͡❛ ͜ʖ ͡❛)_/¯
+//                        ScienceClubListView(
+//                            store: self.store.scope(
+//                                state: \.scienceClubListState,
+//                                action: HomeAction.scienceClubListAction
+//                            )
+//                        )
                     }
-                    
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
@@ -241,8 +235,8 @@ public struct HomeView: View {
                                 .aspectRatio(contentMode: .fit)
                             Spacer()
                         }
-                        .frame(height: 30)
-                        .padding(.bottom, 5)
+                        .frame(height: 20)
+                        .padding([.bottom, .top], 10)
                     }
                 }
             }

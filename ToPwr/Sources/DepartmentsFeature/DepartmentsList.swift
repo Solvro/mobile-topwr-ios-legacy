@@ -134,8 +134,8 @@ public struct DepartmentListView: View {
                                 .aspectRatio(contentMode: .fit)
                             Spacer()
                         }
-                        .frame(height: 30)
-                        .padding(.bottom, 5)
+                        .frame(height: 20)
+                        .padding([.bottom, .top], 10)
                     }
                 }
                 .navigationTitle(Strings.DepartmentList.welcomeText)

@@ -17,12 +17,13 @@ public struct WelcomeView: View {
         HStack {
             VStack(alignment: .leading) {
                 Strings.WelcomeView.welcomeText
+                    .font(.appRegular1)
                 Text(dayString())
-                    .font(.appBoldTitle3)
+                    .font(.appRegularBold1)
             }
-            .padding()
             Spacer()
         }
+        .padding([.leading, .trailing], 25)
     }
     
     private func dayString() -> String {
