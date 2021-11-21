@@ -108,9 +108,9 @@ public struct ClubListView: View {
                                 state: \.searchState,
                                 action: ClubListAction.searchAction
                             )
-                        )
+                        ).padding(.bottom, 16)
                         
-                        LazyVStack(spacing: 10) {
+                        LazyVStack(spacing: 16) {
                             ForEachStore(
                                 self.store.scope(
                                     state: \.filtered,

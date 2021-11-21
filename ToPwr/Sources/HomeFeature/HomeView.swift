@@ -191,10 +191,12 @@ public struct HomeView: View {
         WithViewStore(store) { viewStore in
             NavigationView {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 20) {
                         WelcomeView()
+                            .padding([.top, .bottom], 20)
                         
                         DaysToSessionView(session: viewStore.sessionDay)
+                            .padding(.trailing, 24)
                         
                         /// Buildings
                         BuildingListView(
@@ -212,16 +214,17 @@ public struct HomeView: View {
                             )
                         )
                         
-                        /// Science Clubs
-                        //TO ASK: Graphics delete this view from design ¯\_( ͡❛ ͜ʖ ͡❛)_/¯
-//                        ScienceClubListView(
-//                            store: self.store.scope(
-//                                state: \.scienceClubListState,
-//                                action: HomeAction.scienceClubListAction
-//                            )
-//                        )
+                        // Science Clubs
+                        // TO ASK: Graphics delete this view from design ¯\_( ͡❛ ͜ʖ ͡❛)_/¯
+                        ScienceClubListView(
+                            store: self.store.scope(
+                                state: \.scienceClubListState,
+                                action: HomeAction.scienceClubListAction
+                            )
+                        )
                     }
                 }
+                .padding(.leading, 24)
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
                     viewStore.send(.onAppear)
@@ -237,6 +240,7 @@ public struct HomeView: View {
                         }
                         .frame(height: 20)
                         .padding([.bottom, .top], 10)
+                        .padding(.leading, 4)
                     }
                 }
             }

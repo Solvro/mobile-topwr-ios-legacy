@@ -78,7 +78,7 @@ public struct DepartmentListView: View {
         WithViewStore(store) { viewStore in
             HStack {
                 viewStore.title
-                    .font(.appRegularBold1)
+                    .font(.appRegularBold2)
                 Spacer()
                 Button(
                     action: {
@@ -92,8 +92,7 @@ public struct DepartmentListView: View {
                             .foregroundColor(.gray)
                     }
                 )
-            }
-            .padding([.leading, .trailing], 25)
+            }.padding(.trailing, 24)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 18) {
@@ -106,7 +105,6 @@ public struct DepartmentListView: View {
                         DepartmentCellView(store: store)
                     }
                 }
-                .padding(.leading, 25)
             }
         }
     }

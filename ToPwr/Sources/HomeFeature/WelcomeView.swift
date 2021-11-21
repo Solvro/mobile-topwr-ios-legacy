@@ -23,7 +23,6 @@ public struct WelcomeView: View {
             }
             Spacer()
         }
-        .padding([.leading, .trailing], 25)
     }
     
     private func dayString() -> String {

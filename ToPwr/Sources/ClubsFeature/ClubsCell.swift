@@ -62,27 +62,25 @@ public struct ClubCellView: View {
                     Rectangle()
                         .foregroundColor(K.CellColors.scienceBackground)
                         .cornerRadius(8)
-                    VStack() {
+                    HStack() {
+                        HStack() {
+                            Text(viewStore.club.name ?? "")
+                                .fontWeight(.medium)
+                                .foregroundColor(.black)
+                        }
                         HStack() {
                             Spacer()
                             ZStack() {
                                 Rectangle()
-                                    .frame(width: 48, height: 48)
+                                    .frame(width: 72, height: 72)
                                     .foregroundColor(.white)
                                     .cornerRadius(5)
                                 ImageView(
                                     url: URL(string: viewStore.club.photo?.url ?? ""),
                                     contentMode: .aspectFill
                                 )
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 56, height: 56)
                             }
-                        }
-                        Spacer()
-                        HStack() {
-                            Text(viewStore.club.name ?? "")
-                                .fontWeight(.medium)
-                                .foregroundColor(.black)
-                            Spacer()
                         }
                     }.padding()
                 }.padding([.leading, .trailing])

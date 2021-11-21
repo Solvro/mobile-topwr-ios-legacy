@@ -77,15 +77,14 @@ public struct BuildingListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appRegularBold1)
+                    .font(.appRegularBold2)
                 Spacer()
                 viewStore.buttonText
                     .foregroundColor(.gray)
                     .font(.appRegular3)
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
-            }
-            .padding([.leading, .trailing], 25)
+            }.padding(.trailing, 24)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 18) {
@@ -98,7 +97,6 @@ public struct BuildingListView: View {
                         BuildingCellView(store: store)
                     }
                 }
-                .padding(.leading, 25)
             }
         }
     }

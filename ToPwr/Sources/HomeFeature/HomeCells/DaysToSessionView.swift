@@ -54,7 +54,6 @@ public struct DaysToSessionView: View {
  
     public var body: some View {
            HStack {
-               Spacer()
                ZStack {
                    if sessionDay != nil {
                        HStack {
@@ -82,7 +81,6 @@ public struct DaysToSessionView: View {
                        ProgressView()
                    }
                }
-               .frame(width: 360, height: 72)
                .background(
                    LinearGradient(
                        gradient: Gradient(
@@ -96,11 +94,8 @@ public struct DaysToSessionView: View {
                    )
                )
                .cornerRadius(10)
-               Spacer()
            }
-//           .padding([.leading, .trailing], 25)
        }
-
 }
 
 extension DaysToSessionView {
@@ -135,7 +130,7 @@ private struct CounterView: View {
             }
             .frame(width: width, height: height)
             .background(Color.white)
-            .cornerRadius(3)
+            .cornerRadius(4)
             .shadow(radius: 2, y: 2)
             
             ZStack {
@@ -145,7 +140,7 @@ private struct CounterView: View {
             }
             .frame(width: width, height: height)
             .background(Color.white)
-            .cornerRadius(3)
+            .cornerRadius(4)
             .shadow(radius: 2, y: 2)
             
             
