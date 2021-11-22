@@ -71,7 +71,8 @@ public struct DepartmentCellView: View {
                         VStack(alignment: .leading) {
                                 Text(viewStore.department.code ?? "")
                                     .bold()
-                                    .font(.appBoldTitle1)
+                                    .font(.appBoldTitle3)
+                                    .padding(.bottom, 10)
 
                                 Text(viewStore.department.name ?? "")
                                     .font(.appRegular2)
@@ -80,9 +81,8 @@ public struct DepartmentCellView: View {
                                     .fixedSize(horizontal: false, vertical: true)
                                 Spacer()
                         }
-                        .frame(width: 220)
                         .foregroundColor(.white)
-                        .padding([.top, .bottom], 15)
+                        .padding([.top, .bottom, .leading], 15)
                     }
                 }
             )

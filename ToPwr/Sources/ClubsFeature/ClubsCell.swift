@@ -67,6 +67,7 @@ public struct ClubCellView: View {
                             Text(viewStore.club.name ?? "")
                                 .fontWeight(.medium)
                                 .foregroundColor(.black)
+                                .multilineTextAlignment(.leading)
                         }
                         HStack() {
                             Spacer()
@@ -74,12 +75,12 @@ public struct ClubCellView: View {
                                 Rectangle()
                                     .frame(width: 72, height: 72)
                                     .foregroundColor(.white)
-                                    .cornerRadius(5)
+                                    .cornerRadius(8)
                                 ImageView(
                                     url: URL(string: viewStore.club.photo?.url ?? ""),
                                     contentMode: .aspectFill
                                 )
-                                    .frame(width: 56, height: 56)
+                                .frame(width: 56, height: 56)
                             }
                         }
                     }.padding()
