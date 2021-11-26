@@ -215,7 +215,6 @@ public struct HomeView: View {
                         )
                         
                         // Science Clubs
-                        // TO ASK: Graphics delete this view from design ¯\_( ͡❛ ͜ʖ ͡❛)_/¯
                         ScienceClubListView(
                             store: self.store.scope(
                                 state: \.scienceClubListState,

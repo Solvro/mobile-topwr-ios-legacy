@@ -75,7 +75,7 @@ public struct DepartmentCellView: View {
                                 .font(.appBoldTitle3)
                             Text(viewStore.department.name ?? "")
                                 .multilineTextAlignment(.leading)
-                                .font(.appRegular2)
+                                .font(.appRegularTitle3)
                         }
                         .foregroundColor(.white)
                         .padding()

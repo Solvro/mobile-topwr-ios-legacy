@@ -23,17 +23,69 @@ public struct K {
         public static let buildings1 = Color(hex: "#eae9e8")
         public static let buildings2 = Color(hex: "#f5e9d3")
     }
+    
+    public struct FontColors {
+        public static let primary = Color(hex: "#293241")
+        
+    }
 }
 
 //MARK: - FONTS
 public extension Font {
-    static let appBoldTitle1 = Font.system(size: 22, weight: .bold)
-    static let appBoldTitle2 = Font.system(size: 20, weight: .bold)
-    static let appBoldTitle3 = Font.system(size: 19, weight: .bold)
-    static let appRegular1 = Font.system(size: 19, weight: .regular)
-    static let appRegular2 = Font.system(size: 17, weight: .regular)
-    static let appRegular3 = Font.system(size: 15, weight: .regular)
-    static let appRegularBold1 = Font.system(size: 19, weight: .bold)
-    static let appRegularBold2 = Font.system(size: 17, weight: .bold)
-    static let appRegularBold3 = Font.system(size: 15, weight: .bold)
+    static let appBoldTitle1 = Font.system(size: 20, weight: .bold)
+    static let appRegularTitle1 = Font.system(size: 20, weight: .regular)
+    static let appBoldTitle2 = Font.system(size: 17, weight: .bold)
+    static let appRegularTitle2 = Font.system(size: 17, weight: .regular)
+    static let appBoldTitle3 = Font.system(size: 15, weight: .bold)
+    static let appRegularTitle3 = Font.system(size: 15, weight: .regular)
+    static let appBoldTitle4 = Font.system(size: 13, weight: .bold)
+    static let appRegularTitle4 = Font.system(size: 13, weight: .regular)
+    static let appBoldTitle5 = Font.system(size: 12, weight: .bold)
+    static let appRegularTitle5 = Font.system(size: 12, weight: .regular)
+    static let appBoldTitle6 = Font.system(size: 11, weight: .bold)
+    static let appRegularTitle6 = Font.system(size: 11, weight: .regular)
 }
+
+//MARK: - PREVIEW
+#if DEBUG
+struct FontsView: View {
+    var body: some View {
+        ScrollView {
+            VStack {
+                Text("appBoldTitle1")
+                    .font(.appBoldTitle1)
+                Text("appRegularTitle1")
+                    .font(.appRegularTitle1)
+                Text("appBoldTitle2")
+                    .font(.appBoldTitle2)
+                Text("appRegularTitle2")
+                    .font(.appRegularTitle2)
+                Text("appBoldTitle3")
+                    .font(.appBoldTitle3)
+                Text("appRegularTitle3")
+                    .font(.appRegularTitle3)
+                Text("appBoldTitle4")
+                    .font(.appBoldTitle4)
+            }
+            VStack {
+                Text("appRegularTitle4")
+                    .font(.appRegularTitle4)
+                Text("appBoldTitle5")
+                    .font(.appBoldTitle5)
+                Text("appRegularTitle5")
+                    .font(.appRegularTitle5)
+                Text("appBoldTitle6")
+                    .font(.appBoldTitle6)
+                Text("appRegularTitle6")
+                    .font(.appRegularTitle6)
+            }
+        }
+    }
+}
+
+struct FontsView_Previews: PreviewProvider {
+    static var previews: some View {
+        FontsView()
+    }
+}
+#endif

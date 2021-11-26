@@ -75,7 +75,7 @@ public struct DepartmentCellView: View {
                                     .padding(.bottom, 10)
 
                                 Text(viewStore.department.name ?? "")
-                                    .font(.appRegular2)
+                                    .font(.appRegularTitle3)
                                     .lineLimit(2)
                                     .multilineTextAlignment(.leading)
                                     .fixedSize(horizontal: false, vertical: true)

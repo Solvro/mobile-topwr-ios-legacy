@@ -2,6 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 import CoreMedia
 import Strings
+import Common
 
 //MARK: - STATE
 public struct ScienceClubListState: Equatable {
@@ -75,7 +76,8 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appRegularBold2)
+                    .font(.appBoldTitle2)
+                    .foregroundColor(K.FontColors.primary)
                 Spacer()
             }
             

@@ -67,9 +67,9 @@ public struct DaysToSessionView: View {
                            
                            VStack(alignment: .leading) {
                                Strings.DaysToSessionView.days
-                                   .font(.appRegularBold3)
+                                   .font(.appBoldTitle3)
                                Strings.DaysToSessionView.tillStart
-                                   .font(.appRegular3)
+                                   .font(.appRegularTitle3)
                            }
                            .foregroundColor(K.Colors.white)
                            .padding(5)
@@ -126,7 +126,8 @@ private struct CounterView: View {
         HStack {
             ZStack {
                 Text(first)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
             }
             .frame(width: width, height: height)
             .background(Color.white)
@@ -135,7 +136,8 @@ private struct CounterView: View {
             
             ZStack {
                 Text(second)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
                 
             }
             .frame(width: width, height: height)
@@ -146,7 +148,8 @@ private struct CounterView: View {
             
             ZStack {
                 Text(third)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
             }
             .frame(width: width, height: height)
             .background(Color.white)
