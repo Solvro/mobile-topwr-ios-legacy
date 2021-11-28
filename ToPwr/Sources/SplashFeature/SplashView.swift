@@ -6,15 +6,14 @@ import MenuFeature
 
 //MARK: - STATE
 public struct SplashState: Equatable {
-    var text: String = "Hello World ToPwr"
-    var isButtonTapped: Bool = false
+    var isLoading: Bool = true
     
     var menuState = MenuState()
     public init(){}
 }
 //MARK: - ACTION
 public enum SplashAction: Equatable {
-    case buttonTapped
+    case stopLoading
     case menuAction(MenuAction)
 }
 
@@ -48,8 +47,9 @@ public let splashReducer = Reducer<
     SplashEnvironment
 > { state, action, environment in
   switch action {
-  case .buttonTapped:
-    state.isButtonTapped.toggle()
+  case .stopLoading:
+      #warning("TODO")
+    state.isLoading = false
     return .none
   case .menuAction:
       return .none
@@ -76,6 +76,14 @@ public let splashReducer = Reducer<
 public struct SplashView: View {
     let store: Store<SplashState, SplashAction>
     
+    @State var scale: CGFloat = 1.0
+    
+    var repeatingAnimation: Animation {
+        Animation
+            .easeInOut(duration: 1.2)
+            .repeatForever()
+    }
+    
     public init(
         store: Store<SplashState, SplashAction>
     ) {
@@ -85,15 +93,54 @@ public struct SplashView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             ZStack {
-                Color.gray
-                    .ignoresSafeArea()
-                
-                MenuView(
-                    store: self.store.scope(
-                        state: \.menuState,
-                        action: SplashAction.menuAction
+                if viewStore.isLoading {
+                    ZStack {
+                        LinearGradient(
+                            colors: [
+                                K.Colors.firstColorLight,
+                                K.Colors.firstColorDark
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                viewStore.send(.stopLoading)
+                            }
+                        
+                        VStack {
+                            K.Images.logoTemplate
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundColor(Color.white)
+                                .shadow(
+                                    color: .black.opacity(0.2),
+                                    radius: 2,
+                                    x: 0,
+                                    y: 2
+                                )
+                                .scaleEffect(scale)
+                                .onAppear() {
+                                    withAnimation(self.repeatingAnimation) { self.scale = 1.1 }
+                                }
+                            ProgressView()
+                                .progressViewStyle(
+                                    CircularProgressViewStyle(
+                                        tint: Color.white
+                                    )
+                                )
+                                .padding(.top, 20)
+                        }
+                        .frame(width: 200)
+                    }
+                } else {
+                    MenuView(
+                        store: self.store.scope(
+                            state: \.menuState,
+                            action: SplashAction.menuAction
+                        )
                     )
-                )
+                }
             }
         }
     }
