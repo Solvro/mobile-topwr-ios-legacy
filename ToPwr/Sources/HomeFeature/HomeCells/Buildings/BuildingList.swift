@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Strings
+import Common
 
 //MARK: - STATE
 public struct BuildingListState: Equatable {
@@ -77,17 +78,18 @@ public struct BuildingListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appBoldTitle1)
+                    .font(.appBoldTitle2)
+                    .foregroundColor(K.FontColors.primary)
                 Spacer()
                 viewStore.buttonText
                     .foregroundColor(.gray)
+                    .font(.appRegularTitle3)
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
-            }
-            .padding([.leading, .trailing], 10)
+            }.padding(.trailing, 24)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
+                LazyHStack(spacing: 18) {
                     ForEachStore(
                         self.store.scope(
                             state: \.buildings,
@@ -97,9 +99,7 @@ public struct BuildingListView: View {
                         BuildingCellView(store: store)
                     }
                 }
-                .padding(.leading, 10)
             }
-            .padding(.bottom, 30)
         }
     }
 }

@@ -72,13 +72,13 @@ public struct DepartmentCellView: View {
                         VStack(alignment: .leading) {
                             Text(viewStore.department.code ?? "")
                                 .bold()
-                                .font(.appBoldTitle1)
+                                .font(.appBoldTitle3)
                             Text(viewStore.department.name ?? "")
                                 .multilineTextAlignment(.leading)
-                                .font(.appRegular2)
+                                .font(.appRegularTitle3)
                         }
                         .foregroundColor(.white)
-                        .padding(10)
+                        .padding()
                     }
                     .frame(width: 183)
                 }

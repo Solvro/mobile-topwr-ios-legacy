@@ -62,27 +62,26 @@ public struct ClubCellView: View {
                     Rectangle()
                         .foregroundColor(K.CellColors.scienceBackground)
                         .cornerRadius(8)
-                    VStack() {
-                        HStack() {
-                            Spacer()
-                            ZStack() {
-                                Rectangle()
-                                    .frame(width: 48, height: 48)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(5)
-                                ImageView(
-                                    url: URL(string: viewStore.club.photo?.url ?? ""),
-                                    contentMode: .aspectFill
-                                )
-                                    .frame(width: 20, height: 20)
-                            }
-                        }
-                        Spacer()
+                    HStack() {
                         HStack() {
                             Text(viewStore.club.name ?? "")
                                 .fontWeight(.medium)
                                 .foregroundColor(.black)
+                                .multilineTextAlignment(.leading)
+                        }
+                        HStack() {
                             Spacer()
+                            ZStack() {
+                                Rectangle()
+                                    .frame(width: 72, height: 72)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                                ImageView(
+                                    url: URL(string: viewStore.club.photo?.url ?? ""),
+                                    contentMode: .aspectFill
+                                )
+                                .frame(width: 56, height: 56)
+                            }
                         }
                     }.padding()
                 }.padding([.leading, .trailing])
