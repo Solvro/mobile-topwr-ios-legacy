@@ -5,8 +5,8 @@ public struct K {
     public struct Colors {
         public static let background = Color.white
         public static let white = Color.white
-        public static let firstColorDark = Color(hex: "#e56353")
-        public static let firstColorLight = Color(hex: "#ff9f7e")
+        public static let firstColorDark = Color(hex: "#E16257")
+        public static let firstColorLight = Color(hex: "#FFA07E")
     }
     
     public struct SearchColors {
@@ -26,7 +26,11 @@ public struct K {
     
     public struct FontColors {
         public static let primary = Color(hex: "#293241")
-        
+    }
+    //MARK: - IMAGES
+    public struct Images {
+        public static let logoColor = Image("AppLogoColor", bundle: .module)
+        public static let logoTemplate = Image("LogoTemplate", bundle: .module)
     }
 }
 
