@@ -78,7 +78,12 @@ public struct DaysToSessionView: View {
                        }
                        .padding()
                    } else {
-                       ProgressView()
+                       HStack {
+                           Spacer()
+                           ProgressView()
+                               .padding(20)
+                           Spacer()
+                       }
                    }
                }
                .background(
