@@ -108,9 +108,9 @@ public struct ClubListView: View {
                                 state: \.searchState,
                                 action: ClubListAction.searchAction
                             )
-                        )
+                        ).padding(.bottom, 16)
                         
-                        LazyVStack(spacing: 10) {
+                        LazyVStack(spacing: 16) {
                             ForEachStore(
                                 self.store.scope(
                                     state: \.filtered,
@@ -131,8 +131,8 @@ public struct ClubListView: View {
                                 .aspectRatio(contentMode: .fit)
                             Spacer()
                         }
-                        .frame(height: 30)
-                        .padding(.bottom, 5)
+                        .frame(height: 20)
+                        .padding([.bottom, .top], 10)
                     }
                 }
                 .navigationTitle(Strings.ScienceClubList.title)
