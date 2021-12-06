@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Strings
+import Common
 
 //MARK: - STATE
 public struct DepartmentListState: Equatable {
@@ -76,41 +77,37 @@ public struct DepartmentListView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            VStack {
-                HStack {
-                    viewStore.title
-                        .font(.appBoldTitle1)
-                    Spacer()
-                    Button(
-                        action: {
-                            viewStore.send(.listButtonTapped)
-                        },
-                        label: {
-                            viewStore.buttonText
-                                .foregroundColor(.gray)
-                                .font(.appRegular1)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                        }
-                    )
-                }
-                .padding([.leading, .trailing], 10)
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        ForEachStore(
-                            self.store.scope(
-                                state: \.departments,
-                                action: DepartmentListAction.cellAction(id:action:)
-                            )
-                        ) { store in
-                            DepartmentCellView(store: store)
-                        }
+            HStack {
+                viewStore.title
+                    .font(.appBoldTitle2)
+                    .foregroundColor(K.FontColors.primary)
+                Spacer()
+                Button(
+                    action: {
+                        viewStore.send(.listButtonTapped)
+                    },
+                    label: {
+                        viewStore.buttonText
+                            .foregroundColor(.gray)
+                            .font(.appRegularTitle3)
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
                     }
-                    .padding(.leading, 10)
+                )
+            }.padding(.trailing, 24)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 18) {
+                    ForEachStore(
+                        self.store.scope(
+                            state: \.departments,
+                            action: DepartmentListAction.cellAction(id:action:)
+                        )
+                    ) { store in
+                        DepartmentCellView(store: store)
+                    }
                 }
             }
-            .padding(.bottom, 30)
         }
     }
 }

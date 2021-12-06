@@ -20,7 +20,7 @@ public struct Strings {
     }
     
     public struct BuildingList {
-        public static let title = Text("Last searched", bundle: .module)
+        public static let title = Text("Buildings", bundle: .module)
         public static let button = Text("Map", bundle: .module)
     }
     
