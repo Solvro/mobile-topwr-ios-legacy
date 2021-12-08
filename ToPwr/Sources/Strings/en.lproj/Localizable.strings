@@ -1,11 +1,30 @@
 
-"What's up?" = "What's up?";
-"Home" = "Home";
-"Map" = "Map";
-"Faculties" = "Faculties";
-"Clubs" = "Clubs";
-"Calculator" = "Calculator";
+"What's up?" = "Co nowego?";
+"Home" = "Dom";
+"Map" = "Mapa";
+"Faculties" = "Wydziały";
+"Clubs" = "Koła";
+"Calculator" = "Kalkulator";
 
 //Search strings
-"searching" = "Search...";
+"searching" = "Wyszukiwanie...";
+"days" = "dni";
+"before the session starts" = "do rozpoczęcia sesji";
+
+// WelcomeView strings
+"Hi, good to see you!" = "Cześć, miło Cię widzieć";
+
+// BuildingList strings
+"Buildings" = "Budynki";
+"Map" = "Mapa";
+
+// DepartmentList strings
+"Faculties" = "Wydziały";
+"List" = "Lista";
+
+// ScienceClubList strings
+"Science Clubs" = "Koła naukowe";
+
+//Search strings
+"searching" = "Szukaj...";
 
