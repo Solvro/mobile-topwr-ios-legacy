@@ -123,13 +123,6 @@ public struct SplashView: View {
                                 .onAppear() {
                                     withAnimation(self.repeatingAnimation) { self.scale = 1.1 }
                                 }
-                            ProgressView()
-                                .progressViewStyle(
-                                    CircularProgressViewStyle(
-                                        tint: Color.white
-                                    )
-                                )
-                                .padding(.top, 20)
                         }
                         .frame(width: 200)
                     }
