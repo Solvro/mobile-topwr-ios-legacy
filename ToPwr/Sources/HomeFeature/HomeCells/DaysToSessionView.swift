@@ -54,7 +54,6 @@ public struct DaysToSessionView: View {
  
     public var body: some View {
            HStack {
-               Spacer()
                ZStack {
                    if sessionDay != nil {
                        HStack {
@@ -68,16 +67,25 @@ public struct DaysToSessionView: View {
                            
                            VStack(alignment: .leading) {
                                Strings.DaysToSessionView.days
+                                   .font(.appBoldTitle3)
                                Strings.DaysToSessionView.tillStart
+                                   .font(.appRegularTitle3)
                            }
                            .foregroundColor(K.Colors.white)
+                           .padding(5)
+                           
+                           Spacer()
                        }
                        .padding()
                    } else {
-                       ProgressView()
+                       HStack {
+                           Spacer()
+                           ProgressView()
+                               .padding(20)
+                           Spacer()
+                       }
                    }
                }
-               .frame(width: 360, height: 80)
                .background(
                    LinearGradient(
                        gradient: Gradient(
@@ -91,10 +99,8 @@ public struct DaysToSessionView: View {
                    )
                )
                .cornerRadius(10)
-               Spacer()
            }
        }
-
 }
 
 extension DaysToSessionView {
@@ -117,35 +123,38 @@ private struct CounterView: View {
     var second: String
     var third: String
     
-    var width: CGFloat = 37
-    var height: CGFloat = 47
-    var fontSize: CGFloat = 24
+    var width: CGFloat = 31
+    var height: CGFloat = 42
+    var fontSize: CGFloat = 20
     
     public var body: some View {
         HStack {
             ZStack {
                 Text(first)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
             }
             .frame(width: width, height: height)
             .background(Color.white)
-            .cornerRadius(3)
+            .cornerRadius(4)
             .shadow(radius: 2, y: 2)
             
             ZStack {
                 Text(second)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
                 
             }
             .frame(width: width, height: height)
             .background(Color.white)
-            .cornerRadius(3)
+            .cornerRadius(4)
             .shadow(radius: 2, y: 2)
             
             
             ZStack {
                 Text(third)
-                    .font(.system(size: fontSize))
+                    .font(.appBoldTitle1)
+                    .foregroundColor(K.FontColors.primary)
             }
             .frame(width: width, height: height)
             .background(Color.white)

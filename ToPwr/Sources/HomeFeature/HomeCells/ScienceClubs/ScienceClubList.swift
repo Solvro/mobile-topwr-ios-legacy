@@ -2,6 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 import CoreMedia
 import Strings
+import Common
 
 //MARK: - STATE
 public struct ScienceClubListState: Equatable {
@@ -75,12 +76,13 @@ public struct ScienceClubListView: View {
         WithViewStore(store) { viewStore in
             HStack() {
                 viewStore.title
-                    .font(.appBoldTitle1)
+                    .font(.appBoldTitle2)
+                    .foregroundColor(K.FontColors.primary)
                 Spacer()
             }
-            .padding([.leading, .trailing], 10)
+            
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack() {
+                LazyHStack(spacing: 16) {
                     ForEachStore(
                         self.store.scope(
                             state: \.scienceClubs,
@@ -90,9 +92,7 @@ public struct ScienceClubListView: View {
                         ScienceClubCellView(store: store)
                     }
                 }
-                .padding(.leading, 10)
             }
-            .padding(.bottom, 30)
         }
     }
 }

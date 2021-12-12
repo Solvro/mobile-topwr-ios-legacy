@@ -17,10 +17,11 @@ public struct WelcomeView: View {
         HStack {
             VStack(alignment: .leading) {
                 Strings.WelcomeView.welcomeText
+                    .font(.appRegularTitle1)
                 Text(dayString())
-                    .font(.appBoldTitle3)
+                    .font(.appBoldTitle1)
             }
-            .padding()
+            .foregroundColor(K.FontColors.primary)
             Spacer()
         }
     }

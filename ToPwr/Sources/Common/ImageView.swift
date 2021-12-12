@@ -36,7 +36,7 @@ public struct ImageView<Placeholder: View>: View {
             } else {
                 Image("placeholder", bundle: Bundle.module)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .clipped()
                     .background(K.Colors.firstColorDark)
             }
