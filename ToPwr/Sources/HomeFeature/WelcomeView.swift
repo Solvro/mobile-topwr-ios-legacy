@@ -5,10 +5,14 @@ import Strings
 
 public struct WelcomeView: View {
     let date: Date
+    let exceptations: ExceptationDays?
     let isEvenWeek: Bool
     
-    public init(){
+    public init(
+        exceptations: ExceptationDays?
+    ) {
         self.date = Date()
+        self.exceptations = exceptations
         let weekOfYear = Calendar.current.component(.weekOfYear, from: Date.init(timeIntervalSinceNow: 0))
         self.isEvenWeek = (weekOfYear % 2 == 0) ? true : false
     }
@@ -25,6 +29,8 @@ public struct WelcomeView: View {
             Spacer()
         }
     }
+    
+    
     
     private func dayString() -> String {
         var text: String = "w "
@@ -85,5 +91,31 @@ public struct WelcomeView: View {
             text += "Niezidentyfikowany dzień! "
         }
         return text + textDay
+    }
+}
+
+//MARK: - Date String logic
+extension WelcomeView {
+    fileprivate func getWelcomeText(
+        currentDate: Date,
+        exceptations: ExceptationDays?
+    ) -> String {
+//        var isOven: Bool
+//
+//        guard let exceptations = exceptations else {
+//            return ""
+//        }
+//
+//        for exceptation in exceptations.weekDays {
+//            if Calendar.current.compare(
+//                currentDate,
+//                to: exceptations,
+//                toGranularity: .day
+//            ) == .orderedSame {
+//                return "XD"
+//            }
+//        }
+//
+        return " test"
     }
 }
