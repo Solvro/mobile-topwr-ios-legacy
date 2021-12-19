@@ -1,12 +1,11 @@
 import SwiftUI
 import ComposableArchitecture
-import Strings
 import Common
 
 //MARK: - STATE
 public struct DepartmentListState: Equatable {
-    let title: Text = Strings.DepartmentList.welcomeText
-    let buttonText: Text = Strings.DepartmentList.button
+    let title: String = Strings.HomeLists.departmentListTitle
+    let buttonText: String = Strings.HomeLists.departmentListButton
     var departments: IdentifiedArrayOf<DepartmentCellState> = []
     
     var isLoading: Bool {
@@ -78,7 +77,7 @@ public struct DepartmentListView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             HStack {
-                viewStore.title
+                Text(viewStore.title)
                     .font(.appBoldTitle2)
                     .foregroundColor(K.FontColors.primary)
                 Spacer()
@@ -87,7 +86,7 @@ public struct DepartmentListView: View {
                         viewStore.send(.listButtonTapped)
                     },
                     label: {
-                        viewStore.buttonText
+                        Text(viewStore.buttonText)
                             .foregroundColor(.gray)
                             .font(.appRegularTitle3)
                         Image(systemName: "chevron.right")

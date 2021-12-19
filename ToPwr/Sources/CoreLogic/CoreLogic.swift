@@ -18,6 +18,7 @@ public struct CoreLogic {
         self.decoder = decoder
     }
     
+//MARK: - API
     public func getSessionDate() -> AnyPublisher<SessionDay, ErrorModel> {
         let path: String = "/academic-year-end-date"
         return api.fetch(path: path)
@@ -58,4 +59,19 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
+    public func getWelcomeDayText() -> AnyPublisher<ExceptationDays, ErrorModel> {
+        let path: String = "/week-day-exceptions"
+        return api.fetch(path: path)
+            .decode(type: ExceptationDays.self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+
+//MARK: - Transform
+    public func transform(exceptationDays: ExceptationDays) -> String {
+        let currentDate = Date()
+        return "test"
+    }
 }

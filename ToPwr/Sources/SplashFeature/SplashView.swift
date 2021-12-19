@@ -24,19 +24,22 @@ public struct SplashEnvironment {
     var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
+        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
+        self.getWelcomeDayText = getWelcomeDayText
     }
 }
 
@@ -66,7 +69,8 @@ public let splashReducer = Reducer<
                         getSessionDate: env.getSessionDate,
                         getDepartments: env.getDepartments,
                         getBuildings: env.getBuildings,
-                        getScienceClubs: env.getScienceClubs
+                        getScienceClubs: env.getScienceClubs,
+                        getWelcomeDayText: env.getWelcomeDayText
                     )
             }
         )
@@ -151,7 +155,8 @@ struct SplashView_Previews: PreviewProvider {
                     getSessionDate: failing0,
                     getDepartments: failing0,
                     getBuildings: failing0,
-                    getScienceClubs: failing0
+                    getScienceClubs: failing0,
+                    getWelcomeDayText: failing0
                 )
             )
         )

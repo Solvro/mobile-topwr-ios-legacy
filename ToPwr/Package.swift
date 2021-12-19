@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "ToPwr",
-    defaultLocalization: "en",
+    defaultLocalization: "pl",
     platforms: [
         .iOS(.v14),
     ],
@@ -57,10 +57,6 @@ let package = Package(
             name: "CoreLogic",
             targets: ["ToPwr"]
         ),
-        .library(
-            name: "Strings",
-            targets: ["ToPwr"]
-        ),
     ],
     dependencies: [
         .package(
@@ -79,7 +75,6 @@ let package = Package(
                 "SplashFeature",
                 "Common",
                 "CoreLogic",
-                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -93,7 +88,6 @@ let package = Package(
         .target(
             name: "Common",
             dependencies: [
-                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -131,7 +125,6 @@ let package = Package(
                 "ClubsFeature",
                 "InfoFeature",
                 "Common",
-                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -146,7 +139,6 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
-                "Strings",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -259,19 +251,6 @@ let package = Package(
         .testTarget(
             name: "ApiTests",
             dependencies: ["Api"]
-        ),
-        .target(
-            name: "Strings",
-            dependencies: [
-                .product(
-                    name: "ComposableArchitecture",
-                    package: "swift-composable-architecture"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "StringsTests",
-            dependencies: ["Strings"]
         ),
     ]
 )

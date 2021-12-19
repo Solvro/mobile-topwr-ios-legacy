@@ -1,6 +1,5 @@
 import SwiftUI
 import ComposableArchitecture
-import Strings
 
 //MARK: - STATE
 public struct SearchState: Equatable {
@@ -8,7 +7,7 @@ public struct SearchState: Equatable {
     let placeholder: String
 
     public init(
-        placeholder: String = Strings.Search.searching
+        placeholder: String = Strings.Other.searching
     ){
         self.placeholder = placeholder
     }
