@@ -1,7 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
 import Common
-import Strings
 
 //MARK: - STATE
 public struct DepartmentListState: Equatable {
@@ -138,7 +137,7 @@ public struct DepartmentListView: View {
                         .padding([.bottom, .top], 10)
                     }
                 }
-                .navigationTitle(Strings.DepartmentList.welcomeText)
+                .navigationTitle(Strings.HomeLists.departmentListTitle)
             }
         }
     }

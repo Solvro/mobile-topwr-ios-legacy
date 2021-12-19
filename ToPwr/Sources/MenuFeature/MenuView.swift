@@ -7,7 +7,6 @@ import DepartmentsFeature
 import ClubsFeature
 import InfoFeature
 import Common
-import Strings
 
 //MARK: - STATE
 public struct MenuState: Equatable {
@@ -157,9 +156,9 @@ public struct MenuView: View {
                     action: MenuAction.homeAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "house.fill")
-                    Strings.TabBar.home
                 }
             
             MapFeatureView(
@@ -168,9 +167,9 @@ public struct MenuView: View {
                     action: MenuAction.mapAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Strings.TabBar.map
                 }
             
             DepartmentsView(
@@ -179,9 +178,9 @@ public struct MenuView: View {
                     action: MenuAction.departmentsAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "arrowshape.turn.up.left.circle.fill")
-                    Strings.TabBar.faculties
                 }
             
             ClubsView(
@@ -190,9 +189,9 @@ public struct MenuView: View {
                     action: MenuAction.clubsAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "suit.club.fill")
-                    Strings.TabBar.clubs
                 }
             InfoView(
                 store: self.store.scope(
@@ -200,9 +199,9 @@ public struct MenuView: View {
                     action: MenuAction.infoAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "info.circle.fill")
-                    Strings.TabBar.calculator
                 }
         }
         .accentColor(K.Colors.firstColorDark)

@@ -258,6 +258,21 @@ public struct ExceptationDays: Codable, Equatable {
         case id = "id"
         case weekDays = "Weekday"
     }
+    
+    public func isExceptation(date: Date) -> WeekDay? {
+        for day in weekDays {
+            if let exceptation = day.date {
+                if Calendar.current.compare(
+                    date,
+                    to: exceptation,
+                    toGranularity: .day
+                ) == .orderedSame {
+                    return day
+                }
+            }
+        }
+        return nil
+    }
 }
 
 public struct WeekDay: Codable, Equatable {
@@ -269,6 +284,14 @@ public struct WeekDay: Codable, Equatable {
         case dateString = "Date"
         case parity = "Parity"
         case day = "DayOfTheWeek"
+    }
+    
+    var isEven: Bool {
+        if parity == "Even" {
+            return true
+        } else {
+            return false
+        }
     }
 }
 

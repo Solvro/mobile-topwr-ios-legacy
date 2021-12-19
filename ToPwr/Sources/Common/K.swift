@@ -32,6 +32,18 @@ public struct K {
         public static let logoColor = Image("AppLogoColor", bundle: .module)
         public static let logoTemplate = Image("LogoTemplate", bundle: .module)
     }
+
+//MARK: - Background modifier
+    public struct DefaultBackgroundColor: ViewModifier {
+        public init() {}
+        public func body(content: Content) -> some View {
+            ZStack {
+                K.Colors.background
+                    .edgesIgnoringSafeArea(.all)
+                content
+            }
+        }
+    }
 }
 
 //MARK: - FONTS
