@@ -158,7 +158,7 @@ public struct MenuView: View {
             )
                 .modifier(K.DefaultBackgroundColor())
                 .tabItem {
-                    Image(systemName: "house.fill")
+                    Image("SchoolIcon")
                 }
             
             MapFeatureView(
@@ -169,7 +169,7 @@ public struct MenuView: View {
             )
                 .modifier(K.DefaultBackgroundColor())
                 .tabItem {
-                    Image(systemName: "map.fill")
+                    Image("CompassIcon")
                 }
             
             DepartmentsView(
@@ -180,7 +180,7 @@ public struct MenuView: View {
             )
                 .modifier(K.DefaultBackgroundColor())
                 .tabItem {
-                    Image(systemName: "arrowshape.turn.up.left.circle.fill")
+                    Image("HatIcon")
                 }
             
             ClubsView(
@@ -191,7 +191,7 @@ public struct MenuView: View {
             )
                 .modifier(K.DefaultBackgroundColor())
                 .tabItem {
-                    Image(systemName: "suit.club.fill")
+                    Image("RocketIcon")
                 }
             InfoView(
                 store: self.store.scope(
@@ -201,7 +201,7 @@ public struct MenuView: View {
             )
                 .modifier(K.DefaultBackgroundColor())
                 .tabItem {
-                    Image(systemName: "info.circle.fill")
+                    Image("InfoIcon")
                 }
         }
         .accentColor(K.Colors.firstColorDark)
