@@ -1,7 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
 import Common
-import Strings
 
 //MARK: - STATE
 public struct ClubListState: Equatable {
@@ -135,7 +134,7 @@ public struct ClubListView: View {
                         .padding([.bottom, .top], 10)
                     }
                 }
-                .navigationTitle(Strings.ScienceClubList.title)
+                .navigationTitle(Strings.HomeLists.scienceClubsTitle)
             }
         }
     }

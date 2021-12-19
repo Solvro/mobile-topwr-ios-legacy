@@ -1,1 +1,39 @@
+//LOCALIZABLE STRINGS
 
+"searching"="szukaj...";
+
+//Home bars
+"home_bar_item"="Home";
+"map_bar_item"="Mapa";
+"faculties_bar_item"="Wydziały";
+"clubs_bar_item"="Koła";
+"informations_bar_item"="Info";
+
+//Home Lists
+"science_list_title"="Koła naukowe";
+"department_list_title"="Wydziały";
+"department_list_button"="Lista";
+"building_list_title"="Budynki";
+"building_list_button_title"="Lista";
+
+//Welcome View
+"welcome_view_even_sunday"="w parzystą Niedzielę!";
+"welcome_view_odd_sunday"="w nieparzystą Niedzielę!";
+"welcome_view_even_monday"="w parzysty Poniedziałek!";
+"welcome_view_odd_monday"="w nieparzysty Poniedziałek!";
+"welcome_view_even_tuesday"="w parzysty Wtorek!";
+"welcome_view_odd_tuesday"="w nieparzysty Wtorek!";
+"welcome_view_even_wednesday"="w parzystą Środę!";
+"welcome_view_odd_wednesday"="w nieparzystą Środę!";
+"welcome_view_even_thursday"="w parzysty Czwartek!";
+"welcome_view_odd_thursday"="w nieparzysty Czwartek!";
+"welcome_view_even_friday"="w parzysty Piątek!";
+"welcome_view_odd_friday"="w nieparzysty Piątek!";
+"welcome_view_even_saturday"="w parzystą Sobotę!";
+"welcome_view_odd_saturday"="w nieparzystą Sobotę!";
+
+//Other (TO DO)
+"searching"="szukaj...";
+"welcome_title"="Cześć, miło Cie widzieć";
+"days_text"="dni";
+"till_session_start"="do rozpoczęcia sesji";

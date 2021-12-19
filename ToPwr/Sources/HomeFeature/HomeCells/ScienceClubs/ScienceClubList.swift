@@ -1,12 +1,11 @@
 import SwiftUI
 import ComposableArchitecture
 import CoreMedia
-import Strings
 import Common
 
 //MARK: - STATE
 public struct ScienceClubListState: Equatable {
-    let title: Text = Strings.ScienceClubList.title
+    let title: String = Strings.HomeLists.scienceClubsTitle
     var scienceClubs: IdentifiedArrayOf<ScienceClubCellState> = []
     
     var isLoading: Bool {
@@ -75,7 +74,7 @@ public struct ScienceClubListView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             HStack() {
-                viewStore.title
+                Text(viewStore.title)
                     .font(.appBoldTitle2)
                     .foregroundColor(K.FontColors.primary)
                 Spacer()

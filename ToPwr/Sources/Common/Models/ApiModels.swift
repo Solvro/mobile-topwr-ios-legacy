@@ -249,6 +249,60 @@ public extension GradientColor {
     }
 }
 
+//MARK: - ExceptationDay
+public struct ExceptationDays: Codable, Equatable {
+    public let id: Int
+    public let weekDays: [WeekDay]
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case weekDays = "Weekday"
+    }
+    
+    public func isExceptation(date: Date) -> WeekDay? {
+        for day in weekDays {
+            if let exceptation = day.date {
+                if Calendar.current.compare(
+                    date,
+                    to: exceptation,
+                    toGranularity: .day
+                ) == .orderedSame {
+                    return day
+                }
+            }
+        }
+        return nil
+    }
+}
+
+public struct WeekDay: Codable, Equatable {
+    public let dateString: String
+    public let parity: String
+    public let day: String
+    
+    enum CodingKeys: String, CodingKey {
+        case dateString = "Date"
+        case parity = "Parity"
+        case day = "DayOfTheWeek"
+    }
+    
+    var isEven: Bool {
+        if parity == "Even" {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+public extension WeekDay {
+    var date: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yy-MM-dd"
+        return dateFormatter.date(from: dateString)
+    }
+}
+
 #if DEBUG
 //MARK: - MOCKS
 public extension Department {
