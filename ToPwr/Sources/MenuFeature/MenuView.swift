@@ -7,7 +7,6 @@ import DepartmentsFeature
 import ClubsFeature
 import InfoFeature
 import Common
-import Strings
 
 //MARK: - STATE
 public struct MenuState: Equatable {
@@ -37,19 +36,22 @@ public struct MenuEnvironment {
     var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
+        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
+        self.getWelcomeDayText = getWelcomeDayText
     }
 }
 
@@ -86,7 +88,8 @@ public let menuReducer = Reducer<
                         getSessionDate: env.getSessionDate,
                         getDepartments: env.getDepartments,
                         getBuildings: env.getBuildings,
-                        getScienceClubs: env.getScienceClubs
+                        getScienceClubs: env.getScienceClubs,
+                        getWelcomeDayText: env.getWelcomeDayText
                     )
             }
         )
@@ -153,9 +156,9 @@ public struct MenuView: View {
                     action: MenuAction.homeAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "house.fill")
-                    Strings.TabBar.home
                 }
             
             MapFeatureView(
@@ -164,9 +167,9 @@ public struct MenuView: View {
                     action: MenuAction.mapAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Strings.TabBar.map
                 }
             
             DepartmentsView(
@@ -175,9 +178,9 @@ public struct MenuView: View {
                     action: MenuAction.departmentsAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "arrowshape.turn.up.left.circle.fill")
-                    Strings.TabBar.faculties
                 }
             
             ClubsView(
@@ -186,9 +189,9 @@ public struct MenuView: View {
                     action: MenuAction.clubsAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "suit.club.fill")
-                    Strings.TabBar.clubs
                 }
             InfoView(
                 store: self.store.scope(
@@ -196,9 +199,9 @@ public struct MenuView: View {
                     action: MenuAction.infoAction
                 )
             )
+                .modifier(K.DefaultBackgroundColor())
                 .tabItem {
                     Image(systemName: "info.circle.fill")
-                    Strings.TabBar.calculator
                 }
         }
         .accentColor(K.Colors.firstColorDark)
@@ -218,7 +221,8 @@ struct MenuView_Previews: PreviewProvider {
                     getSessionDate: failing0,
                     getDepartments: failing0,
                     getBuildings: failing0,
-                    getScienceClubs: failing0
+                    getScienceClubs: failing0,
+                    getWelcomeDayText: failing0
                 )
             )
         )

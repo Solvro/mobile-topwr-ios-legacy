@@ -11,6 +11,7 @@ public struct HomeState: Equatable {
     var departmentListState = DepartmentListState()
     var buildingListState = BuildingListState()
     var scienceClubListState = ScienceClubListState()
+    var exceptations: ExceptationDays?
     var sessionDay: SessionDay? = nil
 
     public init(){}
@@ -24,10 +25,12 @@ public enum HomeAction: Equatable {
     case loadDepartments
     case loadBuildings
     case loadScienceClubs
+    case loadWelcomeDayText
     case receivedSessionDate(Result<SessionDay, ErrorModel>)
     case receivedDepartments(Result<[Department], ErrorModel>)
     case receivedBuildings(Result<[Map], ErrorModel>)
     case receivedScienceClubs(Result<[ScienceClub], ErrorModel>)
+    case receivedWelcomeDayText(Result<ExceptationDays, ErrorModel>)
     case buttonTapped
     case departmentListAction(DepartmentListAction)
     case buildingListAction(BuildingListAction)
@@ -41,19 +44,22 @@ public struct HomeEnvironment {
     var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
+        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
+        self.getWelcomeDayText = getWelcomeDayText
     }
 }
 
@@ -79,7 +85,8 @@ public let homeReducer = Reducer<
         .init(value: .loadSessionDate),
         .init(value: .loadDepartments),
         .init(value: .loadBuildings),
-        .init(value: .loadScienceClubs)
+        .init(value: .loadScienceClubs),
+        .init(value: .loadWelcomeDayText)
       )
   case .loadSessionDate:
       return env.getSessionDate()
@@ -101,6 +108,11 @@ public let homeReducer = Reducer<
           .receive(on: env.mainQueue)
           .catchToEffect()
           .map(HomeAction.receivedScienceClubs)
+  case .loadWelcomeDayText:
+      return env.getWelcomeDayText()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedWelcomeDayText)
       
       //api success
   case .receivedSessionDate(.success(let sessionDate)):
@@ -127,6 +139,9 @@ public let homeReducer = Reducer<
         }
       )
       return .none
+  case .receivedWelcomeDayText(.success(let exceptations)):
+      state.exceptations = exceptations
+      return .none
   case .receivedSessionDate(.failure(let error)):
       return .none
   case .receivedDepartments(.failure(let error)):
@@ -135,6 +150,8 @@ public let homeReducer = Reducer<
       return .none
   case .receivedScienceClubs(.failure(let error)):
       print(error)
+      return .none
+  case .receivedWelcomeDayText(.failure(let error)):
       return .none
   case .buttonTapped:
     return .none
@@ -192,7 +209,9 @@ public struct HomeView: View {
             NavigationView {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        WelcomeView()
+                        WelcomeView(
+                            exceptations: viewStore.exceptations
+                        )
                             .padding([.top, .bottom], 20)
                         
                         DaysToSessionView(session: viewStore.sessionDay)
@@ -267,7 +286,8 @@ public extension HomeEnvironment {
         getSessionDate: failing0,
         getDepartments: failing0,
         getBuildings: failing0,
-        getScienceClubs: failing0
+        getScienceClubs: failing0,
+        getWelcomeDayText: failing0
     )
 }
 #endif

@@ -49,7 +49,7 @@ public struct MapFeatureView: View {
             ZStack {
                 MapView()
             }
-            .ignoresSafeArea()
+            .ignoresSafeArea(.container, edges: .top)
         }
     }
 }
