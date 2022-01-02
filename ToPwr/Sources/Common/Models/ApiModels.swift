@@ -168,6 +168,7 @@ public struct ScienceClub: Codable, Equatable {
     public let socialMedia: [SocialMedia]
     public let tag: [Tag]
     public let photo: Photo?
+    public let background: Photo?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -179,6 +180,7 @@ public struct ScienceClub: Codable, Equatable {
         case socialMedia = "SocialMedia"
         case tag = "Tag"
         case photo = "Photo"
+        case background = "BackgroundPhoto"
     }
 }
 
@@ -363,7 +365,8 @@ public extension ScienceClub {
         contact: [],
         socialMedia: [],
         tag: [],
-        photo: nil
+        photo: nil,
+        background: nil
     )
 }
 #endif

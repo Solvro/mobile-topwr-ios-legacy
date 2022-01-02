@@ -93,7 +93,8 @@ public struct DepartmentListView: View {
                             .foregroundColor(.gray)
                     }
                 )
-            }.padding(.trailing, 24)
+            }
+            .horizontalPadding(.normal)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 18) {
@@ -106,6 +107,7 @@ public struct DepartmentListView: View {
                         DepartmentCellView(store: store)
                     }
                 }
+                .horizontalPadding(.normal)
             }
         }
     }

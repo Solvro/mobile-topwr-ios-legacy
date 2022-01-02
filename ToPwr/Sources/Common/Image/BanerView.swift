@@ -39,10 +39,10 @@ public struct BanerView: View {
             .opacity(0.1)
             .offset(
                 x: isSquare ? 0 : 90,
-                y: isSquare ? 0 : 22
+                y: isSquare ? 0 : 0
             )
             .aspectRatio(
-                isSquare ? 1 : 2.1,
+                isSquare ? 1 : 2.9,
                 contentMode: .fill
             )
         }
