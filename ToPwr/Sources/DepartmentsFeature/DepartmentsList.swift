@@ -124,19 +124,7 @@ public struct DepartmentListView: View {
                         }
                     }
                 }
-                .toolbar {
-                    ToolbarItem(
-                        placement: .navigationBarLeading
-                    ) {
-                        HStack {
-                            LogoView()
-                                .aspectRatio(contentMode: .fit)
-                            Spacer()
-                        }
-                        .frame(height: 20)
-                        .padding([.bottom, .top], 10)
-                    }
-                }
+                .barLogo()
                 .navigationTitle(Strings.HomeLists.departmentListTitle)
             }
         }
