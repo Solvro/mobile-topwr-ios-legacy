@@ -54,9 +54,7 @@ public let DepartmentsReducer = Reducer<
             .map(DepartmentsAction.receivedDepartments)
     case .receivedDepartments(.success(let departments)):
         state.listState = .init(
-          departments: departments.map {
-              DepartmentCellState(department: $0)
-          }
+          departments: departments
         )
         return .none
     case .receivedDepartments:
@@ -96,9 +94,6 @@ public struct DepartmentsView: View {
                         action: DepartmentsAction.listAction
                     )
                 )
-            }
-            .onTapGesture {
-                viewStore.send(.dismissKeyboard)
             }
             .onAppear {
                 viewStore.send(.onAppear)
