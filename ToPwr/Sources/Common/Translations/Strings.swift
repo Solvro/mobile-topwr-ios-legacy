@@ -48,6 +48,8 @@ public extension Strings.Other {
     static let welcomeTitle = translation(from: "welcome_title")
     static let searching = translation(from: "searching")
     static let deanOffice = translation(from: "dean_office")
+    static let contact = translation(from: "contact")
+    static let aboutUs = translation(from: "about_us")
 }
 
 func translation(

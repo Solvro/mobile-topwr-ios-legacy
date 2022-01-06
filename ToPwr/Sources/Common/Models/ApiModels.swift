@@ -194,7 +194,7 @@ public struct Tag: Codable, Equatable {
     }
 }
 
-public struct Contact: Codable, Equatable {
+public struct Contact: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let number: String?

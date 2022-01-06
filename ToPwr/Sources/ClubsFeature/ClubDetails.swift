@@ -38,6 +38,12 @@ public let clubDetailsReducer = Reducer<
 }
 //MARK: - VIEW
 public struct ClubDetailsView: View {
+    
+    private enum Constants {
+        static let backgroundImageHeith: CGFloat = 254
+        static let avatarSize: CGFloat = 120
+    }
+    
     let store: Store<ClubDetailsState, ClubDetailsAction>
     
     public init(
@@ -54,36 +60,62 @@ public struct ClubDetailsView: View {
                         url: URL(string: viewStore.club.background?.url ?? ""),
                         contentMode: .aspectFill
                     )
-                        .frame(height: 300)
+                        .frame(height: Constants.backgroundImageHeith)
                     
                     ImageView(
                         url: URL(string: viewStore.club.photo?.url ?? ""),
                         contentMode: .aspectFill
                     )
-                        .frame(width: 120, height: 120)
+                        .frame(
+                            width: Constants.avatarSize,
+                            height: Constants.avatarSize
+                        )
                         .clipShape(Circle())
                         .shadow(radius: 7, x: 0, y: -5)
-                        .offset(y: -60)
-                        .padding(.bottom, -60)
+                        .offset(y: -(Constants.avatarSize/2))
+                        .padding(.bottom, -(Constants.avatarSize/2))
                     
                     Text(viewStore.club.name ?? "")
                         .font(.appBoldTitle2)
                         .horizontalPadding(.big)
                     
-                    Text(viewStore.club.locale)
+                    Text("TODO: Wydział")
                         .font(.appRegularTitle2)
                         .horizontalPadding(.huge)
                     
-                    ZStack {
-                        VStack {
-                            Text(Strings.Other.deanOffice)
-                                .font(.appBoldTitle2)
+                    if !viewStore.club.contact.isEmpty {
+                        ZStack {
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Text(Strings.Other.contact)
+                                        .font(.appBoldTitle2)
+                                        .horizontalPadding(.normal)
+                                    Spacer()
+                                }
+                                VStack {
+                                    ForEach(viewStore.club.contact) { contact in
+                                        ContactView(contact: contact)
+                                    }
+                                }
+                            }
                         }
-                        HStack {
-                            Text(viewStore.club.contact.first?.name ?? "")
-                        }
+                        .verticalPadding(.normal)
+                        .background(K.Colors.lightGray)
                     }
-                    .background(K.Colors.lightGray)
+                    
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(Strings.Other.aboutUs)
+                                .font(.appBoldTitle2)
+                            Spacer()
+                        }
+                        
+                        Text(viewStore.club.description ?? "")
+                            .font(.appRegularTitle2)
+                        
+                    }
+                    .verticalPadding(.normal)
+                    .horizontalPadding(.normal)
                 }
                 .navigationBarTitleDisplayMode(.inline)
             }
