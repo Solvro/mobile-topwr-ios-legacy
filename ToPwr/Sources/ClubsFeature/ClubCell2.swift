@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jakub Legut on 20/12/2021.
-//
-
 import Foundation
 import SwiftUI
 import Common
@@ -23,7 +16,7 @@ public struct ClubCellView2: View {
             K.CellColors.scienceBackground
 
             HStack {
-                HStack() {
+                HStack {
                     Text(club.club.name ?? "")
                         .fontWeight(.medium)
                         .foregroundColor(.black)
@@ -32,7 +25,7 @@ public struct ClubCellView2: View {
                 }
                 HStack {
                     Spacer()
-                    ZStack() {
+                    ZStack {
                         ImageView(
                             url: URL(string: club.club.photo?.url ?? ""),
                             contentMode: .aspectFill

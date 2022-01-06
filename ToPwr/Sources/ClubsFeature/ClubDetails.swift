@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jakub Legut on 20/12/2021.
-//
-
 import Foundation
 import SwiftUI
 import Common
@@ -55,14 +48,6 @@ public struct ClubDetailsView: View {
                     }
                 }
                 .background(K.Colors.lightGray)
-                
-                HStack {
-                    Spacer()
-                    VStack {
-                        
-                    }
-                    Spacer()
-                }
             }
             .navigationBarTitleDisplayMode(.inline)
         }
