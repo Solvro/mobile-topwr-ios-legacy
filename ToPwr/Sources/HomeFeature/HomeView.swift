@@ -212,10 +212,11 @@ public struct HomeView: View {
                         WelcomeView(
                             exceptations: viewStore.exceptations
                         )
-                            .padding([.top, .bottom], 20)
+                            .verticalPadding(.big)
+                            .horizontalPadding(.normal)
                         
                         DaysToSessionView(session: viewStore.sessionDay)
-                            .padding(.trailing, 24)
+                            .horizontalPadding(.normal)
                         
                         /// Buildings
                         BuildingListView(
@@ -242,25 +243,11 @@ public struct HomeView: View {
                         )
                     }
                 }
-                .padding(.leading, 24)
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
-                .toolbar {
-                    ToolbarItem(
-                        placement: .navigationBarLeading
-                    ) {
-                        HStack {
-                            LogoView()
-                                .aspectRatio(contentMode: .fit)
-                            Spacer()
-                        }
-                        .frame(height: 20)
-                        .padding([.bottom, .top], 10)
-                        .padding(.leading, 4)
-                    }
-                }
+                .barLogo()
             }
         }
     }

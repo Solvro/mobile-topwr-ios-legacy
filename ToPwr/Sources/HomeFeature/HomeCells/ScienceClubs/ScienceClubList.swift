@@ -79,6 +79,7 @@ public struct ScienceClubListView: View {
                     .foregroundColor(K.FontColors.primary)
                 Spacer()
             }
+            .horizontalPadding(.normal)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
@@ -91,6 +92,7 @@ public struct ScienceClubListView: View {
                         ScienceClubCellView(store: store)
                     }
                 }
+                .horizontalPadding(.normal)
             }
         }
     }

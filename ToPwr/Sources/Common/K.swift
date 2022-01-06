@@ -7,6 +7,7 @@ public struct K {
         public static let white = Color.white
         public static let firstColorDark = Color(hex: "#E16257")
         public static let firstColorLight = Color(hex: "#FFA07E")
+        public static let lightGray = Color(hex: "#f7f7f8")
     }
     
     public struct SearchColors {
