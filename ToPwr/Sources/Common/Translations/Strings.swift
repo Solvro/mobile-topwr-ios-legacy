@@ -47,6 +47,7 @@ public extension Strings.Other {
     static let tillSessionStart = translation(from: "till_session_start")
     static let welcomeTitle = translation(from: "welcome_title")
     static let searching = translation(from: "searching")
+    static let deanOffice = translation(from: "dean_office")
 }
 
 func translation(

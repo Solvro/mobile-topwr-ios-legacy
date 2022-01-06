@@ -97,9 +97,9 @@ public struct ClubsView: View {
                     )
                 )
             }
-            .onTapGesture {
-                viewStore.send(.dismissKeyboard)
-            }
+//            .onTapGesture {
+//                viewStore.send(.dismissKeyboard)
+//            }
             .onAppear {
                 viewStore.send(.onAppear)
             }

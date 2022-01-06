@@ -4,13 +4,13 @@ import Common
 
 //MARK: - STATE
 public struct ClubCellState: Equatable, Identifiable {
-    public let id: Int
+    public let id: String
     var club: ScienceClub
 
     public init(
         club: ScienceClub
     ){
-        self.id = club.id
+        self.id = UUID().uuidString
         self.club = club
     }
 }
@@ -59,9 +59,9 @@ public struct ClubCellView: View {
                 viewStore.send(.buttonTapped)
             }, label: {
                 ZStack(alignment: .topLeading) {
-                    Rectangle()
-                        .foregroundColor(K.CellColors.scienceBackground)
-                        .cornerRadius(8)
+//                    Rectangle()
+//                        .foregroundColor(K.CellColors.scienceBackground)
+//                        .cornerRadius(8)
                     HStack() {
                         HStack() {
                             Text(viewStore.club.name ?? "")
@@ -72,19 +72,26 @@ public struct ClubCellView: View {
                         HStack() {
                             Spacer()
                             ZStack() {
-                                Rectangle()
-                                    .frame(width: 72, height: 72)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(8)
+//                                Rectangle()
+//                                    .frame(width: 72, height: 72)
+//                                    .foregroundColor(.white)
+//                                    .cornerRadius(8)
                                 ImageView(
                                     url: URL(string: viewStore.club.photo?.url ?? ""),
                                     contentMode: .aspectFill
                                 )
-                                .frame(width: 56, height: 56)
+                                .frame(width: 59, height: 59)
+                                .cornerRadius(8, corners: [.topRight, .bottomRight])
                             }
+                            .background(Color.red)
                         }
-                    }.padding()
-                }.padding([.leading, .trailing])
+                    }
+                    .padding()
+                }
+                .frame(height:20)
+                .foregroundColor(K.CellColors.scienceBackground)
+                .cornerRadius(8)
+                .padding([.leading, .trailing])
             })
         }
     }

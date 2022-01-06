@@ -110,30 +110,29 @@ public struct ClubListView: View {
                         ).padding(.bottom, 16)
                         
                         LazyVStack(spacing: 16) {
-                            ForEachStore(
-                                self.store.scope(
-                                    state: \.filtered,
-                                    action: ClubListAction.cellAction(id:action:)
-                                )
-                            ) { store in
-                                ClubCellView(store: store)
+//                            ForEachStore(
+//                                self.store.scope(
+//                                    state: \.filtered,
+//                                    action: ClubListAction.cellAction(id:action:)
+//                                )
+//                            ) { store in
+//                                ClubCellView(store: store)
+//                            }
+                            
+                            
+                            ForEach(viewStore.filtered, id: \.id) { club in
+                                NavigationLink {
+                                    ClubDetailsView(club: club)
+                                } label: {
+                                    ClubCellView2(club: club)
+                                }
                             }
+                            
+                            
                         }
                     }
                 }
-                .toolbar {
-                    ToolbarItem(
-                        placement: .navigationBarLeading
-                    ) {
-                        HStack {
-                            LogoView()
-                                .aspectRatio(contentMode: .fit)
-                            Spacer()
-                        }
-                        .frame(height: 20)
-                        .padding([.bottom, .top], 10)
-                    }
-                }
+                .barLogo()
                 .navigationTitle(Strings.HomeLists.scienceClubsTitle)
             }
         }
