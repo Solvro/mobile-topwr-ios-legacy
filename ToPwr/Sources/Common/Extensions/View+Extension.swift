@@ -33,6 +33,10 @@ public extension View {
         }
         }
     }
+    
+    func shadow() -> some View {
+        self.shadow(radius: 7, x: 0, y: -5)
+    }
 }
 
 public struct RoundedCorner: Shape {

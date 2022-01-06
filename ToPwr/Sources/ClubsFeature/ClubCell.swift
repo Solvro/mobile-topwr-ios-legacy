@@ -1,23 +1,22 @@
-import Foundation
 import SwiftUI
+import ComposableArchitecture
 import Common
 
-public struct ClubCellView2: View {
-    let club: ClubCellState
+public struct ClubCellView: View {
+    let viewState: ClubDetailsState
     
     public init(
-        club: ClubCellState
+        viewState: ClubDetailsState
     ) {
-        self.club = club
+        self.viewState = viewState
     }
     
     public var body: some View {
         ZStack(alignment: .topLeading) {
             K.CellColors.scienceBackground
-
             HStack {
                 HStack {
-                    Text(club.club.name ?? "")
+                    Text(viewState.club.name ?? "")
                         .fontWeight(.medium)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
@@ -27,11 +26,11 @@ public struct ClubCellView2: View {
                     Spacer()
                     ZStack {
                         ImageView(
-                            url: URL(string: club.club.photo?.url ?? ""),
+                            url: URL(string: viewState.club.photo?.url ?? ""),
                             contentMode: .aspectFill
                         )
-                        .frame(width: 90, height: 90)
-                        .cornerRadius(8, corners: [.topRight, .bottomRight])
+                            .frame(width: 90, height: 90)
+                            .cornerRadius(8, corners: [.topRight, .bottomRight])
                     }
                 }
             }

@@ -54,11 +54,7 @@ public let ClubsReducer = Reducer<
             .catchToEffect()
             .map(ClubsAction.receivedClubs)
     case .receivedClubs(.success(let clubs)):
-        state.listState = .init(
-            clubs: clubs.map {
-              ClubCellState(club: $0)
-          }
-        )
+        state.listState = .init(clubs: clubs)
         return .none
     case .receivedClubs:
         return .none
