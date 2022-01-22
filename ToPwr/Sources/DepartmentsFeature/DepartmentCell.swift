@@ -14,7 +14,7 @@ public struct DepartmentCellView: View {
     public var body: some View {
         ZStack(alignment: .leading) {
             BanerView(
-                url: URL(string: viewState.department.logo?.url ?? ""),
+                url: viewState.department.logo?.url,
                 color: viewState.department.color
             )
                 .frame(width: 360, height: 120)

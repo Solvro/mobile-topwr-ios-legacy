@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import Combine
 import Common
 
 //MARK: - STATE
@@ -38,12 +39,15 @@ public enum DepartmentListAction: Equatable {
 
 //MARK: - ENVIRONMENT
 public struct DepartmentListEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getScienceClub = getScienceClub
     }
 }
 
@@ -56,7 +60,13 @@ departmentDetailsReducer
 .pullback(
   state: \DepartmentListState.selection,
   action: /DepartmentListAction.departmentDetailsAction,
-  environment: { _ in DepartmentDetailsEnvironment() }
+  environment: {
+      .init(
+        mainQueue: $0.mainQueue,
+        getScienceClub: $0.getScienceClub
+      )
+      
+  }
 )
 .combined(
     with: Reducer<
