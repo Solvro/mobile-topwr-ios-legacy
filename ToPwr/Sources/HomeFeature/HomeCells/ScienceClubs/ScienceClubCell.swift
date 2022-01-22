@@ -71,7 +71,7 @@ public struct ScienceClubCellView: View {
                                     .foregroundColor(.white)
                                     .cornerRadius(5)
                                 ImageView(
-                                    url: URL(string: viewStore.scienceClub.photo?.url ?? ""),
+                                    url: viewStore.scienceClub.photo?.url,
                                     contentMode: .aspectFill
                                 )
                                     .frame(width: 20, height: 20)

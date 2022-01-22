@@ -13,33 +13,44 @@ public struct SplashState: Equatable {
 }
 //MARK: - ACTION
 public enum SplashAction: Equatable {
+    case onAppear
+    case apiVersion(Result<Version, ErrorModel>)
     case stopLoading
     case menuAction(MenuAction)
 }
 
 //MARK: - ENVIRONMENT
 public struct SplashEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
-    var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getApiVersion: () -> AnyPublisher<Version, ErrorModel>
+    let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
+    let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
+    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        getApiVersion: @escaping () -> AnyPublisher<Version, ErrorModel>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
-        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getApiVersion = getApiVersion
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
         self.getWelcomeDayText = getWelcomeDayText
+        self.getDepartment = getDepartment
+        self.getScienceClub = getScienceClub
     }
 }
 
@@ -48,10 +59,19 @@ public let splashReducer = Reducer<
     SplashState,
     SplashAction,
     SplashEnvironment
-> { state, action, environment in
+> { state, action, env in
   switch action {
+  case .onAppear:
+      return env.getApiVersion()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(SplashAction.apiVersion)
+  case .apiVersion(.success(let version)):
+      return .init(value: .stopLoading)
+  case .apiVersion(.failure(let error)):
+      print(error.localizedDescription)
+      return .none
   case .stopLoading:
-      #warning("TODO")
     state.isLoading = false
     return .none
   case .menuAction:
@@ -63,14 +83,16 @@ public let splashReducer = Reducer<
         .pullback(
             state: \.menuState,
             action: /SplashAction.menuAction,
-            environment: { env in
+            environment: {
                     .init(
-                        mainQueue: env.mainQueue,
-                        getSessionDate: env.getSessionDate,
-                        getDepartments: env.getDepartments,
-                        getBuildings: env.getBuildings,
-                        getScienceClubs: env.getScienceClubs,
-                        getWelcomeDayText: env.getWelcomeDayText
+                        mainQueue: $0.mainQueue,
+                        getSessionDate: $0.getSessionDate,
+                        getDepartments: $0.getDepartments,
+                        getBuildings: $0.getBuildings,
+                        getScienceClubs: $0.getScienceClubs,
+                        getWelcomeDayText: $0.getWelcomeDayText,
+                        getDepartment: $0.getDepartment,
+                        getScienceClub: $0.getScienceClub
                     )
             }
         )
@@ -108,10 +130,6 @@ public struct SplashView: View {
                             endPoint: .trailing
                         )
                             .ignoresSafeArea()
-                            .onTapGesture {
-                                viewStore.send(.stopLoading)
-                            }
-                        
                         VStack {
                             K.Images.logoTemplate
                                 .resizable()
@@ -139,6 +157,9 @@ public struct SplashView: View {
                     )
                 }
             }
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
         }
     }
 }
@@ -152,11 +173,14 @@ struct SplashView_Previews: PreviewProvider {
                 reducer: splashReducer,
                 environment: .init(
                     mainQueue: .immediate,
+                    getApiVersion: failing0,
                     getSessionDate: failing0,
                     getDepartments: failing0,
                     getBuildings: failing0,
                     getScienceClubs: failing0,
-                    getWelcomeDayText: failing0
+                    getWelcomeDayText: failing0,
+                    getDepartment: failing1,
+                    getScienceClub: failing1
                 )
             )
         )

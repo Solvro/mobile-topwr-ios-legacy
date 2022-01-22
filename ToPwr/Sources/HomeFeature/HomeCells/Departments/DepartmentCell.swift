@@ -62,7 +62,7 @@ public struct DepartmentCellView: View {
                 label: {
                     ZStack(alignment: .bottomLeading) {
                         BanerView(
-                            url: URL(string: viewStore.department.logo?.url ?? ""),
+                            url: viewStore.department.logo?.url,
                             color: viewStore.department.color,
                             isSquare: true
                         )
