@@ -30,10 +30,10 @@ public struct LinkView: View {
                         contentMode: .aspectFit
                     )
                         .foregroundColor(.red)
-                    .frame(
-                        width: Constants.iconSize,
-                        height: Constants.iconSize
-                    )
+                        .frame(
+                            width: Constants.iconSize,
+                            height: Constants.iconSize
+                        )
                 }
                 #warning("TODO: Contact link")
                 Text(link.name ?? "")

@@ -93,14 +93,12 @@ public let departmentDetailsReducer = Reducer<
 
 // MARK: - View
 public struct DepartmentDetailsView: View {
-
     private enum Constants {
         static let backgroundImageHeith: CGFloat = 254
         static let logoBackgroundSize: CGFloat = 120
         static let logoSize: CGFloat = 64
         static let fieldsHeight: CGFloat = 50
     }
-
 
     let store: Store<DepartmentDetailsState, DepartmentDetailsAction>
 

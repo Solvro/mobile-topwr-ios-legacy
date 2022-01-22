@@ -48,7 +48,6 @@ public let tileReducer = Reducer<
 
 // MARK: - View
 public struct TileView: View {
-    
     private enum Constants {
         static let viewHeight: CGFloat = 365
         static let viewWidth: CGFloat = 275
