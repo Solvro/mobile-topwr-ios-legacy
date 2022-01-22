@@ -28,13 +28,14 @@ public struct Department: Codable, Equatable {
     public var description: String?
     public var website: String?
     public var locale: String?
-    public var socialMedia: [SocialMedia?]
-    public var adress: Address?
+    public var socialMedia: [LinkComponent?]
+    public var adress: [LinkComponent?]
     public var fieldOfStudy: [FieldOfStudy]
     public var color: GradientColor?
-    public var photo: Photo?
     public var logo: Photo?
-    public var clubs: [ScienceClub?]
+    public var clubsID: [Int]
+    public var latitude: Float?
+    public var longitude: Float?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -47,9 +48,10 @@ public struct Department: Codable, Equatable {
         case adress = "Address"
         case fieldOfStudy = "FieldOfStudy"
         case color = "Color"
-        case photo = "Photo"
         case logo = "Logo"
-        case clubs = "scientific_circles"
+        case clubsID = "scientific_circles"
+        case latitude = "Latitude"
+        case longitude = "Longitude"
     }
 }
 
@@ -65,7 +67,7 @@ public struct Address: Codable, Equatable {
 }
 
 // MARK: - FieldOfStudy
-public struct FieldOfStudy: Codable, Equatable {
+public struct FieldOfStudy: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String
 
@@ -79,13 +81,13 @@ public struct FieldOfStudy: Codable, Equatable {
 public struct Photo: Codable, Equatable {
     public let id: Int
     public let name: String
-    public let url: String
+    private let stringUrl: String
     public let previewURL: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
-        case url = "url"
+        case stringUrl = "url"
         case previewURL = "previewUrl"
     }
 }
@@ -142,7 +144,7 @@ public struct Provider: Codable, Equatable {
 }
 
 //MARK: - Social Media
-public struct SocialMedia: Codable, Equatable {
+public struct LinkComponent: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let link: String?
@@ -150,8 +152,8 @@ public struct SocialMedia: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case link = "Link"
+        case name = "LinkText"
+        case link = "Value"
         case icon = "Icon"
        
     }
@@ -159,13 +161,14 @@ public struct SocialMedia: Codable, Equatable {
 
 //MARK: - Science Clubs
 public struct ScienceClub: Codable, Equatable {
+    #warning("TODO: Departments ID")
     public let id: Int
     public let name: String?
-//    public let department: Department?
+    public let department: Int
     public let description: String?
     public let locale: String
     public let contact: [Contact]
-    public let socialMedia: [SocialMedia]
+    public let socialMedia: [LinkComponent?]
     public let tag: [Tag]
     public let photo: Photo?
     public let background: Photo?
@@ -173,7 +176,7 @@ public struct ScienceClub: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "Name"
-//        case department = "department"
+        case department = "department"
         case description = "Description"
         case locale = "locale"
         case contact = "Contact"
@@ -297,11 +300,26 @@ public struct WeekDay: Codable, Equatable {
     }
 }
 
+public struct Version: Codable, Equatable {
+    public let id: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "uuid"
+    }
+}
+
+// MARK: - EXTENSIONS
 public extension WeekDay {
     var date: Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yy-MM-dd"
         return dateFormatter.date(from: dateString)
+    }
+}
+
+public extension Photo {
+    var url: URL? {
+        URL(string: stringUrl)
     }
 }
 
@@ -316,12 +334,11 @@ public extension Department {
         website: nil,
         locale: nil,
         socialMedia: [],
-        adress: nil,
+        adress: [],
         fieldOfStudy: [],
         color: nil,
-        photo: nil,
         logo: nil,
-        clubs: []
+        clubsID: []
     )
     
     static func mock(id: Int) -> Self {
@@ -333,12 +350,11 @@ public extension Department {
             website: nil,
             locale: nil,
             socialMedia: [],
-            adress: nil,
+            adress: [],
             fieldOfStudy: [],
             color: nil,
-            photo: nil,
             logo: nil,
-            clubs: []
+            clubsID: []
         )
     }
 }
@@ -360,6 +376,7 @@ public extension ScienceClub {
     static let mock: Self = .init(
         id: 1,
         name: "SOLVRO",
+        department: 5,
         description: "TEST",
         locale: "",
         contact: [],

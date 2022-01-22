@@ -21,15 +21,18 @@ public enum ClubsAction: Equatable {
 
 //MARK: - ENVIRONMENT
 public struct ClubsEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var getClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
+        getClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getClubs = getClubs
+        self.getDepartment = getDepartment
     }
 }
 
@@ -68,8 +71,11 @@ public let ClubsReducer = Reducer<
         .pullback(
             state: \.listState,
             action: /ClubsAction.listAction,
-            environment: { env in
-                    .init(mainQueue: env.mainQueue)
+            environment: {
+                .init(
+                    mainQueue: $0.mainQueue,
+                    getDepartment: $0.getDepartment
+                )
             }
         )
 )
@@ -93,9 +99,6 @@ public struct ClubsView: View {
                     )
                 )
             }
-//            .onTapGesture {
-//                viewStore.send(.dismissKeyboard)
-//            }
             .onAppear {
                 viewStore.send(.onAppear)
             }
@@ -119,7 +122,8 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension ClubsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getClubs: failing0
+        getClubs: failing0,
+        getDepartment: failing1
     )
 }
 #endif
