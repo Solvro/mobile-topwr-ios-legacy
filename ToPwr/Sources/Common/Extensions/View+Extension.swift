@@ -34,13 +34,19 @@ public extension View {
         }
     }
     
-    func shadow() -> some View {
-        self.shadow(radius: 7, x: 0, y: -5)
+    func shadow(_ type: ShadowType, radius: CGFloat = 3) -> some View {
+        switch type {
+        case .complex:
+            return self.shadow(radius: radius)
+        case .up:
+            return self.shadow(radius: radius, x: 0, y: -5)
+        case .down:
+            return self.shadow(radius: radius, x: 0, y: 5)
+        }
     }
 }
 
 public struct RoundedCorner: Shape {
-
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
 
@@ -48,4 +54,10 @@ public struct RoundedCorner: Shape {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
     }
+}
+
+public enum ShadowType {
+    case complex
+    case up
+    case down
 }

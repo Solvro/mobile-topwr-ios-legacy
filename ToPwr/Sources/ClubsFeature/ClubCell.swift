@@ -26,7 +26,7 @@ public struct ClubCellView: View {
                     Spacer()
                     ZStack {
                         ImageView(
-                            url: URL(string: viewState.club.photo?.url ?? ""),
+                            url: viewState.club.photo?.url,
                             contentMode: .aspectFill
                         )
                             .frame(width: 90, height: 90)

@@ -20,15 +20,18 @@ public enum DepartmentsAction: Equatable {
 
 //MARK: - ENVIRONMENT
 public struct DepartmentsEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>
+        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getDepartments = getDepartments
+        self.getScienceClub = getScienceClub
     }
 }
 
@@ -54,9 +57,7 @@ public let DepartmentsReducer = Reducer<
             .map(DepartmentsAction.receivedDepartments)
     case .receivedDepartments(.success(let departments)):
         state.listState = .init(
-          departments: departments.map {
-              DepartmentCellState(department: $0)
-          }
+          departments: departments
         )
         return .none
     case .receivedDepartments:
@@ -72,7 +73,10 @@ public let DepartmentsReducer = Reducer<
             state: \.listState,
             action: /DepartmentsAction.listAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getScienceClub: env.getScienceClub
+                    )
             }
         )
 )
@@ -97,9 +101,6 @@ public struct DepartmentsView: View {
                     )
                 )
             }
-            .onTapGesture {
-                viewStore.send(.dismissKeyboard)
-            }
             .onAppear {
                 viewStore.send(.onAppear)
             }
@@ -123,7 +124,8 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension DepartmentsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getDepartments: failing0
+        getDepartments: failing0,
+        getScienceClub: failing1
     )
 }
 #endif
