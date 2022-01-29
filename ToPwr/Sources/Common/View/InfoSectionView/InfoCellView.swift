@@ -35,11 +35,33 @@ public struct InfoCellView: View {
                             height: Constants.iconSize
                         )
                 }
-                #warning("TODO: Contact link")
-                Text(info.label ?? "")
-                    .foregroundColor(K.Colors.red)
-                    .underline()
-                    .verticalPadding(.normal)
+            ZStack {
+                switch info.type {
+                case .phone:
+                    Link(
+                        info.label ?? info.value ?? "",
+                        destination: URL(string: "tel:\(info.value!)")!
+                    )
+                case .addres:
+                    Text(info.label ?? "")
+                        
+                case .website:
+                    Link(
+                        info.label ?? info.value ?? "",
+                        destination: URL(string: info.value!)!
+                    )
+                case .email:
+                    Link(
+                        info.label ?? info.value ?? "",
+                        destination: URL(string: "mailto:\(info.value!)")!
+                    )
+                case .other:
+                    Text(info.label ?? "")
+                        .underline()
+                }
+            }
+            .foregroundColor(K.Colors.red)
+            .verticalPadding(.normal)
         }
         .horizontalPadding(.normal)
     }

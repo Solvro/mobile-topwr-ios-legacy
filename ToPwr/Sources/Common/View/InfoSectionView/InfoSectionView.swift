@@ -19,7 +19,9 @@ public struct InfoSectionView: View {
                     Spacer()
                 }
                 ForEach(section.info) { info in
-                    InfoCellView(info: info)
+                    if let _ = info.value {
+                        InfoCellView(info: info)
+                    }
                 }
             }
         }

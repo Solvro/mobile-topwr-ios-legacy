@@ -126,15 +126,29 @@ public struct InfoComponent: Codable, Equatable, Identifiable {
     public let id: Int
     public let value: String?
     public let icon: Photo?
-    public let type: String?
+    private let stringType: String?
     public let label: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case value = "value"
         case icon = "icon"
-        case type = "type"
+        case stringType = "type"
         case label = "visibleText"
+    }
+}
+
+public extension InfoComponent {
+    enum InfoType: String {
+        case phone = "PhoneNumber"
+        case addres = "Addres"
+        case website = "Website"
+        case email = "Email"
+        case other = "other"
+    }
+    
+    var type: InfoType {
+        InfoType(rawValue: stringType ?? "other") ?? .other
     }
 }
 
