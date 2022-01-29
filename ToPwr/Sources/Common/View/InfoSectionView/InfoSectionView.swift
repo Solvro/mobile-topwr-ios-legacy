@@ -19,9 +19,37 @@ public struct InfoSectionView: View {
                     Spacer()
                 }
                 ForEach(section.info) { info in
-                    if let _ = info.value {
-                        InfoCellView(info: info)
-                    }
+                        switch info.type {
+                        case .other, .addres:
+                            InfoCellView(info: info)
+                        case .website:
+                            Link(
+                                destination: URL(
+                                    string: info.value ?? info.label ?? ""
+                                )!,
+                                label: {
+                                    InfoCellView(info: info)
+                                }
+                            )
+                        case .phone:
+                            Link(
+                                destination: URL(
+                                    string: "tel:\(info.value ?? info.label ?? "")"
+                                )!,
+                                label: {
+                                    InfoCellView(info: info)
+                                }
+                            )
+                        case .email:
+                            Link(
+                                destination: URL(
+                                    string: "mailto:\(info.value ?? info.label ?? "")"
+                                )!,
+                                label: {
+                                    InfoCellView(info: info)
+                                }
+                            )
+                        }
                 }
             }
         }
