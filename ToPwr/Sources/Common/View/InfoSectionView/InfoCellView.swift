@@ -19,7 +19,7 @@ public struct InfoCellView: View {
                 ZStack {
                     K.Colors.white
                         .cornerRadius(UIDimensions.small.cornerRadius)
-                        .shadow(.down, radius: 1)
+                        .shadow(radius: 1, y: 1)
                         .frame(
                             width: Constants.iconBackgroundSize,
                             height: Constants.iconBackgroundSize
