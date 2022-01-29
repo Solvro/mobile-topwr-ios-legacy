@@ -121,10 +121,10 @@ public struct ClubDetailsView: View {
                         }
                         
                         if !viewStore.club.socialMedia.isEmpty {
-                            LinkSection(
-                                title: "Social Media",
-                                links: viewStore.club.socialMedia
-                            )
+//                            LinkSection(
+//                                title: "Social Media",
+//                                links: viewStore.club.socialMedia
+//                            )
                         }
                         
                         VStack(alignment: .leading) {

@@ -1,28 +1,25 @@
 import SwiftUI
 
-public struct LinkSection: View {
-    let title: String
-    let links: [LinkComponent]
+public struct InfoSectionView: View {
+    let section: InfoSection
     
     public init(
-        title: String,
-        links: [LinkComponent?]
+        section: InfoSection
     ){
-        self.title = title
-        self.links = links.compactMap { $0 }
+        self.section = section
     }
     
     public var body: some View {
         ZStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text(title)
+                    Text(section.name ?? "")
                         .font(.appBoldTitle2)
                         .horizontalPadding(.normal)
                     Spacer()
                 }
-                ForEach(links) { link in
-                    LinkView(link: link)
+                ForEach(section.info) { info in
+                    InfoCellView(info: info)
                 }
             }
         }

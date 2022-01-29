@@ -1,17 +1,17 @@
 import SwiftUI
 import NukeUI
 
-public struct LinkView: View {
+public struct InfoCellView: View {
     private enum Constants {
         static let iconBackgroundSize: CGFloat = 35
         static let iconSize: CGFloat = 20
     }
-    let link: LinkComponent
+    let info: InfoComponent
     
     public init(
-        link: LinkComponent
+        info: InfoComponent
     ) {
-        self.link = link
+        self.info = info
     }
     
     public var body: some View {
@@ -26,7 +26,7 @@ public struct LinkView: View {
                         )
                     
                     ImageView(
-                        url: link.icon?.url,
+                        url: info.icon?.url,
                         contentMode: .aspectFit
                     )
                         .foregroundColor(.red)
@@ -36,7 +36,7 @@ public struct LinkView: View {
                         )
                 }
                 #warning("TODO: Contact link")
-                Text(link.name ?? "")
+                Text(info.label ?? "")
                     .foregroundColor(K.Colors.red)
                     .underline()
                     .verticalPadding(.normal)

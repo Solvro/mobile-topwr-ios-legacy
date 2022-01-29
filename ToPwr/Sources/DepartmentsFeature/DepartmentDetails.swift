@@ -133,10 +133,13 @@ public struct DepartmentDetailsView: View {
                         .font(.appRegularTitle2)
                         .horizontalPadding(.huge)
                     
-                    LinkSection(
-                        title: Strings.Other.deanOffice,
-                        links: viewStore.department.socialMedia
-                    )
+                    ForEach(viewStore.department.infoSection) { section in
+                        VStack(spacing: UIDimensions.normal.spacing) {
+                            InfoSectionView(
+                                section: section
+                            )
+                        }
+                    }
                     
                     VStack {
                         HStack {
@@ -149,7 +152,7 @@ public struct DepartmentDetailsView: View {
                         VStack {
                             ForEach(viewStore.department.fieldOfStudy) { department in
                                 FieldView(
-                                    title: department.name,
+                                    title: department.name2 ?? "",
                                     height: Constants.fieldsHeight
                                 )
                             }
