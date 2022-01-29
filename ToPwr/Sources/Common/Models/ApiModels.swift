@@ -84,64 +84,11 @@ public struct Photo: Codable, Equatable {
     public let id: Int
     public let name: String
     private let stringUrl: String
-    public let previewURL: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
         case stringUrl = "url"
-        case previewURL = "previewUrl"
-    }
-}
-
-// MARK: - Formats
-public struct Formats: Codable, Equatable {
-    public let large: Format?
-    public let small: Format?
-    public let medium: Format?
-    public let thumbnail: Format?
-
-    enum CodingKeys: String, CodingKey {
-        case large = "large"
-        case small = "small"
-        case medium = "medium"
-        case thumbnail = "thumbnail"
-    }
-}
-
-public struct Format: Codable, Equatable {
-    public let ext: String?
-    public let url: String?
-    public let hash: String?
-    public let mime: String?
-    public let name: String?
-    public let path: String?
-    public let size: Int?
-    public let width: Int?
-    public let height: Int?
-    public let provider: Provider?
-    
-    enum CodingKeys: String, CodingKey {
-        case ext = "ext"
-        case url = "url"
-        case hash = "hash"
-        case mime = "mime"
-        case name = "name"
-        case path = "path"
-        case size = "size"
-        case width = "width"
-        case height = "height"
-        case provider = "provider_metadata"
-    }
-}
-
-public struct Provider: Codable, Equatable {
-    let id: String?
-    let type: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "public_id"
-        case type = "resource_type"
     }
 }
 
@@ -193,15 +140,13 @@ public struct InfoComponent: Codable, Equatable, Identifiable {
 
 //MARK: - Science Clubs
 public struct ScienceClub: Codable, Equatable {
-    #warning("TODO: Departments ID")
     public let id: Int
     public let name: String?
-    public let department: Int
+    public let department: Int?
     public let description: String?
     public let locale: String
-    public let contact: [Contact]
-    public let socialMedia: [LinkComponent?]
-    public let tag: [Tag]
+    public let infoSection: [InfoSection]
+    public let tags: [Tag]
     public let photo: Photo?
     public let background: Photo?
     
@@ -209,13 +154,12 @@ public struct ScienceClub: Codable, Equatable {
         case id = "id"
         case name = "Name"
         case department = "department"
-        case description = "Description"
+        case description = "description"
         case locale = "locale"
-        case contact = "Contact"
-        case socialMedia = "SocialMedia"
-        case tag = "Tag"
-        case photo = "Photo"
-        case background = "BackgroundPhoto"
+        case infoSection = "infoSection"
+        case tags = "tags"
+        case photo = "photo"
+        case background = "backgroundPhoto"
     }
 }
 
@@ -225,7 +169,7 @@ public struct Tag: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
+        case name = "name"
     }
 }
 
@@ -411,9 +355,8 @@ public extension ScienceClub {
         department: 5,
         description: "TEST",
         locale: "",
-        contact: [],
-        socialMedia: [],
-        tag: [],
+        infoSection: [],
+        tags: [],
         photo: nil,
         background: nil
     )
