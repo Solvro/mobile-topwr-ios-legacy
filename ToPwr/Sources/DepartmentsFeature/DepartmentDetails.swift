@@ -129,9 +129,10 @@ public struct DepartmentDetailsView: View {
                         .font(.appBoldTitle2)
                         .horizontalPadding(.big)
                     
-                    Text("TODO: Adres")
+                    Text(viewStore.department.adress ?? "")
                         .font(.appRegularTitle2)
                         .horizontalPadding(.huge)
+                        .multilineTextAlignment(.center)
                     
                     ForEach(viewStore.department.infoSection) { section in
                         VStack(spacing: UIDimensions.normal.spacing) {
