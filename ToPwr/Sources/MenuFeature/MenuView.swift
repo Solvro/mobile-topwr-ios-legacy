@@ -166,7 +166,7 @@ public struct MenuView: View {
                     action: MenuAction.homeAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("SchoolIcon")
                 }
@@ -177,7 +177,7 @@ public struct MenuView: View {
                     action: MenuAction.mapAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("CompassIcon")
                 }
@@ -188,7 +188,7 @@ public struct MenuView: View {
                     action: MenuAction.departmentsAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("HatIcon")
                 }
@@ -199,7 +199,7 @@ public struct MenuView: View {
                     action: MenuAction.clubsAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("RocketIcon")
                 }
@@ -209,7 +209,7 @@ public struct MenuView: View {
                     action: MenuAction.infoAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("InfoIcon")
                 }

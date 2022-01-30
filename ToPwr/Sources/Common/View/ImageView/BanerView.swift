@@ -15,7 +15,11 @@ public struct BanerView: View {
         isSquare: Bool = false
     ) {
         self.url = url
-        self.color = color
+        self.color = (
+            color == nil ||
+            color?.gradientFirst == nil ||
+            color?.gradientSecond == nil
+        ) ? K.defaultGradient : color
         self.isSquare = isSquare
     }
     

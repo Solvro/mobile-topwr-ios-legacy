@@ -29,6 +29,14 @@ public struct K {
     public struct FontColors {
         public static let primary = Color(hex: "#293241")
     }
+    
+    static let defaultGradient: GradientColor = {
+        GradientColor(
+            id: 9999,
+            gradientFirst: "#BFBEBE",
+            gradientSecond: "#868585"
+        )
+    }()
     //MARK: - IMAGES
     public struct Images {
         public static let logoColor = Image("AppLogoColor", bundle: .module)

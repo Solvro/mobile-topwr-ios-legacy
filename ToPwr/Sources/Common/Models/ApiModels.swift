@@ -28,8 +28,8 @@ public struct Department: Codable, Equatable {
     public var description: String?
     public var website: String?
     public var locale: String?
-    public var socialMedia: [LinkComponent?]
-    public var adress: [LinkComponent?]
+    public var infoSection: [InfoSection]
+    public var adress: String?
     public var fieldOfStudy: [FieldOfStudy]
     public var color: GradientColor?
     public var logo: Photo?
@@ -44,14 +44,14 @@ public struct Department: Codable, Equatable {
         case description = "Description"
         case website = "Website"
         case locale = "locale"
-        case socialMedia = "SocialMedia"
-        case adress = "Address"
-        case fieldOfStudy = "FieldOfStudy"
-        case color = "Color"
-        case logo = "Logo"
-        case clubsID = "scientific_circles"
-        case latitude = "Latitude"
-        case longitude = "Longitude"
+        case infoSection = "infoSection"
+        case adress = "addres"
+        case fieldOfStudy = "fieldsOfStudy"
+        case color = "color"
+        case logo = "logo"
+        case clubsID = "scientificCircles"
+        case latitude = "latitude"
+        case longitude = "longitude"
     }
 }
 
@@ -69,11 +69,13 @@ public struct Address: Codable, Equatable {
 // MARK: - FieldOfStudy
 public struct FieldOfStudy: Codable, Equatable, Identifiable {
     public let id: Int
-    public let name: String
+    public let name: String?
+    public let name2: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "Name"
+        case name2 = "name"
     }
 }
 
@@ -82,64 +84,11 @@ public struct Photo: Codable, Equatable {
     public let id: Int
     public let name: String
     private let stringUrl: String
-    public let previewURL: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
         case stringUrl = "url"
-        case previewURL = "previewUrl"
-    }
-}
-
-// MARK: - Formats
-public struct Formats: Codable, Equatable {
-    public let large: Format?
-    public let small: Format?
-    public let medium: Format?
-    public let thumbnail: Format?
-
-    enum CodingKeys: String, CodingKey {
-        case large = "large"
-        case small = "small"
-        case medium = "medium"
-        case thumbnail = "thumbnail"
-    }
-}
-
-public struct Format: Codable, Equatable {
-    public let ext: String?
-    public let url: String?
-    public let hash: String?
-    public let mime: String?
-    public let name: String?
-    public let path: String?
-    public let size: Int?
-    public let width: Int?
-    public let height: Int?
-    public let provider: Provider?
-    
-    enum CodingKeys: String, CodingKey {
-        case ext = "ext"
-        case url = "url"
-        case hash = "hash"
-        case mime = "mime"
-        case name = "name"
-        case path = "path"
-        case size = "size"
-        case width = "width"
-        case height = "height"
-        case provider = "provider_metadata"
-    }
-}
-
-public struct Provider: Codable, Equatable {
-    let id: String?
-    let type: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "public_id"
-        case type = "resource_type"
     }
 }
 
@@ -159,17 +108,59 @@ public struct LinkComponent: Codable, Equatable, Identifiable {
     }
 }
 
-//MARK: - Science Clubs
-public struct ScienceClub: Codable, Equatable {
-    #warning("TODO: Departments ID")
+//MARK: - Info Section
+public struct InfoSection: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
-    public let department: Int
+    public let info: [InfoComponent]
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case name = "name"
+        case info = "info"
+    }
+}
+
+//MARK: - Info Component
+public struct InfoComponent: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let value: String?
+    public let icon: Photo?
+    private let stringType: String?
+    public let label: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case value = "value"
+        case icon = "icon"
+        case stringType = "type"
+        case label = "visibleText"
+    }
+}
+
+public extension InfoComponent {
+    enum InfoType: String {
+        case phone = "PhoneNumber"
+        case addres = "Addres"
+        case website = "Website"
+        case email = "Email"
+        case other = "other"
+    }
+    
+    var type: InfoType {
+        InfoType(rawValue: stringType ?? "other") ?? .other
+    }
+}
+
+//MARK: - Science Clubs
+public struct ScienceClub: Codable, Equatable {
+    public let id: Int
+    public let name: String?
+    public let department: Int?
     public let description: String?
     public let locale: String
-    public let contact: [Contact]
-    public let socialMedia: [LinkComponent?]
-    public let tag: [Tag]
+    public let infoSection: [InfoSection]
+    public let tags: [Tag]
     public let photo: Photo?
     public let background: Photo?
     
@@ -177,13 +168,12 @@ public struct ScienceClub: Codable, Equatable {
         case id = "id"
         case name = "Name"
         case department = "department"
-        case description = "Description"
+        case description = "description"
         case locale = "locale"
-        case contact = "Contact"
-        case socialMedia = "SocialMedia"
-        case tag = "Tag"
-        case photo = "Photo"
-        case background = "BackgroundPhoto"
+        case infoSection = "infoSection"
+        case tags = "tags"
+        case photo = "photo"
+        case background = "backgroundPhoto"
     }
 }
 
@@ -193,7 +183,7 @@ public struct Tag: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
+        case name = "name"
     }
 }
 
@@ -240,8 +230,8 @@ public struct GradientColor: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case gradientFirst = "GradientFirst"
-        case gradientSecond = "GradientSecond"
+        case gradientFirst = "gradientFirst"
+        case gradientSecond = "gradientSecond"
     }
 }
 
@@ -333,8 +323,8 @@ public extension Department {
         description: "Jaramy trawę w kosmosie",
         website: nil,
         locale: nil,
-        socialMedia: [],
-        adress: [],
+        infoSection: [],
+        adress: "",
         fieldOfStudy: [],
         color: nil,
         logo: nil,
@@ -349,8 +339,8 @@ public extension Department {
             description: "Jaramy trawę w kosmosie",
             website: nil,
             locale: nil,
-            socialMedia: [],
-            adress: [],
+            infoSection: [],
+            adress: "",
             fieldOfStudy: [],
             color: nil,
             logo: nil,
@@ -379,9 +369,8 @@ public extension ScienceClub {
         department: 5,
         description: "TEST",
         locale: "",
-        contact: [],
-        socialMedia: [],
-        tag: [],
+        infoSection: [],
+        tags: [],
         photo: nil,
         background: nil
     )
