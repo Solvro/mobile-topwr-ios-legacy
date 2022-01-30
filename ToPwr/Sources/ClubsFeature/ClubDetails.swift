@@ -48,9 +48,13 @@ public let clubDetailsReducer = Reducer<
 > { state, action, env in
     switch action {
     case .onAppear:
+        guard let departmentID = state.club.department else {
+            state.isLoading = false
+            return .none
+        }
         return .init(
             value: .loadDepartment(
-                state.club.department
+                departmentID
             )
         )
     case .loadDepartment(let id):
@@ -120,11 +124,10 @@ public struct ClubDetailsView: View {
                                 .horizontalPadding(.huge)
                         }
                         
-                        if !viewStore.club.socialMedia.isEmpty {
-                            LinkSection(
-                                title: "Social Media",
-                                links: viewStore.club.socialMedia
-                            )
+                        ForEach(viewStore.club.infoSection) { section in
+                            VStack(spacing: UIDimensions.normal.spacing) {
+                                InfoSectionView(section: section)
+                            }
                         }
                         
                         VStack(alignment: .leading) {
