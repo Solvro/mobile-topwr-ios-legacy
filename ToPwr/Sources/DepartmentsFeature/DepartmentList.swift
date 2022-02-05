@@ -33,7 +33,6 @@ public enum DepartmentListAction: Equatable {
     case listButtonTapped
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
-    case setNavigationSelectionCompleted
     case departmentDetailsAction(DepartmentDetailsAction)
 }
 
@@ -95,17 +94,14 @@ departmentDetailsReducer
         case .searchAction:
             return .none
         case let .setNavigation(selection: .some(id)):
-            #warning("TODO: REFACTOR, is not needeed selection complited")
             state.selection = Identified(nil, id: id)
-            return Effect(value: .setNavigationSelectionCompleted)
+            guard let id = state.selection?.id,
+              let department = state.filtered[id: id] else { return .none }
+              state.selection?.value = department
+            return .none
         case .setNavigation(selection: .none):
             state.selection = nil
             return .none
-        case .setNavigationSelectionCompleted:
-          guard let id = state.selection?.id,
-            let department = state.filtered[id: id] else { return .none }
-            state.selection?.value = department
-          return .none
         case .departmentDetailsAction:
             return .none
         }

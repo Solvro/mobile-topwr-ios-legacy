@@ -33,7 +33,6 @@ public enum ClubListAction: Equatable {
     case listButtonTapped
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
-    case setNavigationSelectionCompleted
     case clubDetailsAction(ClubDetailsAction)
 }
 
@@ -92,17 +91,14 @@ clubDetailsReducer
         case .searchAction:
             return .none
         case let .setNavigation(selection: .some(id)):
-            #warning("TODO: REFACTOR IT")
             state.selection = Identified(nil, id: id)
-            return Effect(value: .setNavigationSelectionCompleted)
+            guard let id = state.selection?.id,
+              let club = state.filtered[id: id] else { return .none }
+              state.selection?.value = club
+            return .none
         case .setNavigation(selection: .none):
             state.selection = nil
             return .none
-        case .setNavigationSelectionCompleted:
-          guard let id = state.selection?.id,
-            let club = state.filtered[id: id] else { return .none }
-            state.selection?.value = club
-          return .none
         case .clubDetailsAction:
             return .none
         }
