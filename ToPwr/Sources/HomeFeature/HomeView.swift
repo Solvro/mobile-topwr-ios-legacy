@@ -3,12 +3,13 @@ import ComposableArchitecture
 import Combine
 import Common
 import DepartmentsFeature
+import ClubsFeature
 
 //MARK: - STATE
 public struct HomeState: Equatable {
     var departmentListState = DepartmentHomeListState()
     var buildingListState = BuildingListState()
-    var scienceClubListState = ScienceClubListState()
+    var clubHomeListState = ClubHomeListState()
     var exceptations: ExceptationDays?
     var sessionDay: SessionDay? = nil
 
@@ -32,7 +33,7 @@ public enum HomeAction: Equatable {
     case buttonTapped
     case departmentListAction(DepartmentHomeListAction)
     case buildingListAction(BuildingListAction)
-    case scienceClubListAction(ScienceClubListAction)
+    case clubHomeListAction(ClubHomeListAction)
 }
 
 //MARK: - ENVIRONMENT
@@ -40,6 +41,7 @@ public struct HomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
@@ -49,6 +51,7 @@ public struct HomeEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
@@ -57,6 +60,7 @@ public struct HomeEnvironment {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
         self.getDepartments = getDepartments
+        self.getDepartment = getDepartment
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
         self.getScienceClub = getScienceClub
@@ -134,9 +138,9 @@ public let homeReducer = Reducer<
       )
       return .none
   case .receivedScienceClubs(.success(let clubs)):
-      state.scienceClubListState = .init(
-        scienceClubs: clubs.map {
-            ScienceClubCellState(scienceClub: $0)
+      state.clubHomeListState = .init(
+        clubs: clubs.map {
+            ClubDetailsState(club: $0)
         }
       )
       return .none
@@ -160,7 +164,7 @@ public let homeReducer = Reducer<
       return .none
   case .buildingListAction:
       return .none
-  case .scienceClubListAction:
+  case .clubHomeListAction:
       return .none
   }
 }
@@ -188,12 +192,15 @@ public let homeReducer = Reducer<
         )
 )
 .combined(
-    with: scienceClubListReducer
+    with: clubHomeListReducer
         .pullback(
-            state: \.scienceClubListState,
-            action: /HomeAction.scienceClubListAction,
-            environment: { env in
-                    .init(mainQueue: env.mainQueue)
+            state: \.clubHomeListState,
+            action: /HomeAction.clubHomeListAction,
+            environment: {
+                .init(
+                    mainQueue: $0.mainQueue,
+                    getDepartment: $0.getDepartment
+                )
             }
         )
 )
@@ -239,10 +246,10 @@ public struct HomeView: View {
                         )
                         
                         // Science Clubs
-                        ScienceClubListView(
+                        ClubHomeListView(
                             store: self.store.scope(
-                                state: \.scienceClubListState,
-                                action: HomeAction.scienceClubListAction
+                                state: \.clubHomeListState,
+                                action: HomeAction.clubHomeListAction
                             )
                         )
                     }
@@ -276,6 +283,7 @@ public extension HomeEnvironment {
         mainQueue: .immediate,
         getSessionDate: failing0,
         getDepartments: failing0,
+        getDepartment: failing1,
         getBuildings: failing0,
         getScienceClubs: failing0,
         getScienceClub: failing1,

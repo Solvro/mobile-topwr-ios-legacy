@@ -92,6 +92,7 @@ clubDetailsReducer
         case .searchAction:
             return .none
         case let .setNavigation(selection: .some(id)):
+            #warning("TODO: REFACTOR IT")
             state.selection = Identified(nil, id: id)
             return Effect(value: .setNavigationSelectionCompleted)
         case .setNavigation(selection: .none):

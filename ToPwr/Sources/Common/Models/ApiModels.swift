@@ -166,7 +166,7 @@ public struct ScienceClub: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
+        case name = "name"
         case department = "department"
         case description = "description"
         case locale = "locale"
