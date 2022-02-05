@@ -2,13 +2,11 @@ import SwiftUI
 import ComposableArchitecture
 import Combine
 import Common
-import CryptoKit
+import DepartmentsFeature
 
 //MARK: - STATE
 public struct HomeState: Equatable {
-    var text: String = "Hello World ToPwr"
-    
-    var departmentListState = DepartmentListState()
+    var departmentListState = DepartmentHomeListState()
     var buildingListState = BuildingListState()
     var scienceClubListState = ScienceClubListState()
     var exceptations: ExceptationDays?
@@ -32,19 +30,20 @@ public enum HomeAction: Equatable {
     case receivedScienceClubs(Result<[ScienceClub], ErrorModel>)
     case receivedWelcomeDayText(Result<ExceptationDays, ErrorModel>)
     case buttonTapped
-    case departmentListAction(DepartmentListAction)
+    case departmentListAction(DepartmentHomeListAction)
     case buildingListAction(BuildingListAction)
     case scienceClubListAction(ScienceClubListAction)
 }
 
 //MARK: - ENVIRONMENT
 public struct HomeEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
-    var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
+    let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+    let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -52,6 +51,7 @@ public struct HomeEnvironment {
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
     ) {
         self.mainQueue = mainQueue
@@ -59,6 +59,7 @@ public struct HomeEnvironment {
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
+        self.getScienceClub = getScienceClub
         self.getWelcomeDayText = getWelcomeDayText
     }
 }
@@ -121,7 +122,7 @@ public let homeReducer = Reducer<
   case .receivedDepartments(.success(let departments)):
       state.departmentListState = .init(
         departments: departments.map {
-            DepartmentCellState(department: $0)
+            DepartmentDetailsState(department: $0)
         }
       )
       return .none
@@ -164,12 +165,15 @@ public let homeReducer = Reducer<
   }
 }
 .combined(
-    with: departmentListReducer
+    with: departmentHomeListReducer
         .pullback(
             state: \.departmentListState,
             action: /HomeAction.departmentListAction,
-            environment: { env in
-                    .init(mainQueue: env.mainQueue)
+            environment: {
+                .init(
+                    mainQueue: $0.mainQueue,
+                    getScienceClub: $0.getScienceClub
+                )
             }
         )
 )
@@ -227,7 +231,7 @@ public struct HomeView: View {
                         )
                         
                         /// Departments
-                        DepartmentListView(
+                        DepartmentHomeListView(
                             store: self.store.scope(
                                 state: \.departmentListState,
                                 action: HomeAction.departmentListAction
@@ -274,6 +278,7 @@ public extension HomeEnvironment {
         getDepartments: failing0,
         getBuildings: failing0,
         getScienceClubs: failing0,
+        getScienceClub: failing1,
         getWelcomeDayText: failing0
     )
 }

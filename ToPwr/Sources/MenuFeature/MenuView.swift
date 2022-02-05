@@ -95,6 +95,7 @@ public let menuReducer = Reducer<
                         getDepartments: env.getDepartments,
                         getBuildings: env.getBuildings,
                         getScienceClubs: env.getScienceClubs,
+                        getScienceClub: env.getScienceClub,
                         getWelcomeDayText: env.getWelcomeDayText
                     )
             }

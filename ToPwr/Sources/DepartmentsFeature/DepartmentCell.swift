@@ -3,23 +3,39 @@ import ComposableArchitecture
 import Common
 
 public struct DepartmentCellView: View {
+    
+    enum Constants {
+        static let banerWidth: CGFloat = 360
+        static let banerHeight: CGFloat = 120
+        enum Home {
+            static let banerWidth: CGFloat = 183
+            static let banerHeight: CGFloat = 162
+        }
+    }
+    
     let viewState: DepartmentDetailsState
+    let isHomeCell: Bool
     
     public init(
-        state: DepartmentDetailsState
+        state: DepartmentDetailsState,
+        isHomeCell: Bool = false
     ) {
         self.viewState = state
+        self.isHomeCell = isHomeCell
     }
     
     public var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .bottomLeading) {
             BanerView(
                 url: viewState.department.logo?.url,
-                color: viewState.department.color
+                color: viewState.department.color,
+                isSquare: isHomeCell
             )
-                .frame(width: 360, height: 120)
-                .cornerRadius(8)
-            
+                .frame(
+                    width: isHomeCell ? Constants.Home.banerWidth : Constants.banerWidth,
+                    height: isHomeCell ? Constants.Home.banerHeight : Constants.banerHeight
+                )
+                .cornerRadius(UIDimensions.normal.cornerRadius)
             VStack(alignment: .leading) {
                 Text(viewState.department.code ?? "")
                     .bold()
@@ -30,11 +46,12 @@ public struct DepartmentCellView: View {
                     .font(.appRegularTitle3)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer()
+
+                if !isHomeCell { Spacer() }
             }
             .foregroundColor(.white)
-            .padding([.top, .bottom, .leading], 15)
+            .padding()
         }
+        .frame(maxWidth: isHomeCell ? Constants.Home.banerWidth : Constants.banerWidth)
     }
 }

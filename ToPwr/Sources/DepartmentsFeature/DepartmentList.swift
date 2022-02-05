@@ -95,6 +95,7 @@ departmentDetailsReducer
         case .searchAction:
             return .none
         case let .setNavigation(selection: .some(id)):
+            #warning("TODO: REFACTOR, is not needeed selection complited")
             state.selection = Identified(nil, id: id)
             return Effect(value: .setNavigationSelectionCompleted)
         case .setNavigation(selection: .none):
