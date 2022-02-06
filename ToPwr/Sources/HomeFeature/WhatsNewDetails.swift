@@ -6,7 +6,11 @@ import NukeUI
 
 // MARK: - State
 public struct WhatsNewDetailsState: Equatable {
-    var title: String = "UIExamples"
+    let date = "12.10.2021"
+    let titleText = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
+    let colorBackground = Color("#58667b")
+    let contentText = "Article content"
+    let imageUrl = ""
 }
 
 // MARK: - Actions
@@ -39,10 +43,6 @@ public struct WhatsNewDetailsView: View {
     
     private enum Constants {
         static let backgroundImageHeigth: CGFloat = 254
-        static let date = "12.10.2021"
-        static let titleText = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
-        static let colorBackground = Color("#58667b")
-        static let contentText = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
     }
     
     let store: Store<WhatsNewDetailsState, WhatsNewDetailsAction>
@@ -56,7 +56,7 @@ public struct WhatsNewDetailsView: View {
             ScrollView(showsIndicators: false) {
                 VStack{
                     ImageView(
-                        url: URL(string: ""),
+                        url: URL(string: viewStore.imageUrl),
                         contentMode: .aspectFill
                     )
                         .frame(height: Constants.backgroundImageHeigth)
@@ -67,15 +67,17 @@ public struct WhatsNewDetailsView: View {
                             .foregroundColor(.gray)
                             .horizontalPadding(.big)
                             .verticalPadding(.small)
-                            .overlay(Text(Constants.date)
+                            .overlay(
+                                Text(viewStore.date)
                                         .foregroundColor(.white)
                                         .font(.appRegularTitle4)
                             )
+                        
                         Spacer()
                     }
                     
                     HStack{
-                        Text(Constants.titleText)
+                        Text(viewStore.titleText)
                             .font(.appBoldTitle2)
                             .foregroundColor(.black)
                             .horizontalPadding(.big)
@@ -84,12 +86,10 @@ public struct WhatsNewDetailsView: View {
                         Spacer()
                     }
                     
-                    
-                    Text(Constants.contentText)
+                    Text(viewStore.contentText)
                         .font(.appRegularTitle3)
                         .foregroundColor(.black)
                         .horizontalPadding(.big)
-                    
                     
                 }
             }
@@ -104,32 +104,30 @@ public struct WhatsNewDetailsView: View {
     }
 }
 
-//
-//// MARK: - Preview
-//struct WhatsNewDetails_Previews: PreviewProvider {
-//    static var previews: some View {
-//        WhatsNewDetailsView(
-//            store: Store(
-//                initialState: WhatsNewDetailsState.mock,
-//                reducer: whatsNewDetailsReducer,
-//                environment: WhatsNewDetailsEnvironment.mock
-//            )
-//        )
-//    }
-//}
-//
-//#endif
-//
-//#if DEBUG
-//// MARK: - State - MOCKS
-//public extension WhatsNewDetailsState {
-//    static let mock: Self = .init()
-//}
-//
-//// MARK: - Environment - MOCKS
-//public extension WhatsNewDetailsEnvironment {
-//    static let mock: Self = .init()
-//}
-//#endif
+
+// MARK: - Preview
+struct WhatsNewDetails_Previews: PreviewProvider {
+    static var previews: some View {
+        WhatsNewDetailsView(
+            store: Store(
+                initialState: WhatsNewDetailsState.mock,
+                reducer: whatsNewDetailsReducer,
+                environment: WhatsNewDetailsEnvironment.mock
+            )
+        )
+    }
+}
+
+#if DEBUG
+// MARK: - State - MOCKS
+public extension WhatsNewDetailsState {
+    static let mock: Self = .init()
+}
+
+// MARK: - Environment - MOCKS
+public extension WhatsNewDetailsEnvironment {
+    static let mock: Self = .init()
+}
+#endif
 
 
