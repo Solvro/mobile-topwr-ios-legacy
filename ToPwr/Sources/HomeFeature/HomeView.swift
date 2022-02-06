@@ -217,7 +217,7 @@ public struct HomeView: View {
                         
                         DaysToSessionView(session: viewStore.sessionDay)
                             .horizontalPadding(.normal)
-                        
+
                         /// Buildings
                         BuildingListView(
                             store:  self.store.scope(
