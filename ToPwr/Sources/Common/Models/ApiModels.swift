@@ -15,7 +15,7 @@ public struct SessionDay: Codable, Equatable {
         case id = "id"
         case created = "created_at"
         case updated = "updated_at"
-        case sessionDate = "EndDate"
+        case sessionDate = "endDate"
         case published = "published_at"
     }
 }
@@ -39,10 +39,10 @@ public struct Department: Codable, Equatable {
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case code = "Code"
-        case description = "Description"
-        case website = "Website"
+        case name = "name"
+        case code = "code"
+        case description = "description"
+        case website = "website"
         case locale = "locale"
         case infoSection = "infoSection"
         case adress = "addres"
@@ -166,7 +166,7 @@ public struct ScienceClub: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
+        case name = "name"
         case department = "department"
         case description = "description"
         case locale = "locale"
@@ -218,7 +218,7 @@ public struct Map: Codable, Equatable {
         case longitude = "Longitude"
         case description = "Description"
         case address = "Address"
-        case photo = "Photo"
+        case photo = "photo"
     }
 }
 

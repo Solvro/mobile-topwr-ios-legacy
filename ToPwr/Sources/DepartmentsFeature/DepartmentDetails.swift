@@ -7,7 +7,7 @@ import IdentifiedCollections
 // MARK: - State
 public struct DepartmentDetailsState: Equatable, Identifiable {
     public let id: UUID
-    let department: Department
+    public let department: Department
     var items: IdentifiedArrayOf<TileState> = []
     var clubs: [ScienceClub] = []
     
