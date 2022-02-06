@@ -5,10 +5,11 @@ import Common
 
 // MARK: - State
 public struct WhatsNewDetailsState: Equatable {
-    let date = "12.10.2021"
-    let titleText = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
-    let colorBackground = Color("#58667b")
-    let contentText = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
+    let date: String = "12.10.2021"
+    let imageUrl: String = ""
+    let titleText: String = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
+    let colorBackground: Color = Color("#58667b")
+    let contentText: String = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
 }
 
 // MARK: - Actions
@@ -74,7 +75,6 @@ public struct WhatsNewDetailsView: View {
                                         .foregroundColor(.white)
                                         .font(.appRegularTitle4)
                             )
-                        
                         Spacer()
                     }
                     HStack{
@@ -90,7 +90,6 @@ public struct WhatsNewDetailsView: View {
                         .font(.appRegularTitle3)
                         .foregroundColor(.black)
                         .horizontalPadding(.big)
-                    
                 }
             }
             .onAppear {
@@ -117,8 +116,6 @@ struct WhatsNewDetails_Previews: PreviewProvider {
         )
     }
 }
-
-#if DEBUG
 // MARK: - State - MOCKS
 public extension WhatsNewDetailsState {
     static let mock: Self = .init()
@@ -129,5 +126,3 @@ public extension WhatsNewDetailsEnvironment {
     static let mock: Self = .init()
 }
 #endif
-
-
