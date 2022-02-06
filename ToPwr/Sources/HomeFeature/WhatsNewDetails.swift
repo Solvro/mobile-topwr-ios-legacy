@@ -56,7 +56,7 @@ public struct WhatsNewDetailsView: View {
             ScrollView(showsIndicators: false) {
                 VStack{
                     ImageView(
-                        url: URL(string: ""),
+                        url: URL(string: viewStore.imageUrl),
                         contentMode: .aspectFill
                     )
                         .frame(height: Constants.backgroundImageHeigth)
@@ -69,10 +69,12 @@ public struct WhatsNewDetailsView: View {
                             .foregroundColor(.gray)
                             .horizontalPadding(.big)
                             .verticalPadding(.small)
-                            .overlay(Text(viewStore.date)
+                            .overlay(
+                                Text(viewStore.date)
                                         .foregroundColor(.white)
                                         .font(.appRegularTitle4)
                             )
+                        
                         Spacer()
                     }
                     HStack{
@@ -83,10 +85,12 @@ public struct WhatsNewDetailsView: View {
                             .padding(.bottom, UIDimensions.small.size)
                         Spacer()
                     }
+                    
                     Text(viewStore.contentText)
                         .font(.appRegularTitle3)
                         .foregroundColor(.black)
                         .horizontalPadding(.big)
+                    
                 }
             }
             .onAppear {
@@ -114,6 +118,7 @@ struct WhatsNewDetails_Previews: PreviewProvider {
     }
 }
 
+#if DEBUG
 // MARK: - State - MOCKS
 public extension WhatsNewDetailsState {
     static let mock: Self = .init()
