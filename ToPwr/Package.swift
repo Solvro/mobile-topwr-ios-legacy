@@ -139,6 +139,8 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "Common",
+                "ClubsFeature",
+                "DepartmentsFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"

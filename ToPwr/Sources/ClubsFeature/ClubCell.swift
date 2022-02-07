@@ -17,7 +17,7 @@ public struct ClubCellView: View {
             HStack {
                 HStack {
                     Text(viewState.club.name ?? "")
-                        .fontWeight(.medium)
+                        .font(.appBoldTitle2)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
                         .padding(.leading, UIDimensions.normal.spacing)

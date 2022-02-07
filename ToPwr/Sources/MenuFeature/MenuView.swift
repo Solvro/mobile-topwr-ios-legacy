@@ -93,8 +93,10 @@ public let menuReducer = Reducer<
                         mainQueue: env.mainQueue,
                         getSessionDate: env.getSessionDate,
                         getDepartments: env.getDepartments,
+                        getDepartment: env.getDepartment,
                         getBuildings: env.getBuildings,
                         getScienceClubs: env.getScienceClubs,
+                        getScienceClub: env.getScienceClub,
                         getWelcomeDayText: env.getWelcomeDayText
                     )
             }
