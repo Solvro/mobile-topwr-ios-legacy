@@ -31,12 +31,14 @@ public enum MenuAction: Equatable, BindableAction {
 
 //MARK: - ENVIRONMENT
 public struct MenuEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    var getDepartments: () -> AnyPublisher<[Department], ErrorModel>
-    var getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    var getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    var getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
+    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
+    let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
+    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -44,7 +46,9 @@ public struct MenuEnvironment {
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
-        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -52,6 +56,8 @@ public struct MenuEnvironment {
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
         self.getWelcomeDayText = getWelcomeDayText
+        self.getDepartment = getDepartment
+        self.getScienceClub = getScienceClub
     }
 }
 
@@ -87,8 +93,10 @@ public let menuReducer = Reducer<
                         mainQueue: env.mainQueue,
                         getSessionDate: env.getSessionDate,
                         getDepartments: env.getDepartments,
+                        getDepartment: env.getDepartment,
                         getBuildings: env.getBuildings,
                         getScienceClubs: env.getScienceClubs,
+                        getScienceClub: env.getScienceClub,
                         getWelcomeDayText: env.getWelcomeDayText
                     )
             }
@@ -100,7 +108,8 @@ public let menuReducer = Reducer<
             state: \.mapState,
             action: /MenuAction.mapAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(getBuildings: env.getBuildings,
+                          mainQueue: env.mainQueue)
             }
         )
 )
@@ -112,7 +121,8 @@ public let menuReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getDepartments: env.getDepartments
+                        getDepartments: env.getDepartments,
+                        getScienceClub: env.getScienceClub
                     )
             }
         )
@@ -122,9 +132,12 @@ public let menuReducer = Reducer<
         .pullback(
             state: \.clubsState,
             action: /MenuAction.clubsAction,
-            environment: { env in
-                    .init(mainQueue: env.mainQueue,
-                          getClubs: env.getScienceClubs)
+            environment: {
+                    .init(
+                        mainQueue: $0.mainQueue,
+                        getClubs: $0.getScienceClubs,
+                        getDepartment: $0.getDepartment
+                    )
             }
         )
 )
@@ -156,7 +169,7 @@ public struct MenuView: View {
                     action: MenuAction.homeAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("SchoolIcon")
                 }
@@ -167,7 +180,7 @@ public struct MenuView: View {
                     action: MenuAction.mapAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("CompassIcon")
                 }
@@ -178,7 +191,7 @@ public struct MenuView: View {
                     action: MenuAction.departmentsAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("HatIcon")
                 }
@@ -189,7 +202,7 @@ public struct MenuView: View {
                     action: MenuAction.clubsAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("RocketIcon")
                 }
@@ -199,11 +212,13 @@ public struct MenuView: View {
                     action: MenuAction.infoAction
                 )
             )
-                .modifier(K.DefaultBackgroundColor())
+                .preferredColorScheme(.light)
                 .tabItem {
                     Image("InfoIcon")
                 }
-        }
+        }.onAppear(perform: {
+            UITabBar.appearance().backgroundColor = .systemBackground
+        })
         .accentColor(K.Colors.firstColorDark)
     }
 }
@@ -222,7 +237,9 @@ struct MenuView_Previews: PreviewProvider {
                     getDepartments: failing0,
                     getBuildings: failing0,
                     getScienceClubs: failing0,
-                    getWelcomeDayText: failing0
+                    getWelcomeDayText: failing0,
+                    getDepartment: failing1,
+                    getScienceClub: failing1
                 )
             )
         )

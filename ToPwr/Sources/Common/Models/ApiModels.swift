@@ -15,7 +15,7 @@ public struct SessionDay: Codable, Equatable {
         case id = "id"
         case created = "created_at"
         case updated = "updated_at"
-        case sessionDate = "EndDate"
+        case sessionDate = "endDate"
         case published = "published_at"
     }
 }
@@ -28,28 +28,30 @@ public struct Department: Codable, Equatable {
     public var description: String?
     public var website: String?
     public var locale: String?
-    public var socialMedia: [SocialMedia?]
-    public var adress: Address?
+    public var infoSection: [InfoSection]
+    public var adress: String?
     public var fieldOfStudy: [FieldOfStudy]
     public var color: GradientColor?
-    public var photo: Photo?
     public var logo: Photo?
-    public var clubs: [ScienceClub?]
+    public var clubsID: [Int]
+    public var latitude: Float?
+    public var longitude: Float?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case code = "Code"
-        case description = "Description"
-        case website = "Website"
+        case name = "name"
+        case code = "code"
+        case description = "description"
+        case website = "website"
         case locale = "locale"
-        case socialMedia = "SocialMedia"
-        case adress = "Address"
-        case fieldOfStudy = "FieldOfStudy"
-        case color = "Color"
-        case photo = "Photo"
-        case logo = "Logo"
-        case clubs = "scientific_circles"
+        case infoSection = "infoSection"
+        case adress = "addres"
+        case fieldOfStudy = "fieldsOfStudy"
+        case color = "color"
+        case logo = "logo"
+        case clubsID = "scientificCircles"
+        case latitude = "latitude"
+        case longitude = "longitude"
     }
 }
 
@@ -65,13 +67,15 @@ public struct Address: Codable, Equatable {
 }
 
 // MARK: - FieldOfStudy
-public struct FieldOfStudy: Codable, Equatable {
+public struct FieldOfStudy: Codable, Equatable, Identifiable {
     public let id: Int
-    public let name: String
+    public let name: String?
+    public let name2: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "Name"
+        case name2 = "name"
     }
 }
 
@@ -79,70 +83,17 @@ public struct FieldOfStudy: Codable, Equatable {
 public struct Photo: Codable, Equatable {
     public let id: Int
     public let name: String
-    public let url: String
-    public let previewURL: String?
+    private let stringUrl: String
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
-        case url = "url"
-        case previewURL = "previewUrl"
-    }
-}
-
-// MARK: - Formats
-public struct Formats: Codable, Equatable {
-    public let large: Format?
-    public let small: Format?
-    public let medium: Format?
-    public let thumbnail: Format?
-
-    enum CodingKeys: String, CodingKey {
-        case large = "large"
-        case small = "small"
-        case medium = "medium"
-        case thumbnail = "thumbnail"
-    }
-}
-
-public struct Format: Codable, Equatable {
-    public let ext: String?
-    public let url: String?
-    public let hash: String?
-    public let mime: String?
-    public let name: String?
-    public let path: String?
-    public let size: Int?
-    public let width: Int?
-    public let height: Int?
-    public let provider: Provider?
-    
-    enum CodingKeys: String, CodingKey {
-        case ext = "ext"
-        case url = "url"
-        case hash = "hash"
-        case mime = "mime"
-        case name = "name"
-        case path = "path"
-        case size = "size"
-        case width = "width"
-        case height = "height"
-        case provider = "provider_metadata"
-    }
-}
-
-public struct Provider: Codable, Equatable {
-    let id: String?
-    let type: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "public_id"
-        case type = "resource_type"
+        case stringUrl = "url"
     }
 }
 
 //MARK: - Social Media
-public struct SocialMedia: Codable, Equatable {
+public struct LinkComponent: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let link: String?
@@ -150,10 +101,54 @@ public struct SocialMedia: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case link = "Link"
+        case name = "LinkText"
+        case link = "Value"
         case icon = "Icon"
        
+    }
+}
+
+//MARK: - Info Section
+public struct InfoSection: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let name: String?
+    public let info: [InfoComponent]
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case name = "name"
+        case info = "info"
+    }
+}
+
+//MARK: - Info Component
+public struct InfoComponent: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let value: String?
+    public let icon: Photo?
+    private let stringType: String?
+    public let label: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case value = "value"
+        case icon = "icon"
+        case stringType = "type"
+        case label = "visibleText"
+    }
+}
+
+public extension InfoComponent {
+    enum InfoType: String {
+        case phone = "PhoneNumber"
+        case addres = "Addres"
+        case website = "Website"
+        case email = "Email"
+        case other = "other"
+    }
+    
+    var type: InfoType {
+        InfoType(rawValue: stringType ?? "other") ?? .other
     }
 }
 
@@ -161,26 +156,24 @@ public struct SocialMedia: Codable, Equatable {
 public struct ScienceClub: Codable, Equatable {
     public let id: Int
     public let name: String?
-//    public let department: Department?
+    public let department: Int?
     public let description: String?
     public let locale: String
-    public let contact: [Contact]
-    public let socialMedia: [SocialMedia]
-    public let tag: [Tag]
+    public let infoSection: [InfoSection]
+    public let tags: [Tag]
     public let photo: Photo?
     public let background: Photo?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-//        case department = "department"
-        case description = "Description"
+        case name = "name"
+        case department = "department"
+        case description = "description"
         case locale = "locale"
-        case contact = "Contact"
-        case socialMedia = "SocialMedia"
-        case tag = "Tag"
-        case photo = "Photo"
-        case background = "BackgroundPhoto"
+        case infoSection = "infoSection"
+        case tags = "tags"
+        case photo = "photo"
+        case background = "backgroundPhoto"
     }
 }
 
@@ -190,11 +183,11 @@ public struct Tag: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
+        case name = "name"
     }
 }
 
-public struct Contact: Codable, Equatable {
+public struct Contact: Codable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let number: String?
@@ -219,13 +212,13 @@ public struct Map: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case code = "Code"
-        case latitude = "Latitude"
-        case longitude = "Longitude"
-        case description = "Description"
-        case address = "Address"
-        case photo = "Photo"
+        case name = "name"
+        case code = "code"
+        case latitude = "latitude"
+        case longitude = "longitude"
+        case description = "description"
+        case address = "address"
+        case photo = "photo"
     }
 }
 
@@ -237,8 +230,8 @@ public struct GradientColor: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case gradientFirst = "GradientFirst"
-        case gradientSecond = "GradientSecond"
+        case gradientFirst = "gradientFirst"
+        case gradientSecond = "gradientSecond"
     }
 }
 
@@ -297,11 +290,26 @@ public struct WeekDay: Codable, Equatable {
     }
 }
 
+public struct Version: Codable, Equatable {
+    public let id: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "uuid"
+    }
+}
+
+// MARK: - EXTENSIONS
 public extension WeekDay {
     var date: Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yy-MM-dd"
         return dateFormatter.date(from: dateString)
+    }
+}
+
+public extension Photo {
+    var url: URL? {
+        URL(string: stringUrl)
     }
 }
 
@@ -315,13 +323,12 @@ public extension Department {
         description: "Jaramy trawę w kosmosie",
         website: nil,
         locale: nil,
-        socialMedia: [],
-        adress: nil,
+        infoSection: [],
+        adress: "",
         fieldOfStudy: [],
         color: nil,
-        photo: nil,
         logo: nil,
-        clubs: []
+        clubsID: []
     )
     
     static func mock(id: Int) -> Self {
@@ -332,13 +339,12 @@ public extension Department {
             description: "Jaramy trawę w kosmosie",
             website: nil,
             locale: nil,
-            socialMedia: [],
-            adress: nil,
+            infoSection: [],
+            adress: "",
             fieldOfStudy: [],
             color: nil,
-            photo: nil,
             logo: nil,
-            clubs: []
+            clubsID: []
         )
     }
 }
@@ -360,11 +366,11 @@ public extension ScienceClub {
     static let mock: Self = .init(
         id: 1,
         name: "SOLVRO",
+        department: 5,
         description: "TEST",
         locale: "",
-        contact: [],
-        socialMedia: [],
-        tag: [],
+        infoSection: [],
+        tags: [],
         photo: nil,
         background: nil
     )

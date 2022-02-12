@@ -112,7 +112,7 @@ extension DaysToSessionView {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = .current
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.date(from: text)!
+        return dateFormatter.date(from: text)
     }
 }
 

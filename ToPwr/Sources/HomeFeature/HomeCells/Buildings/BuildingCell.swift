@@ -60,7 +60,7 @@ public struct BuildingCellView: View {
             }, label: {
                 ZStack(alignment: .bottomLeading) {
                     ImageView(
-                        url: URL(string: viewStore.building.photo?.url ?? ""),
+                        url: viewStore.building.photo?.url,
                         contentMode: .aspectFill
                     )
                         .frame(width: 120, height: 120)

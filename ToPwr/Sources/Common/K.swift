@@ -8,6 +8,7 @@ public struct K {
         public static let firstColorDark = Color(hex: "#E16257")
         public static let firstColorLight = Color(hex: "#FFA07E")
         public static let lightGray = Color(hex: "#f7f7f8")
+        public static let red = Color(hex: "E43D32")
     }
     
     public struct SearchColors {
@@ -28,6 +29,14 @@ public struct K {
     public struct FontColors {
         public static let primary = Color(hex: "#293241")
     }
+    
+    static let defaultGradient: GradientColor = {
+        GradientColor(
+            id: 9999,
+            gradientFirst: "#BFBEBE",
+            gradientSecond: "#868585"
+        )
+    }()
     //MARK: - IMAGES
     public struct Images {
         public static let logoColor = Image("AppLogoColor", bundle: .module)

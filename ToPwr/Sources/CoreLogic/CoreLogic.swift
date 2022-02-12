@@ -68,10 +68,34 @@ public struct CoreLogic {
             }
             .eraseToAnyPublisher()
     }
-
-//MARK: - Transform
-    public func transform(exceptationDays: ExceptationDays) -> String {
-        let currentDate = Date()
-        return "test"
+    
+    public func getDepartment(id: Int) -> AnyPublisher<Department, ErrorModel> {
+        let path: String = "/departments/\(id)"
+        return api.fetch(path: path)
+            .decode(type: Department.self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func getScienceClub(id: Int) -> AnyPublisher<ScienceClub, ErrorModel> {
+        let path: String = "/scientific-Circles/\(id)"
+        return api.fetch(path: path)
+            .decode(type: ScienceClub.self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func getApiVersion() -> AnyPublisher<Version, ErrorModel> {
+        let path: String = "/version"
+        return api.fetch(path: path)
+            .decode(type: Version.self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
     }
 }
