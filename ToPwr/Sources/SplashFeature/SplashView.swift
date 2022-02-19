@@ -3,10 +3,20 @@ import ComposableArchitecture
 import Combine
 import Common
 import MenuFeature
+import PureSwiftUI
 
 //MARK: - STATE
 public struct SplashState: Equatable {
-    var isLoading: Bool = true
+    var isLoading: Bool = true {
+        willSet {
+            if !newValue {
+                withAnimation {
+                    showWritingAnimation = true
+                }
+            }
+        }
+    }
+    var showWritingAnimation: Bool = false
     
     var menuState = MenuState()
     public init(){}
@@ -16,6 +26,7 @@ public enum SplashAction: Equatable {
     case onAppear
     case apiVersion(Result<Version, ErrorModel>)
     case stopLoading
+    case setWriting(Bool)
     case menuAction(MenuAction)
 }
 
@@ -77,6 +88,9 @@ public let splashReducer = Reducer<
   case .stopLoading:
     state.isLoading = false
     return .none
+  case .setWriting(let newValue):
+    state.showWritingAnimation = newValue
+    return .none
   case .menuAction:
       return .none
   }
@@ -124,33 +138,44 @@ public struct SplashView: View {
         WithViewStore(store) { viewStore in
             ZStack {
                 if viewStore.isLoading {
-                    ZStack {
-                        LinearGradient(
-                            colors: [
-                                K.Colors.firstColorLight,
-                                K.Colors.firstColorDark
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                            .ignoresSafeArea()
-                        VStack {
-                            K.Images.logoTemplate
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundColor(Color.white)
-                                .shadow(
-                                    color: .black.opacity(0.2),
-                                    radius: 2,
-                                    x: 0,
-                                    y: 2
-                                )
-                                .scaleEffect(scale)
-                                .onAppear() {
-                                    withAnimation(self.repeatingAnimation) { self.scale = 1.1 }
-                                }
+//                    ZStack {
+//                        LinearGradient(
+//                            colors: [
+//                                K.Colors.firstColorLight,
+//                                K.Colors.firstColorDark
+//                            ],
+//                            startPoint: .leading,
+//                            endPoint: .trailing
+//                        )
+//                            .ignoresSafeArea()
+//                        VStack {
+//                            K.Images.logoTemplate
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .foregroundColor(Color.white)
+//                                .shadow(
+//                                    color: .black.opacity(0.2),
+//                                    radius: 2,
+//                                    x: 0,
+//                                    y: 2
+//                                )
+//                                .scaleEffect(scale)
+//                                .onAppear() {
+//                                    withAnimation(self.repeatingAnimation) { self.scale = 1.1 }
+//                                }
+//                        }
+//                        .frame(width: 200)
+//                    }
+                    LoadingAnimation()
+                }else if viewStore.showWritingAnimation{
+                    HStack(spacing: 0){
+                        ProgressView()
+                    }.onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(2)) { // change this accordingly
+                            withAnimation {
+                                viewStore.send(.setWriting(false))
+                            }
                         }
-                        .frame(width: 200)
                     }
                 } else {
                     MenuView(
@@ -164,6 +189,14 @@ public struct SplashView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+        }
+    }
+    
+    private struct T: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            
+            return path
         }
     }
 }

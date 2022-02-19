@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B4F467C27C12FD4005CE0A8 /* PureSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5B4F467B27C12FD4005CE0A8 /* PureSwiftUI */; };
 		6AFDDF442708E17D006B2766 /* AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF432708E17D006B2766 /* AppApp.swift */; };
 		6AFDDF462708E17D006B2766 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF452708E17D006B2766 /* ContentView.swift */; };
 		6AFDDF482708E180006B2766 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6AFDDF472708E180006B2766 /* Assets.xcassets */; };
@@ -55,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B4F467C27C12FD4005CE0A8 /* PureSwiftUI in Frameworks */,
 				6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +163,7 @@
 			name = App;
 			packageProductDependencies = (
 				6AFDDF702708F33A006B2766 /* ToPwr */,
+				5B4F467B27C12FD4005CE0A8 /* PureSwiftUI */,
 			);
 			productName = App;
 			productReference = 6AFDDF402708E17D006B2766 /* App.app */;
@@ -232,6 +235,9 @@
 				pl,
 			);
 			mainGroup = 6AFDDF372708E17D006B2766;
+			packageReferences = (
+				5B4F467A27C12FD4005CE0A8 /* XCRemoteSwiftPackageReference "pure-swift-ui" */,
+			);
 			productRefGroup = 6AFDDF412708E17D006B2766 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -448,7 +454,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
-				DEVELOPMENT_TEAM = M2L4G26Y74;
+				DEVELOPMENT_TEAM = FBLS5HS6W7;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
@@ -456,7 +462,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.JaJaApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Atks;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -470,7 +476,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
-				DEVELOPMENT_TEAM = M2L4G26Y74;
+				DEVELOPMENT_TEAM = FBLS5HS6W7;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
@@ -478,7 +484,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.JaJaApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Atka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -610,7 +616,23 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5B4F467A27C12FD4005CE0A8 /* XCRemoteSwiftPackageReference "pure-swift-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CodeSlicing/pure-swift-ui.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		5B4F467B27C12FD4005CE0A8 /* PureSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5B4F467A27C12FD4005CE0A8 /* XCRemoteSwiftPackageReference "pure-swift-ui" */;
+			productName = PureSwiftUI;
+		};
 		6AFDDF702708F33A006B2766 /* ToPwr */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ToPwr;
