@@ -98,4 +98,14 @@ public struct CoreLogic {
             }
             .eraseToAnyPublisher()
     }
+    
+    public func getWhatsNew() -> AnyPublisher<[WhatsNew], ErrorModel> {
+        let path: String = "/infos"
+        return api.fetch(path: path)
+            .decode(type: [WhatsNew].self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
 }

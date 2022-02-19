@@ -15,6 +15,7 @@
 "department_list_button"="Lista";
 "building_list_title"="Budynki";
 "building_list_button_title"="Lista";
+"whatsnew_list_title"="Co słychać?";
 
 //Welcome View
 "welcome_view_even_sunday"="w parzystą Niedzielę!";
