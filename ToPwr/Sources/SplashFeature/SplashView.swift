@@ -30,6 +30,7 @@ public struct SplashEnvironment {
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+    let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -40,7 +41,8 @@ public struct SplashEnvironment {
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
+        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getApiVersion = getApiVersion
@@ -51,6 +53,7 @@ public struct SplashEnvironment {
         self.getWelcomeDayText = getWelcomeDayText
         self.getDepartment = getDepartment
         self.getScienceClub = getScienceClub
+        self.getWhatsNew = getWhatsNew
     }
 }
 
@@ -92,7 +95,8 @@ public let splashReducer = Reducer<
                         getScienceClubs: $0.getScienceClubs,
                         getWelcomeDayText: $0.getWelcomeDayText,
                         getDepartment: $0.getDepartment,
-                        getScienceClub: $0.getScienceClub
+                        getScienceClub: $0.getScienceClub,
+                        getWhatsNew: $0.getWhatsNew
                     )
             }
         )
@@ -180,7 +184,8 @@ struct SplashView_Previews: PreviewProvider {
                     getScienceClubs: failing0,
                     getWelcomeDayText: failing0,
                     getDepartment: failing1,
-                    getScienceClub: failing1
+                    getScienceClub: failing1,
+                    getWhatsNew: failing0
                 )
             )
         )

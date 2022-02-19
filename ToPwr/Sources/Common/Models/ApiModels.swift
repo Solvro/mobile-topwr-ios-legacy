@@ -298,6 +298,23 @@ public struct Version: Codable, Equatable {
     }
 }
 
+// MARK: - WhatsNew
+public struct WhatsNew: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let title: String
+    public let description: String?
+    public let infoSection: [InfoSection]
+    public let photo: Photo?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case title = "title"
+        case description = "description"
+        case infoSection = "infoSection"
+        case photo = "photo"
+    }
+}
+
 // MARK: - EXTENSIONS
 public extension WeekDay {
     var date: Date? {
@@ -373,6 +390,16 @@ public extension ScienceClub {
         tags: [],
         photo: nil,
         background: nil
+    )
+}
+
+public extension WhatsNew {
+    static let mock: Self = .init(
+        id: 123,
+        title: "Title",
+        description: "description",
+        infoSection: [],
+        photo: nil
     )
 }
 #endif
