@@ -47,8 +47,8 @@ public struct WhatsNewDetailsView: View {
     
     private enum Constants {
         static let backgroundImageHeigth: CGFloat = 254
-        static let imageWidth: CGFloat = 100
-        static let imageHeight: CGFloat = 30
+        static let dateWidth: CGFloat = 100
+        static let dateHeight: CGFloat = 30
     }
     
     let store: Store<WhatsNewDetailsState, WhatsNewDetailsAction>
@@ -67,19 +67,21 @@ public struct WhatsNewDetailsView: View {
                     )
                         .frame(height: Constants.backgroundImageHeigth)
                     HStack{
-                        RoundedRectangle(cornerRadius: 20)
+                        if let date = viewStore.news.dateLabel {
+                            VStack {
+                                Text(date)
+                                    .foregroundColor(.white)
+                                    .font(.appRegularTitle4)
+                            }
                             .frame(
-                                width: Constants.imageWidth,
-                                height: Constants.imageHeight
+                                width: Constants.dateWidth,
+                                height: Constants.dateHeight
                             )
-                            .foregroundColor(.gray)
+                            .background(Color.gray)
+                            .cornerRadius(UIDimensions.huge.cornerRadius)
                             .horizontalPadding(.big)
                             .verticalPadding(.small)
-                            .overlay(
-                                Text("TO DO")
-                                        .foregroundColor(.white)
-                                        .font(.appRegularTitle4)
-                            )
+                        }
                         Spacer()
                     }
                     HStack{
