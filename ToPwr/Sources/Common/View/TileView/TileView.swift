@@ -80,6 +80,7 @@ public struct TileView: View {
                     HStack {
                         Text(viewStore.title)
                             .font(.appBoldTitle2)
+                            .multilineTextAlignment(.leading)
                         Spacer()
                     }
                     
