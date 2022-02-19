@@ -1,24 +1,34 @@
 import SwiftUI
 import ComposableArchitecture
+import Combine
+import Common
 
 //MARK: - STATE
 public struct InfoState: Equatable {
-    var text: String = "Hello World ToPwr"
+    var listState = InfoListState()
+    
     public init(){}
 }
 //MARK: - ACTION
 public enum InfoAction: Equatable {
-    case buttonTapped
+    case onAppear
+    case loadInfos
+    case receivedInfos(Result<[Info], ErrorModel>)
+    case listAction(InfoListAction)
+    case dismissKeyboard
 }
 
 //MARK: - ENVIRONMENT
 public struct InfoEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getInfos: () -> AnyPublisher<[Info], ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getInfos = getInfos
     }
 }
 
@@ -27,13 +37,43 @@ public let infoReducer = Reducer<
     InfoState,
     InfoAction,
     InfoEnvironment
-> { state, action, environment in
-  switch action {
-  case .buttonTapped:
-    return .none
-  }
+> { state, action, env in
+    switch action {
+    case .listAction:
+        return .none
+    case .onAppear:
+        if state.listState.infos.isEmpty {
+            return .init(value: .loadInfos)
+        } else {
+            return .none
+        }
+    case .loadInfos:
+        return env.getInfos()
+            .receive(on: env.mainQueue)
+            .catchToEffect()
+            .map(InfoAction.receivedInfos)
+    case .receivedInfos(.success(let Infos)):
+        state.listState = .init(infos: Infos)
+        return .none
+    case .receivedInfos:
+        return .none
+    case .dismissKeyboard:
+        UIApplication.shared.dismissKeyboard()
+        return .none
+    }
 }
-
+.combined(
+    with: InfoListReducer
+        .pullback(
+            state: \.listState,
+            action: /InfoAction.listAction,
+            environment: {
+                .init(
+                    mainQueue: $0.mainQueue
+                )
+            }
+        )
+)
 //MARK: - VIEW
 public struct InfoView: View {
     let store: Store<InfoState, InfoAction>
@@ -47,22 +87,38 @@ public struct InfoView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             ZStack {
-                Text("InfoView")
+                InfoListView(
+                    store: self.store.scope(
+                        state: \.listState,
+                        action: InfoAction.listAction
+                    )
+                )
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
             }
         }
     }
 }
 
 #if DEBUG
-struct InfoView_Previews: PreviewProvider {
+struct DepartmentsView_Previews: PreviewProvider {
     static var previews: some View {
         InfoView(
             store: Store(
                 initialState: .init(),
                 reducer: infoReducer,
-                environment: .init(mainQueue: .immediate)
+                environment: .failing
             )
         )
     }
 }
+
+public extension InfoEnvironment {
+    static let failing: Self = .init(
+        mainQueue: .immediate,
+        getInfos: failing0
+    )
+}
 #endif
+
