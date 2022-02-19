@@ -27,6 +27,7 @@ private func env() -> SplashEnvironment {
         getScienceClubs: coreLogic.getScienceClubs,
         getWelcomeDayText: coreLogic.getWelcomeDayText,
         getDepartment: coreLogic.getDepartment,
-        getScienceClub: coreLogic.getScienceClub
+        getScienceClub: coreLogic.getScienceClub,
+        getWhatsNew: coreLogic.getWhatsNew
     )
 }

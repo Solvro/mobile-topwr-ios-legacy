@@ -4,12 +4,17 @@ import SwiftUI
 import Common
 
 // MARK: - State
-public struct WhatsNewDetailsState: Equatable {
-    let date: String = "12.10.2021"
-    let imageUrl: String = ""
-    let titleText: String = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
-    let colorBackground: Color = Color("#58667b")
-    let contentText: String = "Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc.Wybitnie uzdolnieni na PWr. Praca z nimi to przyjemnosc."
+public struct WhatsNewDetailsState: Equatable, Identifiable {
+    public let id: UUID
+    let news: WhatsNew
+    
+    public init(
+        id: UUID = UUID(),
+        news: WhatsNew
+    ) {
+        self.id = id
+        self.news = news
+    }
 }
 
 // MARK: - Actions
@@ -57,7 +62,7 @@ public struct WhatsNewDetailsView: View {
             ScrollView(showsIndicators: false) {
                 VStack{
                     ImageView(
-                        url: URL(string: viewStore.imageUrl),
+                        url:  viewStore.news.photo?.url,
                         contentMode: .aspectFill
                     )
                         .frame(height: Constants.backgroundImageHeigth)
@@ -71,14 +76,14 @@ public struct WhatsNewDetailsView: View {
                             .horizontalPadding(.big)
                             .verticalPadding(.small)
                             .overlay(
-                                Text(viewStore.date)
+                                Text("TO DO")
                                         .foregroundColor(.white)
                                         .font(.appRegularTitle4)
                             )
                         Spacer()
                     }
                     HStack{
-                        Text(viewStore.titleText)
+                        Text(viewStore.news.title)
                             .font(.appBoldTitle2)
                             .foregroundColor(.black)
                             .horizontalPadding(.big)
@@ -86,7 +91,7 @@ public struct WhatsNewDetailsView: View {
                         Spacer()
                     }
                     
-                    Text(viewStore.contentText)
+                    Text(viewStore.news.description ?? "")
                         .font(.appRegularTitle3)
                         .foregroundColor(.black)
                         .horizontalPadding(.big)
@@ -118,7 +123,9 @@ struct WhatsNewDetails_Previews: PreviewProvider {
 }
 // MARK: - State - MOCKS
 public extension WhatsNewDetailsState {
-    static let mock: Self = .init()
+    static let mock: Self = .init(
+        news: .mock
+    )
 }
 
 // MARK: - Environment - MOCKS

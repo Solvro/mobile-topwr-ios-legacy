@@ -4,9 +4,11 @@ import Combine
 import Common
 import DepartmentsFeature
 import ClubsFeature
+import WhatsNewFeature
 
 //MARK: - STATE
 public struct HomeState: Equatable {
+    var whatsNewListState = WhatsNewListState()
     var departmentListState = DepartmentHomeListState()
     var buildingListState = BuildingListState()
     var clubHomeListState = ClubHomeListState()
@@ -25,12 +27,15 @@ public enum HomeAction: Equatable {
     case loadBuildings
     case loadScienceClubs
     case loadWelcomeDayText
+    case loadWhatsNew
     case receivedSessionDate(Result<SessionDay, ErrorModel>)
     case receivedDepartments(Result<[Department], ErrorModel>)
     case receivedBuildings(Result<[Map], ErrorModel>)
     case receivedScienceClubs(Result<[ScienceClub], ErrorModel>)
     case receivedWelcomeDayText(Result<ExceptationDays, ErrorModel>)
+    case receivedNews(Result<[WhatsNew], ErrorModel>)
     case buttonTapped
+    case whatsNewListAction(WhatsNewListAction)
     case departmentListAction(DepartmentHomeListAction)
     case buildingListAction(BuildingListAction)
     case clubHomeListAction(ClubHomeListAction)
@@ -46,6 +51,7 @@ public struct HomeEnvironment {
     let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
+    let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -55,7 +61,8 @@ public struct HomeEnvironment {
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>
+        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
+        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -65,6 +72,7 @@ public struct HomeEnvironment {
         self.getScienceClubs = getScienceClubs
         self.getScienceClub = getScienceClub
         self.getWelcomeDayText = getWelcomeDayText
+        self.getWhatsNew = getWhatsNew
     }
 }
 
@@ -87,6 +95,7 @@ public let homeReducer = Reducer<
       //api load
   case .loadApiData:
       return .merge(
+        .init(value: .loadWhatsNew),
         .init(value: .loadSessionDate),
         .init(value: .loadDepartments),
         .init(value: .loadBuildings),
@@ -120,6 +129,11 @@ public let homeReducer = Reducer<
           .map(HomeAction.receivedWelcomeDayText)
       
       //api success
+  case .loadWhatsNew:
+      return env.getWhatsNew()
+          .receive(on: env.mainQueue)
+          .catchToEffect()
+          .map(HomeAction.receivedNews)
   case .receivedSessionDate(.success(let sessionDate)):
       state.sessionDay = sessionDate
       return .none
@@ -147,6 +161,9 @@ public let homeReducer = Reducer<
   case .receivedWelcomeDayText(.success(let exceptations)):
       state.exceptations = exceptations
       return .none
+  case .receivedNews(.success(let news)):
+      state.whatsNewListState = .init(news: news)
+      return .none
   case .receivedSessionDate(.failure(let error)):
       return .none
   case .receivedDepartments(.failure(let error)):
@@ -158,8 +175,13 @@ public let homeReducer = Reducer<
       return .none
   case .receivedWelcomeDayText(.failure(let error)):
       return .none
+  case .receivedNews(.failure(let error)):
+      print(error)
+      return .none
   case .buttonTapped:
     return .none
+  case .whatsNewListAction:
+      return .none
   case .departmentListAction:
       return .none
   case .buildingListAction:
@@ -204,6 +226,16 @@ public let homeReducer = Reducer<
             }
         )
 )
+.combined(
+    with: whatsNewListReducer
+        .pullback(
+            state: \.whatsNewListState,
+            action: /HomeAction.whatsNewListAction,
+            environment: {
+                .init(mainQueue: $0.mainQueue)
+            }
+        )
+)
 
 //MARK: - VIEW
 public struct HomeView: View {
@@ -228,7 +260,15 @@ public struct HomeView: View {
                         
                         DaysToSessionView(session: viewStore.sessionDay)
                             .horizontalPadding(.normal)
-
+                        
+                        /// Whats New
+                        WhatsNewListView(
+                            store:  self.store.scope(
+                                state: \.whatsNewListState,
+                                action: HomeAction.whatsNewListAction
+                            )
+                        )
+                        
                         /// Buildings
                         BuildingListView(
                             store:  self.store.scope(
@@ -287,7 +327,8 @@ public extension HomeEnvironment {
         getBuildings: failing0,
         getScienceClubs: failing0,
         getScienceClub: failing1,
-        getWelcomeDayText: failing0
+        getWelcomeDayText: failing0,
+        getWhatsNew: failing0
     )
 }
 #endif
