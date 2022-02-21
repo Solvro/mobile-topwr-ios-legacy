@@ -4,14 +4,6 @@ import Combine
 import Common
 import HomeFeature
 
-fileprivate enum Constants {
-    static let radius: CGFloat = 16
-    static let indicatorHeight: CGFloat = 6
-    static let indicatorWidth: CGFloat = 60
-    static let snapRatio: CGFloat = 0.25
-    static let minHeightRatio: CGFloat = 0.3
-}
-
 //MARK: - STATE
 public struct MapBottomSheetState: Equatable {
     var searchState = SearchState()
@@ -66,7 +58,7 @@ public let mapBottomSheetReducer = Reducer<
             return .none
         case .searchAction(.update(let text)):
             state.text = text
-            
+            #warning("TODO: filter refactor")
             if text.count == 0 {
                 state.filtered = state.buildings
             } else {
@@ -89,6 +81,14 @@ public let mapBottomSheetReducer = Reducer<
 
 //MARK: - VIEW
 struct MapBottomSheetView: View {
+    fileprivate enum Constants {
+        static let radius: CGFloat = 16
+        static let indicatorHeight: CGFloat = 6
+        static let indicatorWidth: CGFloat = 60
+        static let snapRatio: CGFloat = 0.25
+        static let minHeightRatio: CGFloat = 0.3
+    }
+    
     @GestureState private var translation: CGFloat = 0
     @State private var isOpenInternal: Bool = false
     let store: Store<MapBottomSheetState, MapBottomSheetAction>
@@ -148,7 +148,6 @@ struct MapBottomSheetView: View {
                 .background(Color.white)
                 .cornerRadius(Constants.radius, corners: [.topLeft, .topRight])
                 .frame(height: geometry.size.height, alignment: .bottom)
-                //                .offset(y: max((viewStore.isOpen ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
                 .offset(y: max((isOpenInternal ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
                 .animation(.default)
                 .gesture(
@@ -160,7 +159,6 @@ struct MapBottomSheetView: View {
                             return
                         }
                         value.translation.height < 0 ? (isOpenInternal = true) : (isOpenInternal = false)
-                        //                        viewStore.send(MapBottomSheetAction.isOpenChanged(value.translation.height < 0 ? true : false))
                     }
                 )
             }

@@ -2,10 +2,6 @@ import SwiftUI
 import ComposableArchitecture
 import Common
 
-fileprivate enum Constants {
-    static let radius: CGFloat = 8
-}
-
 //MARK: - STATE
 public struct MapBuildingCellState: Equatable, Identifiable {
     public let id: Int
@@ -48,6 +44,10 @@ public let mapBuildingCellReducer = Reducer<
 
 //MARK: - VIEW
 public struct MapBuildingCellView: View {
+    fileprivate enum Constants {
+        static let radius: CGFloat = 8
+    }
+    
     let store: Store<MapBuildingCellState, MapBuildingCellAction>
     
     public init(
@@ -65,11 +65,11 @@ public struct MapBuildingCellView: View {
                     K.CellColors.scienceBackground
                     HStack {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("Budynek \(viewStore.building.code ?? "")")
+                            Text("\(Strings.MapView.building + " " + (viewStore.building.code ?? ""))")
                                 .font(.appBoldTitle3)
                                 .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
-                            Text(viewStore.building.address?.address ?? "Wyb. S. Wyspiańskiego 23-25 \n50-370 Wrocław")
+                            Text(viewStore.building.address?.address ?? "")
                                 .fontWeight(.light)
                                 .font(.system(size: 14))
                                 .foregroundColor(.black)
