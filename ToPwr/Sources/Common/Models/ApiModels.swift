@@ -212,12 +212,12 @@ public struct Map: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case name = "Name"
-        case code = "Code"
-        case latitude = "Latitude"
-        case longitude = "Longitude"
-        case description = "Description"
-        case address = "Address"
+        case name = "name"
+        case code = "code"
+        case latitude = "latitude"
+        case longitude = "longitude"
+        case description = "description"
+        case address = "address"
         case photo = "photo"
     }
 }
