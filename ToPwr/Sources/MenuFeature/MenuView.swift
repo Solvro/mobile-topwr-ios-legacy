@@ -115,7 +115,8 @@ public let menuReducer = Reducer<
             state: \.mapState,
             action: /MenuAction.mapAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(getBuildings: env.getBuildings,
+                          mainQueue: env.mainQueue)
             }
         )
 )
@@ -225,7 +226,9 @@ public struct MenuView: View {
                 .tabItem {
                     Image("InfoIcon")
                 }
-        }
+        }.onAppear(perform: {
+            UITabBar.appearance().backgroundColor = .systemBackground
+        })
         .accentColor(K.Colors.firstColorDark)
     }
 }
