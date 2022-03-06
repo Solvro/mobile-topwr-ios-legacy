@@ -5,6 +5,9 @@ import Common
 import MenuFeature
 import PureSwiftUI
 
+private typealias Curve = (p: CGPoint, cp1: CGPoint, cp2: CGPoint)
+private let toPwrLayoutConfig = LayoutGuideConfig.grid(columns: 10, rows: 5)
+
 //MARK: - STATE
 public struct SplashState: Equatable {
     var isLoading: Bool = true {
@@ -16,7 +19,7 @@ public struct SplashState: Equatable {
             }
         }
     }
-    var showWritingAnimation: Bool = false
+    var showWritingAnimation: Bool = true
     
     var menuState = MenuState()
     public init(){}
@@ -74,26 +77,26 @@ public let splashReducer = Reducer<
     SplashAction,
     SplashEnvironment
 > { state, action, env in
-  switch action {
-  case .onAppear:
-      return env.getApiVersion()
-          .receive(on: env.mainQueue)
-          .catchToEffect()
-          .map(SplashAction.apiVersion)
-  case .apiVersion(.success(let version)):
-      return .init(value: .stopLoading)
-  case .apiVersion(.failure(let error)):
-      print(error.localizedDescription)
-      return .none
-  case .stopLoading:
-    state.isLoading = false
-    return .none
-  case .setWriting(let newValue):
-    state.showWritingAnimation = newValue
-    return .none
-  case .menuAction:
-      return .none
-  }
+    switch action {
+    case .onAppear:
+        return env.getApiVersion()
+            .receive(on: env.mainQueue)
+            .catchToEffect()
+            .map(SplashAction.apiVersion)
+    case .apiVersion(.success(let version)):
+        return .init(value: .stopLoading)
+    case .apiVersion(.failure(let error)):
+        print(error.localizedDescription)
+        return .none
+    case .stopLoading:
+        state.isLoading = false
+        return .none
+    case .setWriting(let newValue):
+        state.showWritingAnimation = newValue
+        return .none
+    case .menuAction:
+        return .none
+    }
 }
 .combined(
     with: menuReducer
@@ -101,17 +104,17 @@ public let splashReducer = Reducer<
             state: \.menuState,
             action: /SplashAction.menuAction,
             environment: {
-                    .init(
-                        mainQueue: $0.mainQueue,
-                        getSessionDate: $0.getSessionDate,
-                        getDepartments: $0.getDepartments,
-                        getBuildings: $0.getBuildings,
-                        getScienceClubs: $0.getScienceClubs,
-                        getWelcomeDayText: $0.getWelcomeDayText,
-                        getDepartment: $0.getDepartment,
-                        getScienceClub: $0.getScienceClub,
-                        getWhatsNew: $0.getWhatsNew
-                    )
+                .init(
+                    mainQueue: $0.mainQueue,
+                    getSessionDate: $0.getSessionDate,
+                    getDepartments: $0.getDepartments,
+                    getBuildings: $0.getBuildings,
+                    getScienceClubs: $0.getScienceClubs,
+                    getWelcomeDayText: $0.getWelcomeDayText,
+                    getDepartment: $0.getDepartment,
+                    getScienceClub: $0.getScienceClub,
+                    getWhatsNew: $0.getWhatsNew
+                )
             }
         )
 )
@@ -121,6 +124,18 @@ public struct SplashView: View {
     let store: Store<SplashState, SplashAction>
     
     @State var scale: CGFloat = 1.0
+    @State private var progress = 0.0
+    
+    enum Constants {
+        static let lineWidth: CGFloat = 11
+        static let animationDuration: Double = 2
+        static let checkIfLoadedAfter: Int = 3
+        static let baseLetterFrame: CGSize = CGSize(width: 60, height: 60)
+        static let smallLetterFrame: CGSize = CGSize(width: 20, height: 20)
+        static let smallCorrectionOffset: CGFloat = -10
+        static let mediumCorrectionOffset: CGFloat = -17
+        static let shadowParameters: (CGFloat,CGFloat,CGFloat) = (10,10,10) // (radius,x,y)
+    }
     
     var repeatingAnimation: Animation {
         Animation
@@ -137,46 +152,143 @@ public struct SplashView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             ZStack {
-                if viewStore.isLoading {
-//                    ZStack {
-//                        LinearGradient(
-//                            colors: [
-//                                K.Colors.firstColorLight,
-//                                K.Colors.firstColorDark
-//                            ],
-//                            startPoint: .leading,
-//                            endPoint: .trailing
-//                        )
-//                            .ignoresSafeArea()
-//                        VStack {
-//                            K.Images.logoTemplate
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                                .foregroundColor(Color.white)
-//                                .shadow(
-//                                    color: .black.opacity(0.2),
-//                                    radius: 2,
-//                                    x: 0,
-//                                    y: 2
-//                                )
-//                                .scaleEffect(scale)
-//                                .onAppear() {
-//                                    withAnimation(self.repeatingAnimation) { self.scale = 1.1 }
-//                                }
-//                        }
-//                        .frame(width: 200)
-//                    }
-                    LoadingAnimation()
-                }else if viewStore.showWritingAnimation{
-                    HStack(spacing: 0){
-                        ProgressView()
-                    }.onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(2)) { // change this accordingly
+                if viewStore.showWritingAnimation {
+                    HStack(alignment: .bottom,spacing: 0){
+                        //MARK: - T Letter
+                        ZStack{
+                            TVertLine()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.logoBlue,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                            THoriLine()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.logoBlue,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                        }
+                        .frame(Constants.baseLetterFrame)
+                        
+                        //MARK: - O letter
+                        OLetter()
+                            .trim(from: 0, to: progress)
+                            .stroke(
+                                K.Colors.logoBlue,
+                                style: StrokeStyle(
+                                    lineWidth: Constants.lineWidth,
+                                    lineCap: .round, lineJoin: .round
+                                )
+                            )
+                            .frame(Constants.smallLetterFrame)
+                            .offset(x: Constants.smallCorrectionOffset)
+                        
+                        //MARK: - P letter
+                        ZStack{
+                            PRVertLine()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                            PRHoriShape()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                        }
+                        .frame(Constants.baseLetterFrame)
+                        
+                        //MARK: - W letter
+                        ZStack{
+                            WSpecificLineLeft()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                            WSpecificLineRight()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                        }
+                        .frame(Constants.baseLetterFrame)
+                        .offset(x: Constants.smallCorrectionOffset)
+                        
+                        //MARK: - R letter
+                        ZStack{
+                            RSpecificLine()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                            PRVertLine()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                            PRHoriShape()
+                                .trim(from: 0, to: progress)
+                                .stroke(
+                                    K.Colors.firstColorDark,
+                                    style: StrokeStyle(
+                                        lineWidth: Constants.lineWidth,
+                                        lineCap: .round, lineJoin: .round
+                                    )
+                                )
+                        }
+                        .frame(Constants.baseLetterFrame)
+                        .offset(x: Constants.mediumCorrectionOffset)
+                    }
+                    .shadow(
+                        color: K.Colors.lightGray,
+                        radius: Constants.shadowParameters.0,
+                        x: Constants.shadowParameters.1,
+                        y: Constants.shadowParameters.2
+                    )
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: Constants.animationDuration)){
+                            progress = 1.0
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(Constants.checkIfLoadedAfter)) {
                             withAnimation {
                                 viewStore.send(.setWriting(false))
                             }
                         }
                     }
+                    
+                }else if viewStore.isLoading{
+                    LoadingAnimation()
                 } else {
                     MenuView(
                         store: self.store.scope(
@@ -192,9 +304,147 @@ public struct SplashView: View {
         }
     }
     
-    private struct T: Shape {
+    private struct TVertLine: Shape {
         func path(in rect: CGRect) -> Path {
             var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[5,5]
+            let p2 = g[5,1]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            
+            return path
+        }
+    }
+    
+    private struct THoriLine: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[3,1]
+            let p2 = g[9,1]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            
+            return path
+        }
+    }
+    
+    private struct OLetter: Shape {
+        private let oLayoutGuide = LayoutGuideConfig.polar(rings: 1, segments: 40)
+        
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = oLayoutGuide.layout(in: rect)
+            let startPoint = g[1,1]
+            var points: [CGPoint] = []
+            
+            for index in 1...40 {
+                points.append(g[1,index])
+            }
+            
+            path.move(startPoint)
+            
+            for point in points {
+                path.addLine(to: point)
+            }
+            
+            path.addLine(to: startPoint)
+            
+            return path
+        }
+    }
+    
+    private struct PRVertLine: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[4,5]
+            let p2 = g[4,1]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            
+            return path
+        }
+    }
+    
+    private struct PRHoriShape: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[2,1]
+            let p2 = g[6,1]
+            let p3 = g[6,3]
+            let p4 = g[3,3]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            path.curve(p3, cp1: g[8,1], cp2: g[8,3])
+            path.addLine(to: p4)
+            
+            return path
+        }
+    }
+    
+    private struct RSpecificLine: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[7,5]
+            let p2 = g[7,4]
+            let p3 = g[6,3]
+            let p4 = g[3,3]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            path.curve(p3, cp1: g[7,3], cp2: g[7,3])
+            path.addLine(to: p4)
+            
+            return path
+        }
+    }
+    
+    private struct WSpecificLineLeft: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[2,1]
+            let p2 = g[2,4]
+            let p3 = g[5,4]
+            let p4 = g[5,2]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            path.curve(p3, cp1: g[2,5], cp2: g[5,5])
+            path.addLine(to: p4)
+            
+            return path
+        }
+    }
+    
+    private struct WSpecificLineRight: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            let g = toPwrLayoutConfig.layout(in: rect)
+            
+            let startPoint = g[8,1]
+            let p2 = g[8,4]
+            let p3 = g[5,4]
+            let p4 = g[5,2]
+            
+            path.move(startPoint)
+            path.addLine(to: p2)
+            path.curve(p3, cp1: g[8,5], cp2: g[5,5])
+            path.addLine(to: p4)
             
             return path
         }

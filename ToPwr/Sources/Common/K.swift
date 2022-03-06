@@ -9,6 +9,8 @@ public struct K {
         public static let firstColorLight = Color(hex: "#FFA07E")
         public static let lightGray = Color(hex: "#f7f7f8")
         public static let red = Color(hex: "E43D32")
+        public static let logoBlue = Color(hex: "3f6499")
+        public static let firstGreen = Color(hex: "027c3d")
     }
     
     public struct SearchColors {
