@@ -20,3 +20,12 @@ public extension Date {
         self = someDateTime!
     }
 }
+
+//MARK: - toString
+public extension Date {
+    func toString(_ format: String = DateFormat.dateWithDots) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}

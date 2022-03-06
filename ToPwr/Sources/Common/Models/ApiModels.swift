@@ -298,6 +298,61 @@ public struct Version: Codable, Equatable {
     }
 }
 
+// MARK: - WhatsNew
+public struct WhatsNew: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let title: String
+    public let description: String?
+    private let dateString: String?
+    public let infoSection: [InfoSection]
+    public let photo: Photo?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case title = "title"
+        case dateString = "date"
+        case description = "description"
+        case infoSection = "infoSection"
+        case photo = "photo"
+    }
+}
+
+#warning("TO DO: inject everywhere DateFormatter - it's not optimal way")
+public extension WhatsNew {
+    var date: Date? {
+        guard let dateString = dateString else {
+            return nil
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = DateFormat.ISO8601.full
+        return dateFormatter.date(from: dateString)
+    }
+    
+    var dateLabel: String? {
+        guard let date = date else {
+            return nil
+        }
+        return date.toString(DateFormat.dateWithDots)
+    }
+}
+
+// MARK: - WhatsNew
+public struct Info: Codable, Equatable, Identifiable {
+    public let id: Int
+    public let title: String
+    public let description: String?
+    public let infoSection: [InfoSection]
+    public let photo: Photo?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case title = "title"
+        case description = "description"
+        case infoSection = "infoSection"
+        case photo = "photo"
+    }
+}
+
 // MARK: - EXTENSIONS
 public extension WeekDay {
     var date: Date? {
@@ -373,6 +428,17 @@ public extension ScienceClub {
         tags: [],
         photo: nil,
         background: nil
+    )
+}
+
+public extension WhatsNew {
+    static let mock: Self = .init(
+        id: 123,
+        title: "Title",
+        description: "description",
+        dateString: nil,
+        infoSection: [],
+        photo: nil
     )
 }
 #endif

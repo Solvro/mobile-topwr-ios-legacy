@@ -57,6 +57,10 @@ let package = Package(
             name: "CoreLogic",
             targets: ["ToPwr"]
         ),
+        .library(
+            name: "WhatsNewFeature",
+            targets: ["ToPwr"]
+        ),
     ],
     dependencies: [
         .package(
@@ -141,6 +145,7 @@ let package = Package(
                 "Common",
                 "ClubsFeature",
                 "DepartmentsFeature",
+                "WhatsNewFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -255,6 +260,20 @@ let package = Package(
         .testTarget(
             name: "ApiTests",
             dependencies: ["Api"]
+        ),
+        .target(
+            name: "WhatsNewFeature",
+            dependencies: [
+                "Common",
+                .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+            ]
+        ),
+        .testTarget(
+            name: "WhatsNewFeatureTests",
+            dependencies: ["WhatsNewFeature"]
         ),
     ]
 )
