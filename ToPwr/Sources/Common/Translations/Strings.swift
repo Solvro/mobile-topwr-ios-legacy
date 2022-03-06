@@ -24,6 +24,7 @@ public extension Strings.HomeLists {
     static let buildingListTitle = translation(from: "building_list_title")
     static let buildingListButton = translation(from: "building_list_button_title")
     static let whatsnewListTitle = translation(from:"whatsnew_list_title")
+    static let infosListTitle = translation(from:"infos_list_title")
 }
 
 public extension Strings.WelcomeDays {

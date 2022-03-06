@@ -100,9 +100,19 @@ public struct CoreLogic {
     }
     
     public func getWhatsNew() -> AnyPublisher<[WhatsNew], ErrorModel> {
-        let path: String = "/infos"
+        let path: String = "/notices"
         return api.fetch(path: path)
             .decode(type: [WhatsNew].self, decoder: decoder)
+            .mapError { error in
+                ErrorModel(text: error.localizedDescription)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func getInfos() -> AnyPublisher<[Info], ErrorModel> {
+        let path: String = "/infos"
+        return api.fetch(path: path)
+            .decode(type: [Info].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
             }

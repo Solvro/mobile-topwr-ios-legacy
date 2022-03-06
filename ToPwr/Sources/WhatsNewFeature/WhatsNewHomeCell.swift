@@ -6,7 +6,7 @@ public struct WhatsNewHomeCellView: View {
     let viewState: WhatsNewDetailsState
 
     private enum Constants {
-        static let viewHeight: CGFloat = 365
+        static let viewHeight: CGFloat = 380
         static let viewWidth: CGFloat = 275
         static let banerHeight: CGFloat = 135
         static let buttonHeight: CGFloat = 32
@@ -37,6 +37,7 @@ public struct WhatsNewHomeCellView: View {
                 HStack {
                     Text(viewState.news.title)
                         .font(.appBoldTitle2)
+                        .multilineTextAlignment(.leading)
                     Spacer()
                 }
                 Text(viewState.news.description ?? "")
