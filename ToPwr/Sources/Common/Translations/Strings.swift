@@ -6,6 +6,7 @@ public extension Strings {
     enum Tabs {}
     enum HomeLists {}
     enum WelcomeDays {}
+    enum MapView {}
     enum Other {}
 }
 
@@ -54,6 +55,11 @@ public extension Strings.Other {
     static let aboutUs = translation(from: "about_us")
     static let fields = translation(from: "fields")
     static let readMore = translation(from: "read_more")
+}
+
+public extension Strings.MapView {
+    static let buildings = translation(from: "buildings")
+    static let building = translation(from: "building")
 }
 
 func translation(

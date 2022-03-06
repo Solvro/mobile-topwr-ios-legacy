@@ -159,7 +159,9 @@ let package = Package(
         .target(
             name: "MapFeature",
             dependencies: [
+                "DepartmentsFeature",
                 "Common",
+                "HomeFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
