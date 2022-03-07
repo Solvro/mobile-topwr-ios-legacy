@@ -153,9 +153,9 @@ public struct SplashView: View {
         WithViewStore(store) { viewStore in
             ZStack {
                 if viewStore.showWritingAnimation {
-                    HStack(alignment: .bottom,spacing: 0){
+                    HStack(alignment: .bottom,spacing: 0) {
                         //MARK: - T Letter
-                        ZStack{
+                        ZStack {
                             TVertLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
@@ -191,7 +191,7 @@ public struct SplashView: View {
                             .offset(x: Constants.smallCorrectionOffset)
                         
                         //MARK: - P letter
-                        ZStack{
+                        ZStack {
                             PRVertLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
@@ -301,6 +301,7 @@ public struct SplashView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .modifier(SplashBackgroundModifier())
         }
     }
     
