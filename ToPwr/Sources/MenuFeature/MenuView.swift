@@ -40,6 +40,7 @@ public struct MenuEnvironment {
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
+    let getInfos: () -> AnyPublisher<[Info], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -50,7 +51,8 @@ public struct MenuEnvironment {
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>
+        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
+        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -61,6 +63,7 @@ public struct MenuEnvironment {
         self.getDepartment = getDepartment
         self.getScienceClub = getScienceClub
         self.getWhatsNew = getWhatsNew
+        self.getInfos = getInfos
     }
 }
 
@@ -112,7 +115,8 @@ public let menuReducer = Reducer<
             state: \.mapState,
             action: /MenuAction.mapAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(getBuildings: env.getBuildings,
+                          mainQueue: env.mainQueue)
             }
         )
 )
@@ -150,7 +154,10 @@ public let menuReducer = Reducer<
             state: \.infoState,
             action: /MenuAction.infoAction,
             environment: { env in
-                    .init(mainQueue: env.mainQueue)
+                    .init(
+                        mainQueue: env.mainQueue,
+                        getInfos: env.getInfos
+                    )
             }
         )
 )
@@ -219,7 +226,9 @@ public struct MenuView: View {
                 .tabItem {
                     Image("InfoIcon")
                 }
-        }
+        }.onAppear(perform: {
+            UITabBar.appearance().backgroundColor = .systemBackground
+        })
         .accentColor(K.Colors.firstColorDark)
     }
 }
@@ -241,7 +250,8 @@ struct MenuView_Previews: PreviewProvider {
                     getWelcomeDayText: failing0,
                     getDepartment: failing1,
                     getScienceClub: failing1,
-                    getWhatsNew: failing0
+                    getWhatsNew: failing0,
+                    getInfos: failing0
                 )
             )
         )
