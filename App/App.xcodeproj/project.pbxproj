@@ -55,7 +55,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B4F467C27C12FD4005CE0A8 /* PureSwiftUI in Frameworks */,
 				6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -162,7 +161,6 @@
 			name = App;
 			packageProductDependencies = (
 				6AFDDF702708F33A006B2766 /* ToPwr */,
-				5B4F467B27C12FD4005CE0A8 /* PureSwiftUI */,
 			);
 			productName = App;
 			productReference = 6AFDDF402708E17D006B2766 /* App.app */;
@@ -627,11 +625,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5B4F467B27C12FD4005CE0A8 /* PureSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5B4F467A27C12FD4005CE0A8 /* XCRemoteSwiftPackageReference "pure-swift-ui" */;
-			productName = PureSwiftUI;
-		};
 		6AFDDF702708F33A006B2766 /* ToPwr */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ToPwr;

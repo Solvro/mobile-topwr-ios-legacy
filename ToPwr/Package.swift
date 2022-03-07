@@ -70,6 +70,10 @@ let package = Package(
         .package(
             url: "https://github.com/kean/NukeUI",
             from: "0.7.0"
+        ),
+        .package(
+            url: "https://github.com/CodeSlicing/pure-swift-ui.git",
+            from: "3.1.0"
         )
     ],
     targets: [
@@ -113,6 +117,10 @@ let package = Package(
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
+                ),
+                .product(
+                    name: "PureSwiftUI",
+                    package: "pure-swift-ui"
                 ),
             ]
         ),
