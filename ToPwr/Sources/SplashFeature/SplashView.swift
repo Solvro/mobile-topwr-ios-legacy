@@ -163,7 +163,7 @@ public struct SplashView: View {
                             TVertLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.logoBlue,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -172,7 +172,7 @@ public struct SplashView: View {
                             THoriLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.logoBlue,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -185,7 +185,7 @@ public struct SplashView: View {
                         OLetter()
                             .trim(from: 0, to: progress)
                             .stroke(
-                                K.Colors.logoBlue,
+                                .white,
                                 style: StrokeStyle(
                                     lineWidth: Constants.lineWidth,
                                     lineCap: .round, lineJoin: .round
@@ -199,7 +199,7 @@ public struct SplashView: View {
                             PRVertLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -208,7 +208,7 @@ public struct SplashView: View {
                             PRHoriShape()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -222,7 +222,7 @@ public struct SplashView: View {
                             WSpecificLineLeft()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -231,7 +231,7 @@ public struct SplashView: View {
                             WSpecificLineRight()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -246,7 +246,7 @@ public struct SplashView: View {
                             RSpecificLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -255,7 +255,7 @@ public struct SplashView: View {
                             PRVertLine()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -264,7 +264,7 @@ public struct SplashView: View {
                             PRHoriShape()
                                 .trim(from: 0, to: progress)
                                 .stroke(
-                                    K.Colors.firstColorDark,
+                                    .white,
                                     style: StrokeStyle(
                                         lineWidth: Constants.lineWidth,
                                         lineCap: .round, lineJoin: .round
@@ -274,12 +274,6 @@ public struct SplashView: View {
                         .frame(Constants.baseLetterFrame)
                         .offset(x: Constants.mediumCorrectionOffset)
                     }
-                    .shadow(
-                        color: K.Colors.lightGray,
-                        radius: Constants.shadowParameters.0,
-                        x: Constants.shadowParameters.1,
-                        y: Constants.shadowParameters.2
-                    )
                     .onAppear {
                         withAnimation(.easeInOut(duration: Constants.animationDuration)){
                             progress = 1.0
