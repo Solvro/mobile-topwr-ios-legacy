@@ -6,10 +6,10 @@ public struct DepartmentCellView: View {
     
     enum Constants {
         static let banerWidth: CGFloat = 360
-        static let banerHeight: CGFloat = 120
+        static let banerHeight: CGFloat = 92
         enum Home {
-            static let banerWidth: CGFloat = 183
-            static let banerHeight: CGFloat = 162
+            static let banerWidth: CGFloat = 120
+            static let banerHeight: CGFloat = 120
         }
     }
     
@@ -39,11 +39,11 @@ public struct DepartmentCellView: View {
             VStack(alignment: .leading) {
                 Text(viewState.department.code ?? "")
                     .bold()
-                    .font(.appBoldTitle3)
-                    .padding(.bottom, 10)
+                    .font(.appMediumTitle3)
+                    .padding(.bottom, 5)
                 
                 Text(viewState.department.name ?? "")
-                    .font(.appRegularTitle3)
+                    .font(.appRegularTitle4)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
 

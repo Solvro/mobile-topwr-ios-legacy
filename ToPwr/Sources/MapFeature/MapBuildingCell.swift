@@ -66,12 +66,11 @@ public struct MapBuildingCellView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("\(Strings.MapView.building + " " + (viewStore.building.code ?? ""))")
-                                .font(.appBoldTitle3)
+                                .font(.appMediumTitle3)
                                 .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
                             Text(viewStore.building.address?.address ?? "")
-                                .fontWeight(.light)
-                                .font(.system(size: 14))
+                                .font(.appRegularTitle4)
                                 .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
                         }.padding(.leading, UIDimensions.normal.spacing)

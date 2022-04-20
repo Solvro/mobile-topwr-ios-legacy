@@ -97,7 +97,7 @@ public struct DepartmentHomeListView: View {
         WithViewStore(store) { viewStore in
             HStack {
                 Text(viewStore.title)
-                    .font(.appBoldTitle2)
+                    .font(.appMediumTitle2)
                     .foregroundColor(K.FontColors.primary)
                 Spacer()
                 Button(

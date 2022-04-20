@@ -59,12 +59,16 @@ public struct K {
 //MARK: - FONTS
 public extension Font {
     static let appBoldTitle1 = Font.system(size: 20, weight: .bold)
+    static let appMediumTitle1 = Font.system(size: 20, weight: .medium)
     static let appRegularTitle1 = Font.system(size: 20, weight: .regular)
     static let appBoldTitle2 = Font.system(size: 17, weight: .bold)
+    static let appMediumTitle2 = Font.system(size: 17, weight: .medium)
     static let appRegularTitle2 = Font.system(size: 17, weight: .regular)
     static let appBoldTitle3 = Font.system(size: 15, weight: .bold)
+    static let appMediumTitle3 = Font.system(size: 15, weight: .medium)
     static let appRegularTitle3 = Font.system(size: 15, weight: .regular)
     static let appBoldTitle4 = Font.system(size: 13, weight: .bold)
+    static let appMediumTitle4 = Font.system(size: 13, weight: .medium)
     static let appRegularTitle4 = Font.system(size: 13, weight: .regular)
     static let appBoldTitle5 = Font.system(size: 12, weight: .bold)
     static let appRegularTitle5 = Font.system(size: 12, weight: .regular)
