@@ -12,9 +12,10 @@ public struct SplashState: Equatable {
     public init(){}
 }
 //MARK: - ACTION
-public enum SplashAction: Equatable {
+public enum SplashAction {
     case onAppear
     case apiVersion(Result<Version, ErrorModel>)
+	case cache(Result<Void, ErrorModel>)
     case stopLoading
     case menuAction(MenuAction)
 }
@@ -32,6 +33,7 @@ public struct SplashEnvironment {
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
     let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+	let configureCacheToApiVersion: (Version) -> Effect<Void, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -44,7 +46,8 @@ public struct SplashEnvironment {
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>,
+		configureCacheToApiVersion: @escaping (Version) -> Effect<Void, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getApiVersion = getApiVersion
@@ -57,6 +60,7 @@ public struct SplashEnvironment {
         self.getScienceClub = getScienceClub
         self.getWhatsNew = getWhatsNew
         self.getInfos = getInfos
+		self.configureCacheToApiVersion = configureCacheToApiVersion
     }
 }
 
@@ -73,7 +77,9 @@ public let splashReducer = Reducer<
           .catchToEffect()
           .map(SplashAction.apiVersion)
   case .apiVersion(.success(let version)):
-      return .init(value: .stopLoading)
+	  return env.configureCacheToApiVersion(version)
+		  .receive(on: env.mainQueue)
+		  .catchToEffect(SplashAction.cache)
   case .apiVersion(.failure(let error)):
       print(error.localizedDescription)
       return .none
@@ -82,6 +88,8 @@ public let splashReducer = Reducer<
     return .none
   case .menuAction:
       return .none
+  case .cache(_):
+	  return Effect(value: .stopLoading)
   }
 }
 .combined(
@@ -190,7 +198,12 @@ struct SplashView_Previews: PreviewProvider {
                     getDepartment: failing1,
                     getScienceClub: failing1,
                     getWhatsNew: failing0,
-                    getInfos: failing0
+					getInfos: failing0,
+					configureCacheToApiVersion: { _ in
+						return Just(())
+							.setFailureType(to: ErrorModel.self)
+							.eraseToEffect()
+					}
                 )
             )
         )

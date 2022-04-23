@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5BD364DB28140A57008A6A63 /* ToPwr in Frameworks */ = {isa = PBXBuildFile; productRef = 5BD364DA28140A57008A6A63 /* ToPwr */; };
 		6AFDDF442708E17D006B2766 /* AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF432708E17D006B2766 /* AppApp.swift */; };
 		6AFDDF462708E17D006B2766 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF452708E17D006B2766 /* ContentView.swift */; };
 		6AFDDF482708E180006B2766 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6AFDDF472708E180006B2766 /* Assets.xcassets */; };
 		6AFDDF4B2708E180006B2766 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6AFDDF4A2708E180006B2766 /* Preview Assets.xcassets */; };
 		6AFDDF562708E181006B2766 /* AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF552708E181006B2766 /* AppTests.swift */; };
 		6AFDDF612708E181006B2766 /* AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF602708E181006B2766 /* AppUITests.swift */; };
-		6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */ = {isa = PBXBuildFile; productRef = 6AFDDF702708F33A006B2766 /* ToPwr */; };
 		DD514270273834F9001E0002 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DD514272273834F9001E0002 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
@@ -55,7 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */,
+				5BD364DB28140A57008A6A63 /* ToPwr in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,7 +160,7 @@
 			);
 			name = App;
 			packageProductDependencies = (
-				6AFDDF702708F33A006B2766 /* ToPwr */,
+				5BD364DA28140A57008A6A63 /* ToPwr */,
 			);
 			productName = App;
 			productReference = 6AFDDF402708E17D006B2766 /* App.app */;
@@ -451,7 +451,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
-				DEVELOPMENT_TEAM = AM68G3R43K;
+				DEVELOPMENT_TEAM = FBLS5HS6W7;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
@@ -459,7 +459,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.JaJaApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.AtLabSolvro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -473,7 +473,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
-				DEVELOPMENT_TEAM = AM68G3R43K;
+				DEVELOPMENT_TEAM = FBLS5HS6W7;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
@@ -481,7 +481,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.JaJaApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.AtLabSolvro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -625,7 +625,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		6AFDDF702708F33A006B2766 /* ToPwr */ = {
+		5BD364DA28140A57008A6A63 /* ToPwr */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ToPwr;
 		};

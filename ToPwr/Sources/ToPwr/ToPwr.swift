@@ -29,6 +29,16 @@ private func env() -> SplashEnvironment {
         getDepartment: coreLogic.getDepartment,
         getScienceClub: coreLogic.getScienceClub,
         getWhatsNew: coreLogic.getWhatsNew,
-        getInfos: coreLogic.getInfos
+		getInfos: coreLogic.getInfos,
+		configureCacheToApiVersion: configureCacheToApi
     )
+}
+
+// MARK: - Method bridging
+
+private func configureCacheToApi(
+	version: Version
+) -> Effect<Void, ErrorModel> {
+	coreLogic.configureCacheToApiVersion(version: version)
+		.eraseToEffect()
 }

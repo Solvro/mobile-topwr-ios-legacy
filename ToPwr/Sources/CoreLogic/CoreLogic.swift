@@ -118,4 +118,47 @@ public struct CoreLogic {
             }
             .eraseToAnyPublisher()
     }
+	
+	// MARK: - Cache
+	
+	public func configureCacheToApiVersion(
+		version: Version
+	) -> AnyPublisher<Void, ErrorModel> {
+		
+		var publisher: AnyPublisher<Void, ErrorModel>! = nil
+		
+		let _ = storage.loadContent(
+			type: Version.self,
+			key: StorageKeys.apiVersion.rawValue
+		).sink(
+			receiveValue: { deviceVersion in
+				if let deviceVersion = deviceVersion {
+					if deviceVersion == version {
+						let tmp = Just(())
+							.setFailureType(to: ErrorModel.self)
+							.eraseToAnyPublisher()
+						publisher = tmp
+					}	else {
+						publisher = storage.saveContent(
+							content: version,
+							key: StorageKeys.apiVersion.rawValue
+						)
+						clearCache()
+					}
+				}	else {
+					publisher = storage.saveContent(
+						content: version,
+						key: StorageKeys.apiVersion.rawValue
+					)
+				}
+			}
+		)
+		return publisher
+	}
+	
+	private func clearCache() {
+		for key in StorageKeys.allCases {
+			storage.deleteContent(key: key.rawValue)
+		}
+	}
 }
