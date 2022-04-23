@@ -72,7 +72,7 @@ public struct InfoDetailsView: View {
                         .frame(height: Constants.backgroundImageHeigth)
                     HStack{
                         Text(viewStore.info.title)
-                            .font(.appBoldTitle2)
+                            .font(.appMediumTitle3)
                             .foregroundColor(.black)
                             .horizontalPadding(.big)
                             .padding(.bottom, UIDimensions.small.size)

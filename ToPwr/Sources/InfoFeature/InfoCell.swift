@@ -17,7 +17,7 @@ public struct InfoCellView: View {
             HStack {
                 HStack {
                     Text(viewState.info.title)
-                        .font(.appBoldTitle2)
+                        .font(.appMediumTitle3)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
                         .padding(.leading, UIDimensions.normal.spacing)

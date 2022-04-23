@@ -115,12 +115,12 @@ public struct ClubDetailsView: View {
                             .padding(.bottom, -(Constants.avatarSize/2))
                         
                         Text(viewStore.club.name ?? "")
-                            .font(.appBoldTitle2)
+                            .font(.appMediumTitle2)
                             .horizontalPadding(.big)
                         
                         if let departmentName = viewStore.department?.name {
                             Text(departmentName)
-                                .font(.appRegularTitle2)
+                                .font(.appRegularTitle4)
                                 .horizontalPadding(.huge)
                         }
                         
@@ -133,12 +133,12 @@ public struct ClubDetailsView: View {
                         VStack(alignment: .leading) {
                             HStack {
                                 Text(Strings.Other.aboutUs)
-                                    .font(.appBoldTitle2)
+                                    .font(.appMediumTitle3)
                                 Spacer()
-                            }
+                            }.padding(.bottom, 10)
                             
                             Text(viewStore.club.description ?? "")
-                                .font(.appRegularTitle2)
+                                .font(.appRegularTitle4)
                             
                         }
                         .verticalPadding(.normal)

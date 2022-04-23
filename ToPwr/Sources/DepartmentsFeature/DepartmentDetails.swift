@@ -126,11 +126,11 @@ public struct DepartmentDetailsView: View {
                         .padding(.bottom, -(Constants.logoBackgroundSize/2))
                     
                     Text(viewStore.department.name ?? "")
-                        .font(.appBoldTitle2)
+                        .font(.appMediumTitle2)
                         .horizontalPadding(.big)
                     
                     Text(viewStore.department.adress ?? "")
-                        .font(.appRegularTitle2)
+                        .font(.appRegularTitle4)
                         .horizontalPadding(.huge)
                         .multilineTextAlignment(.center)
                     
@@ -145,7 +145,7 @@ public struct DepartmentDetailsView: View {
                     VStack {
                         HStack {
                             Text(Strings.Other.fields)
-                                .font(.appBoldTitle2)
+                                .font(.appMediumTitle3)
                             Spacer()
                         }
                         .verticalPadding(.normal)
@@ -164,7 +164,7 @@ public struct DepartmentDetailsView: View {
                     VStack {
                         HStack {
                             Text(Strings.HomeLists.scienceClubsTitle)
-                                .font(.appBoldTitle2)
+                                .font(.appMediumTitle3)
                             Spacer()
                         }
                         .padding(.normal)
@@ -241,7 +241,7 @@ public struct DepartmentDetailsView: View {
         var body: some View {
             HStack {
                 Text(title)
-                    .font(.appBoldTitle2)
+                    .font(.appMediumTitle3)
                     .horizontalPadding(.big)
                 Spacer()
             }
