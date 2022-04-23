@@ -58,22 +58,22 @@ public struct K {
 
 //MARK: - FONTS
 public extension Font {
-    static let appBoldTitle1 = Font.system(size: 20, weight: .bold)
-    static let appMediumTitle1 = Font.system(size: 20, weight: .medium)
-    static let appRegularTitle1 = Font.system(size: 20, weight: .regular)
-    static let appBoldTitle2 = Font.system(size: 17, weight: .bold)
-    static let appMediumTitle2 = Font.system(size: 17, weight: .medium)
-    static let appRegularTitle2 = Font.system(size: 17, weight: .regular)
-    static let appBoldTitle3 = Font.system(size: 15, weight: .bold)
-    static let appMediumTitle3 = Font.system(size: 15, weight: .medium)
-    static let appRegularTitle3 = Font.system(size: 15, weight: .regular)
-    static let appBoldTitle4 = Font.system(size: 13, weight: .bold)
-    static let appMediumTitle4 = Font.system(size: 13, weight: .medium)
-    static let appRegularTitle4 = Font.system(size: 13, weight: .regular)
-    static let appBoldTitle5 = Font.system(size: 12, weight: .bold)
-    static let appRegularTitle5 = Font.system(size: 12, weight: .regular)
-    static let appBoldTitle6 = Font.system(size: 11, weight: .bold)
-    static let appRegularTitle6 = Font.system(size: 11, weight: .regular)
+    static let appBoldTitle1 = Font.custom("Rubik-Bold", size: 20)
+    static let appMediumTitle1 = Font.custom("Rubik-Medium", size: 20)
+    static let appRegularTitle1 = Font.custom("Rubik-Regular", size: 20)
+    static let appBoldTitle2 = Font.custom("Rubik-Bold", size: 17)
+    static let appMediumTitle2 = Font.custom("Rubik-Medium", size: 17)
+    static let appRegularTitle2 = Font.custom("Rubik-Regular", size: 17)
+    static let appBoldTitle3 = Font.custom("Rubik-Bold", size: 15)
+    static let appMediumTitle3 = Font.custom("Rubik-Medium", size: 15)
+    static let appRegularTitle3 = Font.custom("Rubik-Regular", size: 15)
+    static let appBoldTitle4 = Font.custom("Rubik-Bold", size: 13)
+    static let appMediumTitle4 = Font.custom("Rubik-Medium", size: 13)
+    static let appRegularTitle4 = Font.custom("Rubik-Regular", size: 13)
+    static let appBoldTitle5 = Font.custom("Rubik-Bold", size: 12)
+    static let appRegularTitle5 = Font.custom("Rubik-Regular", size: 12)
+    static let appBoldTitle6 = Font.custom("Rubik-Bold", size: 11)
+    static let appRegularTitle6 = Font.custom("Rubik-Regular", size: 11)
 }
 
 //MARK: - PREVIEW
