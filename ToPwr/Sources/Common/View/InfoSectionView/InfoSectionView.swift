@@ -14,7 +14,7 @@ public struct InfoSectionView: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text(section.name ?? "")
-                        .font(.appBoldTitle2)
+                        .font(.appMediumTitle3)
                         .horizontalPadding(.normal)
                     Spacer()
                 }

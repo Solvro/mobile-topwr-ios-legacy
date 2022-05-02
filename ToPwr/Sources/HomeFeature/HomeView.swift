@@ -277,19 +277,19 @@ public struct HomeView: View {
                             )
                         )
                         
-                        /// Departments
-                        DepartmentHomeListView(
-                            store: self.store.scope(
-                                state: \.departmentListState,
-                                action: HomeAction.departmentListAction
-                            )
-                        )
-                        
                         // Science Clubs
                         ClubHomeListView(
                             store: self.store.scope(
                                 state: \.clubHomeListState,
                                 action: HomeAction.clubHomeListAction
+                            )
+                        )
+                        
+                        /// Departments
+                        DepartmentHomeListView(
+                            store: self.store.scope(
+                                state: \.departmentListState,
+                                action: HomeAction.departmentListAction
                             )
                         )
                     }
