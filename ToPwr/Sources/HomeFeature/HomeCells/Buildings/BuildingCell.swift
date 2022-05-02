@@ -63,15 +63,14 @@ public struct BuildingCellView: View {
                         url: viewStore.building.photo?.url,
                         contentMode: .aspectFill
                     )
-                        .frame(width: 120, height: 120)
-                        .cornerRadius(8)
-
+                    .cornerRadius(8)
+                    
                     Text(viewStore.building.code ?? "")
-                        .font(.appBoldTitle3)
+                        .font(.appMediumTitle2)
                         .foregroundColor(.white)
                         .padding()
                 }
-            })
+            }) .frame(width: 120, height: 120)
         }
     }
 }

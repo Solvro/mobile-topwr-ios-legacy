@@ -121,14 +121,14 @@ struct MapBottomSheetView: View {
                     self.indicator.padding()
                     VStack(alignment: .leading, spacing: 0) {
                         Text(Strings.MapView.buildings)
-                            .bold()
+                            .font(.appMediumTitle2)
                             .padding()
                         SearchView(
                             store: self.store.scope(
                                 state: \.searchState,
                                 action: MapBottomSheetAction.searchAction
                             )
-                        ).padding(.bottom, 10)
+                        ).padding(.bottom)
                         ScrollView(.vertical, showsIndicators: true) {
                             LazyVStack(spacing: 10) {
                                 ForEachStore(

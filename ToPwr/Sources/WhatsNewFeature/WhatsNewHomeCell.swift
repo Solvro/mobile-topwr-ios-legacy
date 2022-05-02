@@ -36,12 +36,12 @@ public struct WhatsNewHomeCellView: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text(viewState.news.title)
-                        .font(.appBoldTitle2)
+                        .font(.appMediumTitle3)
                         .multilineTextAlignment(.leading)
                     Spacer()
                 }
                 Text(viewState.news.description ?? "")
-                    .font(.appRegularTitle2)
+                    .font(.appRegularTitle4)
                     .verticalPadding(.normal)
                     .multilineTextAlignment(.leading)
                 HStack {
@@ -52,7 +52,7 @@ public struct WhatsNewHomeCellView: View {
                         label: {
                             HStack {
                                 Text(Strings.Other.readMore)
-                                    .font(.appBoldTitle2)
+                                    .font(.appMediumTitle4)
                                     .foregroundColor(K.Colors.white)
                             }
                             .horizontalPadding(.normal)
