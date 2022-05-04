@@ -11,7 +11,6 @@ public struct MapBottomSheetState: Equatable {
     
     var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
     var filtered: IdentifiedArrayOf<MapBuildingCellState>
-    @BindableState var isOpen: Bool = false
     
     public init(
         buildings: [MapBuildingCellState] = []
@@ -23,9 +22,9 @@ public struct MapBottomSheetState: Equatable {
 
 //MARK: - ACTION
 public enum MapBottomSheetAction: Equatable {
-    case isOpenChanged(Bool)
     case searchAction(SearchAction)
     case cellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction)
+	case configureToSelectedAnnotationAcion(String)
 }
 
 //MARK: - ENVIRONMENT
@@ -72,9 +71,8 @@ public let mapBottomSheetReducer = Reducer<
             return .none
         case .searchAction:
             return .none
-        case .isOpenChanged(let value):
-            state.isOpen = value
-            return .none
+		case .configureToSelectedAnnotationAcion(let title):
+			return Effect(value: .searchAction(.update(title)))
         }
     }
 )
@@ -90,7 +88,7 @@ struct MapBottomSheetView: View {
     }
     
     @GestureState private var translation: CGFloat = 0
-    @State private var isOpenInternal: Bool = false
+	var isOpenInternal: Binding<Bool>
     let store: Store<MapBottomSheetState, MapBottomSheetAction>
     
     let maxHeight: CGFloat
@@ -107,11 +105,13 @@ struct MapBottomSheetView: View {
     
     public init(
         maxHeight: CGFloat,
-        store: Store<MapBottomSheetState, MapBottomSheetAction>
+        store: Store<MapBottomSheetState, MapBottomSheetAction>,
+		isOpen: Binding<Bool>
     ) {
         self.maxHeight = maxHeight
         self.minHeight = maxHeight * Constants.minHeightRatio
         self.store = store
+		self.isOpenInternal = isOpen
     }
     
     public var body: some View {
@@ -148,7 +148,7 @@ struct MapBottomSheetView: View {
                 .background(Color.white)
                 .cornerRadius(Constants.radius, corners: [.topLeft, .topRight])
                 .frame(height: geometry.size.height, alignment: .bottom)
-                .offset(y: max((isOpenInternal ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
+				.offset(y: max((isOpenInternal.wrappedValue ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
                 .animation(.default)
                 .gesture(
                     DragGesture().updating(self.$translation) { value, state, _ in
@@ -158,7 +158,7 @@ struct MapBottomSheetView: View {
                         guard abs(value.translation.height) > snapDistance else {
                             return
                         }
-                        value.translation.height < 0 ? (isOpenInternal = true) : (isOpenInternal = false)
+						value.translation.height < 0 ? (isOpenInternal.wrappedValue = true) : (isOpenInternal.wrappedValue = false)
                     }
                 )
             }

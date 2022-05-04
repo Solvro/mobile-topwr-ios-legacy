@@ -3,7 +3,7 @@ import ComposableArchitecture
 
 //MARK: - STATE
 public struct SearchState: Equatable {
-    var search: String = ""
+    @BindableState var search: String = ""
     let placeholder: String
 
     public init(
@@ -13,9 +13,10 @@ public struct SearchState: Equatable {
     }
 }
 //MARK: - ACTION
-public enum SearchAction: Equatable {
+public enum SearchAction: Equatable, BindableAction {
     case update(String)
     case clearSearch
+	case binding(BindingAction<SearchState>)
 }
 
 //MARK: - ENVIRONMENT
@@ -42,8 +43,10 @@ public let searchReducer = Reducer<
     case .clearSearch:
         state.search = ""
         return .none
+	case .binding(_):
+		return .none
     }
-}
+}.binding()
 
 //MARK: - VIEW
 public struct SearchView: View {
