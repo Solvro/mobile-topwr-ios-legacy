@@ -110,7 +110,6 @@ let package = Package(
             name: "SplashFeature",
             dependencies: [
                 "MenuFeature",
-				"Storage",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"

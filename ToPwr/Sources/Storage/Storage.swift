@@ -32,11 +32,11 @@ public struct Storage {
     public func loadContent<T: Codable> (
 		type: T.Type,
 		key: String
-	) -> Just<T?> {
+	) -> T? {
         if let loadData = defaults.object(forKey: key) as? Data {
-            return Just(decode(data: loadData, type: type.self))
+            return decode(data: loadData, type: type.self)
         } else {
-            return Just(nil)
+            return nil
         }
     }
 	

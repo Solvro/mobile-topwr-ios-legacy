@@ -4,13 +4,17 @@ import Common
 import Storage
 import Api
 
-public struct CoreLogic {
+public class CoreLogic {
     let api = Api()
     let storage = Storage()
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
+    private var isVersionValid: Bool = false
     
-    public init(
+    ///singleton patern- use it only (to not generate more then 1 instance)
+    public static let shared = CoreLogic()
+    
+    private init(
         encoder: JSONEncoder = JSONEncoder(),
         decoder: JSONDecoder = JSONDecoder()
     ) {
@@ -18,7 +22,7 @@ public struct CoreLogic {
         self.decoder = decoder
     }
     
-//MARK: - API
+    //MARK: - API
     public func getSessionDate() -> AnyPublisher<SessionDay, ErrorModel> {
         let path: String = "/academic-year-end-date"
         return api.fetch(path: path)
@@ -89,12 +93,23 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
-    public func getApiVersion() -> AnyPublisher<Version, ErrorModel> {
+    public func getApiVersion() -> AnyPublisher<Void, ErrorModel> {
         let path: String = "/version"
         return api.fetch(path: path)
-            .decode(type: Version.self, decoder: decoder)
+            .decode(type: ApiVersion.self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
+            }
+            .map { [self] version in
+                guard let appVersion = storage.loadContent(
+                    type: ApiVersion.self,
+                    key: StorageKeys.apiVersion.rawValue
+                ) else { return }
+                if appVersion == version {
+                    self.isVersionValid = true
+                } else {
+                    self.isVersionValid = false
+                }
             }
             .eraseToAnyPublisher()
     }
@@ -118,47 +133,12 @@ public struct CoreLogic {
             }
             .eraseToAnyPublisher()
     }
-	
-	// MARK: - Cache
-	
-	public func configureCacheToApiVersion(
-		version: Version
-	) -> AnyPublisher<Void, ErrorModel> {
-		
-		var publisher: AnyPublisher<Void, ErrorModel>! = nil
-		
-		let _ = storage.loadContent(
-			type: Version.self,
-			key: StorageKeys.apiVersion.rawValue
-		).sink(
-			receiveValue: { deviceVersion in
-				if let deviceVersion = deviceVersion {
-					if deviceVersion == version {
-						let tmp = Just(())
-							.setFailureType(to: ErrorModel.self)
-							.eraseToAnyPublisher()
-						publisher = tmp
-					}	else {
-						publisher = storage.saveContent(
-							content: version,
-							key: StorageKeys.apiVersion.rawValue
-						)
-						clearCache()
-					}
-				}	else {
-					publisher = storage.saveContent(
-						content: version,
-						key: StorageKeys.apiVersion.rawValue
-					)
-				}
-			}
-		)
-		return publisher
-	}
-	
-	private func clearCache() {
-		for key in StorageKeys.allCases {
-			storage.deleteContent(key: key.rawValue)
-		}
-	}
+    
+    // MARK: - Cache
+    
+    private func clearCache() {
+        for key in StorageKeys.allCases {
+            storage.deleteContent(key: key.rawValue)
+        }
+    }
 }
