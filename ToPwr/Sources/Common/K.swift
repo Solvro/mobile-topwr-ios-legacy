@@ -9,6 +9,14 @@ public struct K {
         public static let firstColorLight = Color(hex: "#FFA07E")
         public static let lightGray = Color(hex: "#f7f7f8")
         public static let red = Color(hex: "E43D32")
+        public static let logoBlue = Color(hex: "3f6499")
+        public static let firstGreen = Color(hex: "027c3d")
+        
+        public static let gradient = LinearGradient(
+            colors: [K.Colors.firstColorLight, K.Colors.firstColorDark],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
     }
     
     public struct SearchColors {
@@ -43,19 +51,30 @@ public struct K {
         public static let logoColor = Image("AppLogoColor", bundle: .module)
         public static let logoTemplate = Image("LogoTemplate", bundle: .module)
     }
-
+}
 //MARK: - Background modifier
-    public struct DefaultBackgroundColor: ViewModifier {
-        public init() {}
-        public func body(content: Content) -> some View {
-            ZStack {
-                K.Colors.background
-                    .edgesIgnoringSafeArea(.all)
-                content
-            }
+public struct DefaultBackgroundColor: ViewModifier {
+    public init() {}
+    public func body(content: Content) -> some View {
+        ZStack {
+            K.Colors.background
+                .edgesIgnoringSafeArea(.all)
+            content
         }
     }
 }
+
+public struct SplashBackgroundModifier: ViewModifier {
+    public init() {}
+    public func body(content: Content) -> some View {
+        ZStack {
+            K.Colors.gradient
+                .edgesIgnoringSafeArea(.all)
+            content
+        }
+    }
+}
+
 
 //MARK: - FONTS
 public extension Font {
