@@ -35,11 +35,11 @@ public struct ClubHomeCellView: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text(viewState.club.name ?? "")
-                        .font(.appBoldTitle2)
+                        .font(.appMediumTitle3)
                     Spacer()
                 }
                 Text(viewState.club.description ?? "")
-                    .font(.appRegularTitle2)
+                    .font(.appRegularTitle4)
                     .verticalPadding(.normal)
                     .multilineTextAlignment(.leading)
                 HStack {
@@ -50,7 +50,7 @@ public struct ClubHomeCellView: View {
                         label: {
                             HStack {
                                 Text(Strings.Other.readMore)
-                                    .font(.appBoldTitle2)
+                                    .font(.appMediumTitle4)
                                     .foregroundColor(K.Colors.white)
                             }
                             .horizontalPadding(.normal)

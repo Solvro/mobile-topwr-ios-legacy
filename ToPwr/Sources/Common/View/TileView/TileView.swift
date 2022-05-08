@@ -79,13 +79,13 @@ public struct TileView: View {
                 VStack(alignment: .leading) {
                     HStack {
                         Text(viewStore.title)
-                            .font(.appBoldTitle2)
+                            .font(.appMediumTitle3)
                             .multilineTextAlignment(.leading)
                         Spacer()
                     }
                     
                     Text(viewStore.description)
-                        .font(.appRegularTitle2)
+                        .font(.appRegularTitle4)
                         .verticalPadding(.normal)
                     
                     HStack {
@@ -96,7 +96,7 @@ public struct TileView: View {
                             label: {
                                 HStack {
                                     Text(Strings.Other.readMore)
-                                        .font(.appBoldTitle2)
+                                        .font(.appMediumTitle4)
                                         .foregroundColor(K.Colors.white)
                                 }
                                 .horizontalPadding(.normal)

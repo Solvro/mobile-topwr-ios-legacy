@@ -66,9 +66,9 @@ public struct DaysToSessionView: View {
                            
                            VStack(alignment: .leading) {
                                Text(Strings.Other.days)
-                                   .font(.appBoldTitle3)
+                                   .font(.appMediumTitle1)
                                Text(Strings.Other.tillSessionStart)
-                                   .font(.appRegularTitle3)
+                                   .font(.appRegularTitle2)
                            }
                            .foregroundColor(K.Colors.white)
                            .padding(5)

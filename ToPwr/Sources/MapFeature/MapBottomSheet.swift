@@ -154,7 +154,7 @@ struct MapBottomSheetView: View {
                     self.indicator.padding()
                     VStack(alignment: .leading, spacing: 0) {
                         Text(Strings.MapView.buildings)
-                            .bold()
+                            .font(.appMediumTitle2)
                             .padding()
                         SearchView(
 							store: self.store.scope(

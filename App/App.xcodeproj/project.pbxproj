@@ -15,6 +15,9 @@
 		6AFDDF612708E181006B2766 /* AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF602708E181006B2766 /* AppUITests.swift */; };
 		6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */ = {isa = PBXBuildFile; productRef = 6AFDDF702708F33A006B2766 /* ToPwr */; };
 		DD514270273834F9001E0002 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DD514272273834F9001E0002 /* Localizable.strings */; };
+		FABE4B9228148863005063B8 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FABE4B9128148862005063B8 /* Rubik-Medium.ttf */; };
+		FABE4B9428148ABE005063B8 /* Rubik-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FABE4B9328148ABE005063B8 /* Rubik-Regular.ttf */; };
+		FABE4B9628148B02005063B8 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FABE4B9528148B02005063B8 /* Rubik-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +51,9 @@
 		6AFDDF602708E181006B2766 /* AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUITests.swift; sourceTree = "<group>"; };
 		6AFDDF622708E181006B2766 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD51427427383588001E0002 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FABE4B9128148862005063B8 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Medium.ttf"; sourceTree = "<group>"; };
+		FABE4B9328148ABE005063B8 /* Rubik-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Regular.ttf"; sourceTree = "<group>"; };
+		FABE4B9528148B02005063B8 /* Rubik-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Bold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +85,7 @@
 		6AFDDF372708E17D006B2766 = {
 			isa = PBXGroup;
 			children = (
+				FABE4B9728148B0B005063B8 /* Fonts */,
 				DD514272273834F9001E0002 /* Localizable.strings */,
 				6AFDDF422708E17D006B2766 /* App */,
 				6AFDDF542708E181006B2766 /* AppTests */,
@@ -141,6 +148,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FABE4B9728148B0B005063B8 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				FABE4B9528148B02005063B8 /* Rubik-Bold.ttf */,
+				FABE4B9328148ABE005063B8 /* Rubik-Regular.ttf */,
+				FABE4B9128148862005063B8 /* Rubik-Medium.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,8 +269,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				6AFDDF4B2708E180006B2766 /* Preview Assets.xcassets in Resources */,
+				FABE4B9628148B02005063B8 /* Rubik-Bold.ttf in Resources */,
 				6AFDDF482708E180006B2766 /* Assets.xcassets in Resources */,
 				DD514270273834F9001E0002 /* Localizable.strings in Resources */,
+				FABE4B9428148ABE005063B8 /* Rubik-Regular.ttf in Resources */,
+				FABE4B9228148863005063B8 /* Rubik-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
