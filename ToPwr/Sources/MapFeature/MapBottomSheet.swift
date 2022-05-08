@@ -11,7 +11,8 @@ public struct MapBottomSheetState: Equatable {
     
     var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
     var filtered: IdentifiedArrayOf<MapBuildingCellState>
-    @BindableState var isOpen: Bool = false
+	var selectedId: MapBuildingCellState? = nil
+	var showSelection = false // some weird error occurs when setting selectedId to nil thus the need for showSelection
     
     public init(
         buildings: [MapBuildingCellState] = []
@@ -23,9 +24,12 @@ public struct MapBottomSheetState: Equatable {
 
 //MARK: - ACTION
 public enum MapBottomSheetAction: Equatable {
-    case isOpenChanged(Bool)
     case searchAction(SearchAction)
     case cellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction)
+	case configureToSelectedAnnotationAcion(CustomAnnotation?)
+	case newCellSelected(Int?)
+	case selectedCellAction(MapBuildingCellAction)
+	case forcedCellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction) //enables imposing influance on the "selected cell" state without consequences from outside reducers
 }
 
 //MARK: - ENVIRONMENT
@@ -54,8 +58,8 @@ public let mapBottomSheetReducer = Reducer<
     ),
     Reducer{ state, action, environment in
         switch action {
-        case .cellAction:
-            return .none
+		case .cellAction(id: let id, action: .buttonTapped):
+			return .init(value: .newCellSelected(id))
         case .searchAction(.update(let text)):
             state.text = text
             #warning("TODO: filter refactor")
@@ -72,10 +76,37 @@ public let mapBottomSheetReducer = Reducer<
             return .none
         case .searchAction:
             return .none
-        case .isOpenChanged(let value):
-            state.isOpen = value
-            return .none
-        }
+		case .configureToSelectedAnnotationAcion(let annotation):
+			return .none
+		case .newCellSelected(let id):
+			state.showSelection = true
+			if state.selectedId != nil{
+				state.selectedId!.isSelected.toggle()
+				if state.text == "" {
+					state.filtered.append(state.selectedId!)
+				}
+			}
+			if let safeNewState = state.filtered.first(where: { $0.id == id}) {
+				state.selectedId = safeNewState
+				if state.text == "" {
+					state.filtered.remove(safeNewState)
+				}
+				state.selectedId?.isSelected.toggle()
+			}
+			return .none
+		case .selectedCellAction(.buttonTapped):
+			state.showSelection = false
+			if state.selectedId != nil{
+				state.selectedId!.isSelected.toggle()
+				if state.text == "" {
+					state.filtered.append(state.selectedId!)
+				}
+			}
+			state.filtered.sort(by: { $0.building.code ?? "" < $1.building.code ?? ""})
+			return .none
+		case .forcedCellAction(id: let id, action: let action):
+			return .init(value: .newCellSelected(id))
+		}
     }
 )
 
@@ -90,7 +121,7 @@ struct MapBottomSheetView: View {
     }
     
     @GestureState private var translation: CGFloat = 0
-    @State private var isOpenInternal: Bool = false
+	var isOpenInternal: Binding<Bool>
     let store: Store<MapBottomSheetState, MapBottomSheetAction>
     
     let maxHeight: CGFloat
@@ -107,11 +138,13 @@ struct MapBottomSheetView: View {
     
     public init(
         maxHeight: CGFloat,
-        store: Store<MapBottomSheetState, MapBottomSheetAction>
+        store: Store<MapBottomSheetState, MapBottomSheetAction>,
+		isOpen: Binding<Bool>
     ) {
         self.maxHeight = maxHeight
         self.minHeight = maxHeight * Constants.minHeightRatio
         self.store = store
+		self.isOpenInternal = isOpen
     }
     
     public var body: some View {
@@ -124,20 +157,31 @@ struct MapBottomSheetView: View {
                             .font(.appMediumTitle2)
                             .padding()
                         SearchView(
-                            store: self.store.scope(
-                                state: \.searchState,
-                                action: MapBottomSheetAction.searchAction
-                            )
-                        ).padding(.bottom)
-                        ScrollView(.vertical, showsIndicators: true) {
-                            LazyVStack(spacing: 10) {
-                                ForEachStore(
-                                    self.store.scope(
-                                        state: \.filtered,
-                                        action: MapBottomSheetAction.cellAction(id:action:)
+							store: self.store.scope(
+								state: \.searchState,
+								action: MapBottomSheetAction.searchAction
+							)
+						).padding(.bottom, 10)
+						
+						ScrollView(.vertical, showsIndicators: true) {
+							LazyVStack(spacing: 10) {
+								if viewStore.showSelection { // this must be a seperate view so that we can implement color change on selection
+									MapBuildingCellView(
+										store: store.scope(
+											state: \.selectedId!,
+											action: MapBottomSheetAction.selectedCellAction
+										)
+									)
+								}
+								ForEachStore(
+									self.store.scope(
+										state: \.filtered,
+										action: MapBottomSheetAction.cellAction(id:action:)
                                     )
                                 ) { store in
-                                    MapBuildingCellView(store: store)
+									MapBuildingCellView(
+										store: store
+									)
                                 }
                             }
                             .horizontalPadding(.normal)
@@ -148,7 +192,7 @@ struct MapBottomSheetView: View {
                 .background(Color.white)
                 .cornerRadius(Constants.radius, corners: [.topLeft, .topRight])
                 .frame(height: geometry.size.height, alignment: .bottom)
-                .offset(y: max((isOpenInternal ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
+				.offset(y: max((isOpenInternal.wrappedValue ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
                 .animation(.default)
                 .gesture(
                     DragGesture().updating(self.$translation) { value, state, _ in
@@ -158,7 +202,7 @@ struct MapBottomSheetView: View {
                         guard abs(value.translation.height) > snapDistance else {
                             return
                         }
-                        value.translation.height < 0 ? (isOpenInternal = true) : (isOpenInternal = false)
+						value.translation.height < 0 ? (isOpenInternal.wrappedValue = true) : (isOpenInternal.wrappedValue = false)
                     }
                 )
             }

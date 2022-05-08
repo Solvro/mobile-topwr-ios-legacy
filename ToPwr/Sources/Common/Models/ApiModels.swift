@@ -292,7 +292,7 @@ public struct WeekDay: Codable, Equatable {
 
 public struct Version: Codable, Equatable {
     public let id: String
-    
+	
     enum CodingKeys: String, CodingKey {
         case id = "uuid"
     }

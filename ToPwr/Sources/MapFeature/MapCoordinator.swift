@@ -10,20 +10,20 @@ public struct MapCoordinator {
             #warning("TODO: Error handler")
             return []
         }
-    
+
         var geoJson = [MKGeoJSONObject]()
         var overlays = [MKOverlay]()
         var collection: Collection? = nil
-        
+
         do {
             let data = try Data(contentsOf: url)
             geoJson = try MKGeoJSONDecoder().decode(data)
             collection = try JSONDecoder().decode(Collection.self, from: data)
-            
+
         } catch {
             #warning("TODO: Error handler")
         }
-        
+
         for (index, item) in geoJson.enumerated() {
             if let feature = item as? MKGeoJSONFeature {
                 for geo in feature.geometry {
