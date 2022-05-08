@@ -11,6 +11,8 @@ public struct MapBottomSheetState: Equatable {
     
     var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
     var filtered: IdentifiedArrayOf<MapBuildingCellState>
+	var selectedId: MapBuildingCellState? = nil
+	var showSelection = false // some weird error occurs when setting selectedId to nil thus the need for showSelection
     
     public init(
         buildings: [MapBuildingCellState] = []
@@ -24,7 +26,10 @@ public struct MapBottomSheetState: Equatable {
 public enum MapBottomSheetAction: Equatable {
     case searchAction(SearchAction)
     case cellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction)
-	case configureToSelectedAnnotationAcion(String)
+	case configureToSelectedAnnotationAcion(CustomAnnotation?)
+	case newCellSelected(Int?)
+	case selectedCellAction(MapBuildingCellAction)
+	case forcedCellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction) //enables imposing influance on the "selected cell" state without consequences from outside reducers
 }
 
 //MARK: - ENVIRONMENT
@@ -53,8 +58,8 @@ public let mapBottomSheetReducer = Reducer<
     ),
     Reducer{ state, action, environment in
         switch action {
-        case .cellAction:
-            return .none
+		case .cellAction(id: let id, action: .buttonTapped):
+			return .init(value: .newCellSelected(id))
         case .searchAction(.update(let text)):
             state.text = text
             #warning("TODO: filter refactor")
@@ -71,9 +76,37 @@ public let mapBottomSheetReducer = Reducer<
             return .none
         case .searchAction:
             return .none
-		case .configureToSelectedAnnotationAcion(let title):
-			return Effect(value: .searchAction(.update(title)))
-        }
+		case .configureToSelectedAnnotationAcion(let annotation):
+			return .none
+		case .newCellSelected(let id):
+			state.showSelection = true
+			if state.selectedId != nil{
+				state.selectedId!.isSelected.toggle()
+				if state.text == "" {
+					state.filtered.append(state.selectedId!)
+				}
+			}
+			if let safeNewState = state.filtered.first(where: { $0.id == id}) {
+				state.selectedId = safeNewState
+				if state.text == "" {
+					state.filtered.remove(safeNewState)
+				}
+				state.selectedId?.isSelected.toggle()
+			}
+			return .none
+		case .selectedCellAction(.buttonTapped):
+			state.showSelection = false
+			if state.selectedId != nil{
+				state.selectedId!.isSelected.toggle()
+				if state.text == "" {
+					state.filtered.append(state.selectedId!)
+				}
+			}
+			state.filtered.sort(by: { $0.building.code ?? "" < $1.building.code ?? ""})
+			return .none
+		case .forcedCellAction(id: let id, action: let action):
+			return .init(value: .newCellSelected(id))
+		}
     }
 )
 
@@ -124,20 +157,31 @@ struct MapBottomSheetView: View {
                             .bold()
                             .padding()
                         SearchView(
-                            store: self.store.scope(
-                                state: \.searchState,
-                                action: MapBottomSheetAction.searchAction
-                            )
-                        ).padding(.bottom, 10)
-                        ScrollView(.vertical, showsIndicators: true) {
-                            LazyVStack(spacing: 10) {
-                                ForEachStore(
-                                    self.store.scope(
-                                        state: \.filtered,
-                                        action: MapBottomSheetAction.cellAction(id:action:)
+							store: self.store.scope(
+								state: \.searchState,
+								action: MapBottomSheetAction.searchAction
+							)
+						).padding(.bottom, 10)
+						
+						ScrollView(.vertical, showsIndicators: true) {
+							LazyVStack(spacing: 10) {
+								if viewStore.showSelection { // this must be a seperate view so that we can implement color change on selection
+									MapBuildingCellView(
+										store: store.scope(
+											state: \.selectedId!,
+											action: MapBottomSheetAction.selectedCellAction
+										)
+									)
+								}
+								ForEachStore(
+									self.store.scope(
+										state: \.filtered,
+										action: MapBottomSheetAction.cellAction(id:action:)
                                     )
                                 ) { store in
-                                    MapBuildingCellView(store: store)
+									MapBuildingCellView(
+										store: store
+									)
                                 }
                             }
                             .horizontalPadding(.normal)

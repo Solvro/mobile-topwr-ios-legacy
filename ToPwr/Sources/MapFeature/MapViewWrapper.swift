@@ -17,7 +17,7 @@ public struct MapState: Equatable {
 			longitudeDelta: 0.005
 		)
 	)
-	var selectedAnnotationTitle: CustomAnnotation?
+	var selectedAnnotation: CustomAnnotation?
 	var annotations: [CustomAnnotation]
 	var newSelection: Bool = false
 	
@@ -30,10 +30,11 @@ public struct MapState: Equatable {
 	}
 }
 
-public enum MapAction: Equatable, BindableAction {
-	case binding(BindingAction<MapState>)
+public enum MapAction: Equatable {
 	case annotationTapped(CustomAnnotation?)
 	case speciaUseNewselectionSetter(Bool)
+	case annotationTappedInList(CustomAnnotation?)
+	case annotationDeselected
 }
 
 public struct MapEnvironment {
@@ -52,17 +53,24 @@ public let mapReducer = Reducer<
 	MapEnvironment
 > { state, action, env in
 	switch action {
-	case .binding(_):
-		return .none
 	case .annotationTapped(let annotation):
-		state.selectedAnnotationTitle = annotation
+		state.selectedAnnotation = annotation
+		if annotation == nil {
+			return .init(value: .annotationDeselected)
+		}	else {
+			return .none
+		}
+	case .annotationTappedInList(let annotation):
+		state.selectedAnnotation = annotation
 		return .none
 	case .speciaUseNewselectionSetter(let newValue):
-		// this action enables MKMapView to detec new annotation selection during screen reloading
+		// this effect enables MKMapView to detect new annotation selection during screen reloading
 		state.newSelection = newValue
 		return .none
+	case .annotationDeselected:
+		return .none
 	}
-}.binding()
+}
 
 public struct MapViewWrapper: View {
 	
@@ -80,11 +88,9 @@ public struct MapViewWrapper: View {
 			MapView(
 				annotations: viewStore.annotations,
 				selectedAnnotationTitle: Binding(
-					get: { viewStore.selectedAnnotationTitle },
+					get: { viewStore.selectedAnnotation },
 					set: { ant in
-						withAnimation {
-							viewStore.send(.annotationTapped(ant))
-						}
+						viewStore.send(.annotationTapped(ant))
 					}
 				),
 				region: Binding(

@@ -25,7 +25,7 @@ struct MapView: UIViewRepresentable {
 		view.translatesAutoresizingMaskIntoConstraints = false
 		if wrapperViewState.newSelection == true {
 			if let annotation = annotations.first(
-				where: { $0.title == wrapperViewState.selectedAnnotationTitle?.title ?? ""}
+				where: { $0.title == wrapperViewState.selectedAnnotation?.title ?? ""}
 			) {
 				view.selectAnnotation(annotation, animated: true)
 			}
@@ -89,12 +89,15 @@ public class CustomAnnotation: NSObject, MKAnnotation {
 	
 	public var coordinate: CLLocationCoordinate2D
 	public var title: String?
+	public var id: Int
 	
 	public init(
 		coordinate: CLLocationCoordinate2D,
-		title: String? = nil
+		title: String? = nil,
+		id: Int
 	) {
 		self.coordinate = coordinate
 		self.title = title
+		self.id = id
 	}
 }

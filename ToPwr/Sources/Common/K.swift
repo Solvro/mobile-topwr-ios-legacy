@@ -19,6 +19,7 @@ public struct K {
     
     public struct CellColors {
         public static let scienceBackground = Color(hex: "#F7F7F8")
+		public static let scienceBackgroundSelected = Color(hex: "#F67448")
     }
     
     public struct MapColors {

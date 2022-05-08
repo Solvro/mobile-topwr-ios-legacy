@@ -9,6 +9,7 @@ public struct MapFeatureState: Equatable {
 	var mapBottomSheetState = MapBottomSheetState()
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
+	var selectionFromList: Bool = false
 	public init(){}
 }
 
@@ -69,7 +70,8 @@ public let mapFeatureReducer = Reducer<
 						latitude: value.latitude!,
 						longitude: value.longitude!
 					),
-					title: value.code
+					title: value.code,
+					id: value.id
 				)
 			})
 		)
@@ -77,50 +79,53 @@ public let mapFeatureReducer = Reducer<
 	case .receivedBuildings(.failure(let error)):
 #warning("TODO: Show couldn't low data message")
 		return .none
-	case .buildingListAction(.configureToSelectedAnnotationAcion(let title)):
+	case .buildingListAction(.configureToSelectedAnnotationAcion(let annotaton)):
 		return .none
 	case .buttonTapped:
 		return .none
 	case .mapAction(_):
 		return .none
 	case .mapViewAction(.annotationTapped(let annotation)):
-		if let title = annotation?.title {
-			return .merge (
-				Effect(value: .buildingListAction(.configureToSelectedAnnotationAcion(title))),
-				Effect(value: .sheetOpenStatusChanged(true))
-			)
+		if state.selectionFromList {
+			state.selectionFromList = false
+			return .none
 		}	else {
-			return .merge(
-				Effect(value: .buildingListAction(.searchAction(.update("")))),
-				Effect(value: .sheetOpenStatusChanged(false))
-			)
+			if let annotation = annotation {
+				return .concatenate (
+					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped))),
+					.init(value: .sheetOpenStatusChanged(true))
+				)
+			}
+			return .none
 		}
-	case .mapViewAction(.binding(_)):
+	case .mapViewAction(.annotationTappedInList(let annotation)):
 		return .none
 	case .buildingListAction(.searchAction(_)):
 		return .none
 	case .buildingListAction(.cellAction(id: let id, action: .buttonTapped)):
 		let buildingState = state.mapBottomSheetState.buildings.first(where: { cellState in cellState.building.id == id})
+		state.selectionFromList = true
 		if let buildingState = buildingState,
-		   let code = buildingState.building.code,
 		   let lat = buildingState.building.latitude,
-		   let lon = buildingState.building.longitude {
-			return .merge(
-			Effect(value:
-					.mapViewAction(
-						.annotationTapped(
-							CustomAnnotation(
-								coordinate: .init(
-									latitude: lat,
-									longitude: lon
-								),
-								title: code
+		   let lon = buildingState.building.longitude
+		{
+			return .concatenate(
+				.init(value: .sheetOpenStatusChanged(false)),
+				.init(value: .mapViewAction(.speciaUseNewselectionSetter(true))),
+				.init(value:
+						.mapViewAction(
+							.annotationTappedInList(
+								CustomAnnotation(
+									coordinate: .init(
+										latitude: lat,
+										longitude: lon
+									),
+									title: buildingState.building.code,
+									id: buildingState.building.id
+								)
 							)
 						)
-					)
-			),
-			Effect(value: .mapAction(.searchAction(.update(code)))),
-			Effect(value: .mapViewAction(.speciaUseNewselectionSetter(true)))
+				)
 			)
 		}	else {
 			return .none
@@ -129,6 +134,14 @@ public let mapFeatureReducer = Reducer<
 		state.isOpen = status
 		return .none
 	case .mapViewAction(.speciaUseNewselectionSetter(_)):
+		return .none
+	case .buildingListAction(.newCellSelected(_)):
+		return .none
+	case .buildingListAction(.selectedCellAction(.buttonTapped)):
+		return .none
+	case .mapViewAction(.annotationDeselected):
+		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
+	case .buildingListAction(.forcedCellAction(id: let id, action: let action)):
 		return .none
 	}
 }

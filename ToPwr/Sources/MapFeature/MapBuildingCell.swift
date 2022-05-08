@@ -6,6 +6,7 @@ import Common
 public struct MapBuildingCellState: Equatable, Identifiable {
 	public let id: Int
 	public let building: Map
+	public var isSelected: Bool = false
 	
 	public init(
 		building: Map
@@ -48,7 +49,7 @@ public struct MapBuildingCellView: View {
 		static let radius: CGFloat = 8
 	}
 	
-	let store: Store<MapBuildingCellState, MapBuildingCellAction>
+	public let store: Store<MapBuildingCellState, MapBuildingCellAction>
 	
 	public init(
 		store: Store<MapBuildingCellState, MapBuildingCellAction>
@@ -58,38 +59,40 @@ public struct MapBuildingCellView: View {
 	
 	public var body: some View {
 		WithViewStore(store) { viewStore in
-			Button(action: {
-				viewStore.send(.buttonTapped)
-			}, label: {
-				ZStack(alignment: .topLeading) {
-					K.CellColors.scienceBackground
-					HStack {
-						VStack(alignment: .leading, spacing: 10) {
-							Text("\(Strings.MapView.building + " " + (viewStore.building.code ?? ""))")
-								.font(.appBoldTitle3)
-								.foregroundColor(.black)
-								.multilineTextAlignment(.leading)
-							Text(viewStore.building.address?.address ?? "")
-								.fontWeight(.light)
-								.font(.system(size: 14))
-								.foregroundColor(.black)
-								.multilineTextAlignment(.leading)
-						}.padding(.leading, UIDimensions.normal.spacing)
-						Spacer()
-						ZStack {
-							ImageView(
-								url: viewStore.building.photo?.url,
-								contentMode: .aspectFill
-							)
-							.frame(width: 90, height: 90)
-							.cornerRadius(Constants.radius, corners: [.topRight, .bottomRight])
+			Button(
+				action: {
+					viewStore.send(.buttonTapped)
+				}, label: {
+					ZStack(alignment: .topLeading) {
+						HStack {
+							VStack(alignment: .leading, spacing: 10) {
+								Text("\(Strings.MapView.building + " " + (viewStore.building.code ?? ""))")
+									.font(.appBoldTitle3)
+									.foregroundColor(viewStore.isSelected ? .white : .black)
+									.multilineTextAlignment(.leading)
+								Text(viewStore.building.address?.address ?? "")
+									.fontWeight(.light)
+									.font(.system(size: 14))
+									.foregroundColor(.black)
+									.multilineTextAlignment(.leading)
+							}
+							.padding(.leading, UIDimensions.normal.spacing)
+							Spacer()
+							ZStack {
+								ImageView(
+									url: viewStore.building.photo?.url,
+									contentMode: .aspectFill
+								)
+								.frame(width: 90, height: 90)
+								.cornerRadius(Constants.radius, corners: [.topRight, .bottomRight])
+							}
 						}
 					}
+					.background(viewStore.isSelected ? K.CellColors.scienceBackgroundSelected : K.CellColors.scienceBackground)
+					.frame(height: 90)
+					.foregroundColor(K.CellColors.scienceBackground)
+					.cornerRadius(Constants.radius)
 				}
-				.frame(height: 90)
-				.foregroundColor(K.CellColors.scienceBackground)
-				.cornerRadius(Constants.radius)
-			}
 			)
 		}
 	}
