@@ -12,9 +12,9 @@ public struct SplashState: Equatable {
     public init(){}
 }
 //MARK: - ACTION
-public enum SplashAction: Equatable {
+public enum SplashAction {
     case onAppear
-    case apiVersion(Result<Version, ErrorModel>)
+    case apiVersion(Result<Void, ErrorModel>)
     case stopLoading
     case menuAction(MenuAction)
 }
@@ -22,7 +22,7 @@ public enum SplashAction: Equatable {
 //MARK: - ENVIRONMENT
 public struct SplashEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getApiVersion: () -> AnyPublisher<Version, ErrorModel>
+    let getApiVersion: () -> AnyPublisher<Void, ErrorModel>
     let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
@@ -35,7 +35,7 @@ public struct SplashEnvironment {
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getApiVersion: @escaping () -> AnyPublisher<Version, ErrorModel>,
+        getApiVersion: @escaping () -> AnyPublisher<Void, ErrorModel>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
@@ -72,7 +72,7 @@ public let splashReducer = Reducer<
           .receive(on: env.mainQueue)
           .catchToEffect()
           .map(SplashAction.apiVersion)
-  case .apiVersion(.success(let version)):
+  case .apiVersion(.success()):
       return .init(value: .stopLoading)
   case .apiVersion(.failure(let error)):
       print(error.localizedDescription)
@@ -190,7 +190,7 @@ struct SplashView_Previews: PreviewProvider {
                     getDepartment: failing1,
                     getScienceClub: failing1,
                     getWhatsNew: failing0,
-                    getInfos: failing0
+					getInfos: failing0
                 )
             )
         )
