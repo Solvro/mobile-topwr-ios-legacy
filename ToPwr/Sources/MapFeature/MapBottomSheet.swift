@@ -9,16 +9,20 @@ public struct MapBottomSheetState: Equatable {
     var searchState = SearchState()
     var text: String = ""
     
-    var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
+	var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
     var filtered: IdentifiedArrayOf<MapBuildingCellState>
-	var selectedId: MapBuildingCellState? = nil
-	var showSelection = false // some weird error occurs when setting selectedId to nil thus the need for showSelection
+	var selectedId: MapBuildingCellState?
+	var showSelection: Bool // some weird error occurs when setting selectedId to nil thus the need for showSelection
     
     public init(
-        buildings: [MapBuildingCellState] = []
+        buildings: [MapBuildingCellState] = [],
+		selectedId: MapBuildingCellState?,
+		showSelection: Bool
     ){
         self.buildings = .init(uniqueElements: buildings)
         self.filtered = self.buildings
+		self.selectedId = selectedId
+		self.showSelection = showSelection
     }
 }
 
@@ -157,7 +161,7 @@ struct MapBottomSheetView: View {
                             .font(.appMediumTitle2)
                             .padding()
                         SearchView(
-							store: self.store.scope(
+							store: store.scope(
 								state: \.searchState,
 								action: MapBottomSheetAction.searchAction
 							)
@@ -165,16 +169,18 @@ struct MapBottomSheetView: View {
 						
 						ScrollView(.vertical, showsIndicators: true) {
 							LazyVStack(spacing: 10) {
-								if viewStore.showSelection { // this must be a seperate view so that we can implement color change on selection
-									MapBuildingCellView(
-										store: store.scope(
-											state: \.selectedId!,
+								if viewStore.showSelection && viewStore.selectedId != nil {
+									IfLetStore(
+										store.scope(
+											state: \.selectedId,
 											action: MapBottomSheetAction.selectedCellAction
-										)
+										),
+										then: MapBuildingCellView.init(store:),
+										else: { Text("") }
 									)
 								}
 								ForEachStore(
-									self.store.scope(
+									store.scope(
 										state: \.filtered,
 										action: MapBottomSheetAction.cellAction(id:action:)
                                     )

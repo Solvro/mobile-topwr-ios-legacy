@@ -6,7 +6,7 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapFeatureState: Equatable {
-	var mapBottomSheetState = MapBottomSheetState()
+	var mapBottomSheetState = MapBottomSheetState(selectedId: nil, showSelection: false)
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
 	var selectionFromList: Bool = false
@@ -60,7 +60,9 @@ public let mapFeatureReducer = Reducer<
 		state.mapBottomSheetState = .init(
 			buildings: buildings.map {
 				MapBuildingCellState(building: $0)
-			}
+			},
+			selectedId: nil,
+			showSelection: false
 		)
 		state.mapViewState = MapState(
 			id: UUID(),
