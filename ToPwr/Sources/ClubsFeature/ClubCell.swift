@@ -35,7 +35,7 @@ public struct ClubCellView: View {
                 }
             }
         }
-        .frame(height: 92)
+        .frame(height: 292)
         .foregroundColor(K.CellColors.scienceBackground)
         .cornerRadius(8)
         .padding([.leading, .trailing])
