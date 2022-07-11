@@ -9,6 +9,7 @@ public struct CoreLogic {
     let storage = Storage()
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
+    private let fetchLimit = 10
     
     public init(
         encoder: JSONEncoder = JSONEncoder(),
@@ -49,9 +50,9 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
-    public func getScienceClubs() -> AnyPublisher<[ScienceClub], ErrorModel> {
+    public func getScienceClubs(startingFrom start: Int) -> AnyPublisher<[ScienceClub], ErrorModel> {
         let path: String = "/scientific-Circles"
-        return api.fetch(path: path)
+        return api.fetch(path: path, start: start, limit: fetchLimit)
             .decode(type: [ScienceClub].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)

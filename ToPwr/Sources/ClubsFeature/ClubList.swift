@@ -7,13 +7,12 @@ import Common
 public struct ClubListState: Equatable {
     var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
     var filtered: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
-    var fetchedClubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
     var searchState = SearchState()
     var text: String = ""
-    var defaultFetchingValue = 2
     var isFetching = false
+    var noMoreFetches = false
     
     var isLoading: Bool {
         clubs.isEmpty ? true : false
@@ -27,34 +26,33 @@ public struct ClubListState: Equatable {
                 ClubDetailsState(club: $0)
             }
         )
-        self.filtered = self.clubs
-        guard self.clubs.count >= defaultFetchingValue else { self.fetchedClubs = self.clubs; return }
-        for item in 0..<defaultFetchingValue {
-            self.fetchedClubs.append(self.clubs[item])
-        }
     }
 }
 
 //MARK: - ACTION
 public enum ClubListAction: Equatable {
     case listButtonTapped
-    case appendToFetchingTable
-    case toogleFetchingState
+    case test
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
+    case receivedClubs(Result<[ScienceClub], ErrorModel>)
+    case loadMoreClubs
 }
 
 //MARK: - ENVIRONMENT
 public struct ClubListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
+    let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
+        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getClubs = getClubs
         self.getDepartment = getDepartment
     }
 }
@@ -110,18 +108,26 @@ clubDetailsReducer
                 return .none
             case .clubDetailsAction:
                 return .none
-            case .appendToFetchingTable:
-                let lowerValue = state.fetchedClubs.count
-                var higherValue = lowerValue + state.defaultFetchingValue
-                // When there is less number of elements available to fetch then [defaultFetchingValue]:
-                // in that case we need to fetch everything what is left
-                if state.clubs.count < lowerValue + state.defaultFetchingValue {
-                    higherValue = state.clubs.count
+            case .loadMoreClubs:
+                return env.getClubs(state.clubs.count)
+                    .receive(on: env.mainQueue)
+                    .catchToEffect()
+                    .map(ClubListAction.receivedClubs)
+            case .receivedClubs(.success(let clubs)):
+                if clubs.isEmpty {
+                    state.noMoreFetches = true
+                    state.isFetching = false
+                    return .none
                 }
-                for item in lowerValue..<higherValue { state.fetchedClubs.append(state.clubs[item]) }
+                clubs.forEach { club in
+                    state.clubs.append(ClubDetailsState(club: club))
+                }
+                state.isFetching = false
                 return .none
-            case .toogleFetchingState:
-                state.isFetching.toggle()
+            case .receivedClubs(.failure(_)):
+                return .none
+            case .test:
+                state.isFetching = true
                 return .none
             }
         }
@@ -148,7 +154,7 @@ public struct ClubListView: View {
                             )
                         ).padding(.bottom, 16)
                         LazyVStack(spacing: 16) {
-                            ForEach(viewStore.fetchedClubs) { club in
+                            ForEach(viewStore.clubs) { club in
                                 NavigationLink(
                                     destination: IfLetStore(
                                         self.store.scope(
@@ -166,12 +172,10 @@ public struct ClubListView: View {
                                 ) {
                                     ClubCellView(viewState: club)
                                         .onAppear {
-                                            if viewStore.fetchedClubs.last?.id == club.id && viewStore.fetchedClubs.count != viewStore.clubs.count {
-                                                viewStore.send(.toogleFetchingState)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
-                                                    viewStore.send(.appendToFetchingTable)
-                                                    viewStore.send(.toogleFetchingState)
-                                                    print("# Fake fetching new data rows ⌛️")
+                                            if !viewStore.noMoreFetches {
+                                                viewStore.send(.test)
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                                                    viewStore.send(.loadMoreClubs)
                                                 }
                                             }
                                         }
