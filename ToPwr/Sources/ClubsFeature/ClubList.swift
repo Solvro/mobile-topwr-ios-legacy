@@ -32,7 +32,7 @@ public struct ClubListState: Equatable {
 //MARK: - ACTION
 public enum ClubListAction: Equatable {
     case listButtonTapped
-    case test
+    case fetchingOn
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
@@ -126,7 +126,7 @@ clubDetailsReducer
                 return .none
             case .receivedClubs(.failure(_)):
                 return .none
-            case .test:
+            case .fetchingOn:
                 state.isFetching = true
                 return .none
             }
@@ -173,10 +173,12 @@ public struct ClubListView: View {
                                     ClubCellView(viewState: club)
                                         .onAppear {
                                             if !viewStore.noMoreFetches {
-                                                viewStore.send(.test)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                                                viewStore.send(.fetchingOn)
+//                                                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                                                if club.id == viewStore.clubs.last?.id {
                                                     viewStore.send(.loadMoreClubs)
                                                 }
+//                                                }
                                             }
                                         }
                                 }

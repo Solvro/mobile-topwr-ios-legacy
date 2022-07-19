@@ -9,7 +9,7 @@ public struct CoreLogic {
     let storage = Storage()
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
-    private let fetchLimit = 10
+    private let fetchLimit = 5
     
     public init(
         encoder: JSONEncoder = JSONEncoder(),
