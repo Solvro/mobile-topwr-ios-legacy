@@ -26,6 +26,7 @@ public struct ClubListState: Equatable {
                 ClubDetailsState(club: $0)
             }
         )
+        self.filtered = self.clubs
     }
 }
 
@@ -122,6 +123,7 @@ clubDetailsReducer
                 clubs.forEach { club in
                     state.clubs.append(ClubDetailsState(club: club))
                 }
+                state.filtered = state.clubs
                 state.isFetching = false
                 return .none
             case .receivedClubs(.failure(_)):
@@ -154,7 +156,7 @@ public struct ClubListView: View {
                             )
                         ).padding(.bottom, 16)
                         LazyVStack(spacing: 16) {
-                            ForEach(viewStore.clubs) { club in
+                            ForEach(viewStore.filtered) { club in
                                 NavigationLink(
                                     destination: IfLetStore(
                                         self.store.scope(
@@ -174,11 +176,9 @@ public struct ClubListView: View {
                                         .onAppear {
                                             if !viewStore.noMoreFetches {
                                                 viewStore.send(.fetchingOn)
-//                                                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                                                 if club.id == viewStore.clubs.last?.id {
                                                     viewStore.send(.loadMoreClubs)
                                                 }
-//                                                }
                                             }
                                         }
                                 }
