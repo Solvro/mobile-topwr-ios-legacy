@@ -48,7 +48,7 @@ public struct HomeEnvironment {
     let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
@@ -59,7 +59,7 @@ public struct HomeEnvironment {
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>
@@ -118,7 +118,7 @@ public let homeReducer = Reducer<
           .catchToEffect()
           .map(HomeAction.receivedBuildings)
   case .loadScienceClubs:
-      return env.getScienceClubs()
+      return env.getScienceClubs(0)
           .receive(on: env.mainQueue)
           .catchToEffect()
           .map(HomeAction.receivedScienceClubs)
@@ -325,7 +325,7 @@ public extension HomeEnvironment {
         getDepartments: failing0,
         getDepartment: failing1,
         getBuildings: failing0,
-        getScienceClubs: failing0,
+        getScienceClubs: failing1,
         getScienceClub: failing1,
         getWelcomeDayText: failing0,
         getWhatsNew: failing0
