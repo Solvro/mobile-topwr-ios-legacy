@@ -35,7 +35,7 @@ public struct MenuEnvironment {
     let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
     let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    let getScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
@@ -47,7 +47,7 @@ public struct MenuEnvironment {
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
         getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
@@ -246,7 +246,7 @@ struct MenuView_Previews: PreviewProvider {
                     getSessionDate: failing0,
                     getDepartments: failing0,
                     getBuildings: failing0,
-                    getScienceClubs: failing0,
+                    getScienceClubs: failing1,
                     getWelcomeDayText: failing0,
                     getDepartment: failing1,
                     getScienceClub: failing1,

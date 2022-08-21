@@ -12,7 +12,7 @@ public struct Api {
         self.session = URLSession.shared
     }
     
-    public func fetch(path: String) -> AnyPublisher<Data, ErrorModel> {
+    public func fetch(path: String, start: Int? = nil, limit: Int? = nil) -> AnyPublisher<Data, ErrorModel> {
         guard let url: URL = .init(
             string: scheme + host + path
         )
@@ -21,7 +21,17 @@ public struct Api {
                 .eraseToAnyPublisher()
         }
         
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+        
+        if start != nil && limit != nil {
+            var urlComponents = URLComponents(string: url.absoluteString)!
+            urlComponents.queryItems = [
+                URLQueryItem(name: "_start", value: "\(start!)"),
+                URLQueryItem(name: "_limit", value: "\(limit!)")
+            ]
+            
+            request = URLRequest(url: urlComponents.url!)
+        }
 
         return URLSession.DataTaskPublisher(request: request, session: .shared)
             .tryMap { data, response in
