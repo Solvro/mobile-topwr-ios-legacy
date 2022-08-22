@@ -45,7 +45,7 @@ public enum HomeAction: Equatable {
 public struct HomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
@@ -56,7 +56,7 @@ public struct HomeEnvironment {
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
-        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
@@ -108,7 +108,7 @@ public let homeReducer = Reducer<
           .catchToEffect()
           .map(HomeAction.receivedSessionDate)
   case .loadDepartments:
-      return env.getDepartments()
+      return env.getDepartments(0)
           .receive(on: env.mainQueue)
           .catchToEffect()
           .map(HomeAction.receivedDepartments)
@@ -198,7 +198,8 @@ public let homeReducer = Reducer<
             environment: {
                 .init(
                     mainQueue: $0.mainQueue,
-                    getScienceClub: $0.getScienceClub
+                    getScienceClub: $0.getScienceClub,
+                    getDepatrements: $0.getDepartments
                 )
             }
         )
@@ -221,7 +222,8 @@ public let homeReducer = Reducer<
             environment: {
                 .init(
                     mainQueue: $0.mainQueue,
-                    getDepartment: $0.getDepartment
+                    getDepartment: $0.getDepartment,
+                    getClubs: $0.getScienceClubs
                 )
             }
         )
@@ -322,7 +324,7 @@ public extension HomeEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
         getSessionDate: failing0,
-        getDepartments: failing0,
+        getDepartments: failing1,
         getDepartment: failing1,
         getBuildings: failing0,
         getScienceClubs: failing1,

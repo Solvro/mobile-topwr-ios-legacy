@@ -33,26 +33,26 @@ public enum MenuAction: Equatable, BindableAction {
 public struct MenuEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
-    let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+    let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
-        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -244,14 +244,14 @@ struct MenuView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .immediate,
                     getSessionDate: failing0,
-                    getDepartments: failing0,
+                    getDepartments: failing1,
                     getBuildings: failing0,
                     getScienceClubs: failing1,
                     getWelcomeDayText: failing0,
                     getDepartment: failing1,
                     getScienceClub: failing1,
                     getWhatsNew: failing0,
-                    getInfos: failing0
+                    getInfos: failing1
                 )
             )
         )
