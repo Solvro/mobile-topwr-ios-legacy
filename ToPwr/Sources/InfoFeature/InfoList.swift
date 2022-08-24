@@ -11,6 +11,8 @@ public struct InfoListState: Equatable {
 
     var searchState = SearchState()
     var text: String = ""
+    var isFetching = false
+    var noMoreFetches = false
     
     var isLoading: Bool {
         infos.isEmpty ? true : false
@@ -34,16 +36,23 @@ public enum InfoListAction: Equatable {
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case infoDetailsAction(InfoDetailsAction)
+    case receivedInfos(Result<[Info], ErrorModel>)
+    case fetchingOn
+    case loadMoreInfos
+
 }
 
 //MARK: - ENVIRONMENT
 public struct InfoListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
     
     public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>
     ) {
         self.mainQueue = mainQueue
+        self.getInfos = getInfos
     }
 }
 //MARK: - REDUCER
@@ -97,6 +106,26 @@ infoDetailsReducer
             return .none
         case .infoDetailsAction:
             return .none
+        case .fetchingOn:
+            state.isFetching = true
+            return .none
+        case .receivedInfos(.success(let infos)):
+            if infos.isEmpty {
+                state.noMoreFetches = true
+                state.isFetching = false
+                return .none
+            }
+            infos.forEach { state.infos.append(InfoDetailsState(info: $0)) }
+            state.filtered = state.infos
+            state.isFetching = false
+            return .none
+        case .receivedInfos(.failure(_)):
+            return .none
+        case .loadMoreInfos:
+            return env.getInfos(state.infos.count)
+                .receive(on: env.mainQueue)
+                .catchToEffect()
+                .map(InfoListAction.receivedInfos)
         }
     }
 )
@@ -122,7 +151,7 @@ public struct InfoListView: View {
                             )
                         ).padding(.bottom, 16)
                         LazyVStack(spacing: 16) {
-                            ForEach(viewStore.filtered) { club in
+                            ForEach(viewStore.filtered) { info in
                                 NavigationLink(
                                     destination: IfLetStore(
                                         self.store.scope(
@@ -132,15 +161,24 @@ public struct InfoListView: View {
                                         then: InfoDetailsView.init(store:),
                                         else: ProgressView.init
                                     ),
-                                    tag: club.id,
+                                    tag: info.id,
                                     selection: viewStore.binding(
                                         get: \.selection?.id,
                                         send: InfoListAction.setNavigation(selection:)
                                     )
                                 ) {
-                                    InfoCellView(viewState: club)
+                                    InfoCellView(viewState: info)
+                                        .onAppear {
+                                            if !viewStore.noMoreFetches {
+                                                viewStore.send(.fetchingOn)
+                                                if info.id == viewStore.infos.last?.id {
+                                                    viewStore.send(.loadMoreInfos)
+                                                }
+                                            }
+                                        }
                                 }
                             }
+                            if viewStore.isFetching { ProgressView() }
                         }
                     }
                 }

@@ -11,7 +11,9 @@ public struct DepartmentListState: Equatable {
     
     var searchState = SearchState()
     var text: String = ""
-    
+    var isFetching = false
+    var noMoreFetches = false
+
     var isLoading: Bool {
         departments.isEmpty ? true : false
     }
@@ -34,19 +36,26 @@ public enum DepartmentListAction: Equatable {
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case departmentDetailsAction(DepartmentDetailsAction)
+    case receivedDepartments(Result<[Department], ErrorModel>)
+    case fetchingOn
+    case loadMoreDepartments
+
 }
 
 //MARK: - ENVIRONMENT
 public struct DepartmentListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+    let getDepatrements: (Int) -> AnyPublisher<[Department], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
+        getDepatrements: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getScienceClub = getScienceClub
+        self.getDepatrements = getDepatrements
     }
 }
 
@@ -104,6 +113,25 @@ departmentDetailsReducer
             return .none
         case .departmentDetailsAction:
             return .none
+        case .loadMoreDepartments:
+            return env.getDepatrements(state.departments.count)
+                .receive(on: env.mainQueue)
+                .catchToEffect()
+                .map(DepartmentListAction.receivedDepartments)
+        case .receivedDepartments(.success(let clubs)):
+            if clubs.isEmpty {
+                state.isFetching = false
+                state.noMoreFetches = true
+                return .none
+            }
+            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
+            state.filtered = state.departments
+            return .none
+        case .fetchingOn:
+            state.isFetching = true
+            return .none
+        case .receivedDepartments(.failure(_)):
+            return .none
         }
     }
 )
@@ -158,9 +186,18 @@ public struct DepartmentListView: View {
                                   )
                                 ) {
                                     DepartmentCellView(state: department)
+                                        .onAppear {
+                                            if !viewStore.noMoreFetches {
+                                                viewStore.send(.fetchingOn)
+                                                if department.id == viewStore.departments.last?.id {
+                                                    viewStore.send(.loadMoreDepartments)
+                                                }
+                                            }
+                                        }
                                 }
                             }
                         }
+                        if viewStore.isFetching { ProgressView() }
                     }
                 }
                 .barLogo()

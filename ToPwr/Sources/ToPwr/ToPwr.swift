@@ -33,6 +33,7 @@ private func env() -> SplashEnvironment {
         getInfos: coreLogic.getInfos
     )
 }
+
 //
 //extension SplashEnvironment {
 //	static let mock: Self = .init(

@@ -21,11 +21,11 @@ public enum InfoAction: Equatable {
 //MARK: - ENVIRONMENT
 public struct InfoEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+    let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getInfos = getInfos
@@ -48,7 +48,7 @@ public let infoReducer = Reducer<
             return .none
         }
     case .loadInfos:
-        return env.getInfos()
+        return env.getInfos(0)
             .receive(on: env.mainQueue)
             .catchToEffect()
             .map(InfoAction.receivedInfos)
@@ -69,7 +69,8 @@ public let infoReducer = Reducer<
             action: /InfoAction.listAction,
             environment: {
                 .init(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    getInfos: $0.getInfos
                 )
             }
         )
@@ -117,7 +118,7 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension InfoEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getInfos: failing0
+        getInfos: failing1
     )
 }
 #endif

@@ -30,9 +30,9 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
-    public func getDepartments() -> AnyPublisher<[Department], ErrorModel> {
+    public func getDepartments(startingFrom start: Int) -> AnyPublisher<[Department], ErrorModel> {
         let path: String = "/departments"
-        return api.fetch(path: path)
+        return api.fetch(path: path, start: start, limit: fetchLimit)
             .decode(type: [Department].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
@@ -110,9 +110,9 @@ public struct CoreLogic {
             .eraseToAnyPublisher()
     }
     
-    public func getInfos() -> AnyPublisher<[Info], ErrorModel> {
+    public func getInfos(startingFrom start: Int) -> AnyPublisher<[Info], ErrorModel> {
         let path: String = "/infos"
-        return api.fetch(path: path)
+        return api.fetch(path: path, start: start, limit: fetchLimit)
             .decode(type: [Info].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
