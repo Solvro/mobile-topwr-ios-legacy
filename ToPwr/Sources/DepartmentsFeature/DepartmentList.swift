@@ -36,9 +36,9 @@ public enum DepartmentListAction: Equatable {
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case departmentDetailsAction(DepartmentDetailsAction)
-    case receivedClubs(Result<[Department], ErrorModel>)
+    case receivedDepartments(Result<[Department], ErrorModel>)
     case fetchingOn
-    case loadMoreClubs
+    case loadMoreDepartments
 
 }
 
@@ -113,12 +113,12 @@ departmentDetailsReducer
             return .none
         case .departmentDetailsAction:
             return .none
-        case .loadMoreClubs:
+        case .loadMoreDepartments:
             return env.getDepatrements(state.departments.count)
                 .receive(on: env.mainQueue)
                 .catchToEffect()
-                .map(DepartmentListAction.receivedClubs)
-        case .receivedClubs(.success(let clubs)):
+                .map(DepartmentListAction.receivedDepartments)
+        case .receivedDepartments(.success(let clubs)):
             if clubs.isEmpty {
                 state.isFetching = false
                 state.noMoreFetches = true
@@ -130,7 +130,7 @@ departmentDetailsReducer
         case .fetchingOn:
             state.isFetching = true
             return .none
-        case .receivedClubs(.failure(_)):
+        case .receivedDepartments(.failure(_)):
             return .none
         }
     }
@@ -190,7 +190,7 @@ public struct DepartmentListView: View {
                                             if !viewStore.noMoreFetches {
                                                 viewStore.send(.fetchingOn)
                                                 if department.id == viewStore.departments.last?.id {
-                                                    viewStore.send(.loadMoreClubs)
+                                                    viewStore.send(.loadMoreDepartments)
                                                 }
                                             }
                                         }
