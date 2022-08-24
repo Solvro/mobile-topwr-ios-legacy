@@ -36,9 +36,8 @@ public enum DepartmentListAction: Equatable {
     case searchAction(SearchAction)
     case setNavigation(selection: UUID?)
     case departmentDetailsAction(DepartmentDetailsAction)
-    
-    case fetchingOn
     case receivedClubs(Result<[Department], ErrorModel>)
+    case fetchingOn
     case loadMoreClubs
 
 }
@@ -121,13 +120,11 @@ departmentDetailsReducer
                 .map(DepartmentListAction.receivedClubs)
         case .receivedClubs(.success(let clubs)):
             if clubs.isEmpty {
-                state.noMoreFetches = true
                 state.isFetching = false
+                state.noMoreFetches = true
                 return .none
             }
-            clubs.forEach { club in
-                state.departments.append(DepartmentDetailsState(department: club))
-            }
+            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
             state.filtered = state.departments
             return .none
         case .fetchingOn:

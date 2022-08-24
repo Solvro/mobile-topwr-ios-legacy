@@ -103,17 +103,17 @@ public struct InfoView: View {
 }
 
 #if DEBUG
-//struct DepartmentsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        InfoView(
-//            store: Store(
-//                initialState: .init(),
-//                reducer: infoReducer,
-//                environment: .failing
-//            )
-//        )
-//    }
-//}
+struct DepartmentsView_Previews: PreviewProvider {
+    static var previews: some View {
+        InfoView(
+            store: Store(
+                initialState: .init(),
+                reducer: infoReducer,
+                environment: .failing
+            )
+        )
+    }
+}
 
 public extension InfoEnvironment {
     static let failing: Self = .init(

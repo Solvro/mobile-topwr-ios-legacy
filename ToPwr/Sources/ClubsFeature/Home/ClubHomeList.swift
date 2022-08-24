@@ -13,7 +13,6 @@ public struct ClubHomeListState: Equatable {
     var isLoading: Bool {
         clubs.isEmpty ? true : false
     }
-    
     var isFetching = false
     var noMoreFetches = false
     
@@ -29,7 +28,6 @@ public enum ClubHomeListAction: Equatable {
     case buttonTapped
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
-    
     case receivedClubs(Result<[ScienceClub], ErrorModel>)
     case loadMoreClubs
     case fetchingOn
@@ -89,7 +87,6 @@ clubDetailsReducer
             return .none
         case .clubDetailsAction(_):
             return .none
-            
         case .loadMoreClubs:
             return env.getClubs(state.clubs.count)
                 .receive(on: env.mainQueue)
@@ -101,9 +98,7 @@ clubDetailsReducer
                 state.isFetching = false
                 return .none
             }
-            clubs.forEach { club in
-                state.clubs.append(ClubDetailsState(club: club))
-            }
+            clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
             state.isFetching = false
             return .none
         case .receivedClubs(.failure(_)):

@@ -14,7 +14,6 @@ public struct DepartmentHomeListState: Equatable {
     var isLoading: Bool {
         departments.isEmpty ? true : false
     }
-    
     var isFetching = false
     var noMoreFetches = false
     
@@ -101,9 +100,7 @@ departmentDetailsReducer
                 state.isFetching = false
                 return .none
             }
-            clubs.forEach { club in
-                state.departments.append(DepartmentDetailsState(department: club))
-            }
+            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
             return .none
         case .fetchingOn:
             state.isFetching = true
@@ -174,6 +171,7 @@ public struct DepartmentHomeListView: View {
                                 }
                         }
                     }
+                    if viewStore.isFetching { ProgressView() }
                 }
                 .horizontalPadding(.normal)
             }
