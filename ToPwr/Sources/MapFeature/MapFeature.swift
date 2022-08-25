@@ -6,7 +6,7 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapFeatureState: Equatable {
-	var mapBottomSheetState = MapBottomSheetState(selectedId: nil, showSelection: false)
+	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
 	var selectionFromList: Bool = false
@@ -61,8 +61,7 @@ public let mapFeatureReducer = Reducer<
 			buildings: buildings.map {
 				MapBuildingCellState(building: $0)
 			},
-			selectedId: nil,
-			showSelection: false
+			selectedId: nil
 		)
 		state.mapViewState = MapState(
 			id: UUID(),
@@ -140,9 +139,10 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.newCellSelected(_)):
 		return .none
 	case .buildingListAction(.selectedCellAction(.buttonTapped)):
-		return .none
+		return .init(value: .mapViewAction(.annotationTapped(nil)))
 	case .mapViewAction(.annotationDeselected):
-		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
+		return .none
+	// .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
 	case .buildingListAction(.forcedCellAction(id: let id, action: let action)):
 		return .none
 	}

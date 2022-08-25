@@ -46,7 +46,6 @@ public let searchReducer = Reducer<
 public struct SearchView: View {
 	let store: Store<SearchState, SearchAction>
 	// state property wrappers introduced in order to make textField work as intended within GeometryReader
-	@State var showClearButton: Bool = false
 	@State var textInField: String = ""
 	
 	public init(
@@ -54,7 +53,7 @@ public struct SearchView: View {
 	) {
 		self.store = store
 	}
-#warning("Implement rounded search field in the better way") // is it done now? 
+#warning("Implement rounded search field in the better way")
 	public var body: some View {
 		WithViewStore(store) { viewStore in
 			HStack {
@@ -72,12 +71,6 @@ public struct SearchView: View {
 							// updating local source of truth
 							textInField = newValue
 							
-							if newValue.isEmpty {
-								showClearButton = false
-							}	else {
-								showClearButton = true
-							}
-							
 							// sending global info about change
 							viewStore.send(.update(newValue))
 						}
@@ -86,7 +79,7 @@ public struct SearchView: View {
 				.foregroundColor(K.SearchColors.textColor)
 				.padding(.trailing, 5)
 				
-				if showClearButton{
+				if !textInField.isEmpty {
 					Button(
 						action: {
 							// global info about clear action

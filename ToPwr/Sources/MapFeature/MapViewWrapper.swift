@@ -56,7 +56,7 @@ public let mapReducer = Reducer<
 	case .annotationTapped(let annotation):
 		state.selectedAnnotation = annotation
 		if annotation == nil {
-			return .init(value: .annotationDeselected)
+			return .none
 		}	else {
 			return .none
 		}
@@ -75,7 +75,6 @@ public let mapReducer = Reducer<
 public struct MapViewWrapper: View {
 	
 	let store: Store<MapState, MapAction>
-	@State var tmp: String? 
 	
 	public init(
 		store: Store<MapState, MapAction>
@@ -88,8 +87,12 @@ public struct MapViewWrapper: View {
 			MapView(
 				annotations: viewStore.annotations,
 				selectedAnnotationTitle: Binding(
-					get: { viewStore.selectedAnnotation },
+					get: {
+						viewStore.selectedAnnotation
+					},
 					set: { ant in
+						// program doesn't go here when setting value from within reducer
+						// probably have to rewrite this like search view.
 						viewStore.send(.annotationTapped(ant))
 					}
 				),
