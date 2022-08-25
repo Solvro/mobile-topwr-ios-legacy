@@ -168,7 +168,7 @@ struct MapBottomSheetView: View {
 										action: MapBottomSheetAction.selectedCellAction
 									),
 									then: MapBuildingCellView.init(store:),
-									else: { Text("") }
+									else: { EmptyView() }
 								)
 								// available cells
 								ForEachStore(
