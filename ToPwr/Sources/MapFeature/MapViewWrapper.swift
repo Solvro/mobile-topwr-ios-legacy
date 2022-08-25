@@ -56,7 +56,7 @@ public let mapReducer = Reducer<
 	case .annotationTapped(let annotation):
 		state.selectedAnnotation = annotation
 		if annotation == nil {
-			return .none
+			return .init(value: .annotationDeselected)
 		}	else {
 			return .none
 		}

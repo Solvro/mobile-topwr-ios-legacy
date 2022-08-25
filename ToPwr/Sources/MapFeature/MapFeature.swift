@@ -78,7 +78,7 @@ public let mapFeatureReducer = Reducer<
 		)
 		return .none
 	case .receivedBuildings(.failure(let error)):
-#warning("TODO: Show couldn't low data message")
+	#warning("TODO: Show couldn't load data message")
 		return .none
 	case .buildingListAction(.configureToSelectedAnnotationAcion(let annotaton)):
 		return .none
@@ -93,8 +93,7 @@ public let mapFeatureReducer = Reducer<
 		}	else {
 			if let annotation = annotation {
 				return .concatenate (
-					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped))),
-					.init(value: .sheetOpenStatusChanged(true))
+					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped)))
 				)
 			}
 			return .none
@@ -139,10 +138,9 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.newCellSelected(_)):
 		return .none
 	case .buildingListAction(.selectedCellAction(.buttonTapped)):
-		return .init(value: .mapViewAction(.annotationTapped(nil)))
-	case .mapViewAction(.annotationDeselected):
 		return .none
-	// .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
+	case .mapViewAction(.annotationDeselected):
+		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
 	case .buildingListAction(.forcedCellAction(id: let id, action: let action)):
 		return .none
 	}
