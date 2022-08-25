@@ -7,7 +7,14 @@ import Combine
 
 struct MapView: UIViewRepresentable {
 	var annotations: [CustomAnnotation]
-	@Binding var selectedAnnotationTitle: CustomAnnotation?
+	@Binding var selectedAnnotationTitle: CustomAnnotation? {
+		mutating willSet (newValue) {
+			if newValue == nil {
+				selectionTmpCopy = selectedAnnotationTitle
+			}
+		}
+	}
+	var selectionTmpCopy: CustomAnnotation? = nil
 	@Binding var region: MKCoordinateRegion
 	@ObservedObject var wrapperViewState: ViewStore<MapState,MapAction>
 	
@@ -15,6 +22,9 @@ struct MapView: UIViewRepresentable {
 		let view = MKMapView(frame: .zero)
 		view.delegate = context.coordinator
 		view.region = region // this must be here so that animation can work
+		if let safePastSelection = selectionTmpCopy {
+			view.deselectAnnotation(safePastSelection, animated: true)
+		}
 		return view
 	}
 	

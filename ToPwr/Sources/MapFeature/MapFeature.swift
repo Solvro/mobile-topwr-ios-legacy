@@ -6,7 +6,7 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapFeatureState: Equatable {
-	var mapBottomSheetState = MapBottomSheetState()
+	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
 	var selectionFromList: Bool = false
@@ -60,7 +60,8 @@ public let mapFeatureReducer = Reducer<
 		state.mapBottomSheetState = .init(
 			buildings: buildings.map {
 				MapBuildingCellState(building: $0)
-			}
+			},
+			selectedId: nil
 		)
 		state.mapViewState = MapState(
 			id: UUID(),
@@ -77,7 +78,7 @@ public let mapFeatureReducer = Reducer<
 		)
 		return .none
 	case .receivedBuildings(.failure(let error)):
-#warning("TODO: Show couldn't low data message")
+	#warning("TODO: Show couldn't load data message")
 		return .none
 	case .buildingListAction(.configureToSelectedAnnotationAcion(let annotaton)):
 		return .none
@@ -92,8 +93,7 @@ public let mapFeatureReducer = Reducer<
 		}	else {
 			if let annotation = annotation {
 				return .concatenate (
-					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped))),
-					.init(value: .sheetOpenStatusChanged(true))
+					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped)))
 				)
 			}
 			return .none
