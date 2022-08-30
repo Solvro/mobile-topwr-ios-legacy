@@ -3,6 +3,7 @@ import ComposableArchitecture
 import Combine
 import Common
 import HomeFeature
+import GameplayKit
 
 //MARK: - STATE
 public struct MapBottomSheetState: Equatable {
@@ -116,12 +117,16 @@ struct MapBottomSheetView: View {
 		static let minHeightRatio: CGFloat = 0.3
 	}
 	
+	
 	@GestureState private var translation: CGFloat = 0
 	var isOpenInternal: Binding<Bool>
+	var isFullViewInternal: Binding<Bool>
 	let store: Store<MapBottomSheetState, MapBottomSheetAction>
 	
 	let maxHeight: CGFloat
 	let minHeight: CGFloat
+	let offset = { maxHeight in maxHeight - (maxHeight * Constants.minHeightRatio) }
+	@State var topHeight: CGFloat!
 	
 	var indicator: some View {
 		RoundedRectangle(cornerRadius: Constants.radius)
@@ -135,72 +140,99 @@ struct MapBottomSheetView: View {
 	public init(
 		maxHeight: CGFloat,
 		store: Store<MapBottomSheetState, MapBottomSheetAction>,
-		isOpen: Binding<Bool>
+		isOpen: Binding<Bool>,
+		isFullView: Binding<Bool>
 	) {
 		self.maxHeight = maxHeight
 		self.minHeight = maxHeight * Constants.minHeightRatio
 		self.store = store
 		self.isOpenInternal = isOpen
+		self.topHeight = nil
+		self.isFullViewInternal = isFullView
 	}
 	
 	public var body: some View {
 		WithViewStore(store) { viewStore in
 			GeometryReader { geometry in
 				VStack(spacing: 0) {
-					self.indicator.padding()
-					VStack(alignment: .leading, spacing: 0) {
-						Text(Strings.MapView.buildings)
-							.font(.appMediumTitle2)
-							.padding()
-						SearchView(
-							store: store.scope(
-								state: \.searchState,
-								action: MapBottomSheetAction.searchAction
-							)
-						).padding(.bottom, 10)
-						
-						ScrollView(.vertical, showsIndicators: true) {
-							LazyVStack(spacing: 10) {
-								// optional selected cell
-								IfLetStore(
-									store.scope(
-										state: \.selectedId,
-										action: MapBottomSheetAction.selectedCellAction
-									),
-									then: MapBuildingCellView.init(store:),
-									else: { EmptyView() }
-								)
-								// available cells
-								ForEachStore(
-									store.scope(
-										state: \.filtered,
-										action: MapBottomSheetAction.cellAction(id:action:)
-									)
-								) { store in
-									MapBuildingCellView(
-										store: store
-									)
+					GeometryReader { proxy in
+							VStack(alignment: .leading, spacing: 0) {
+								HStack {
+									Spacer()
+									self.indicator.padding()
+									Spacer()
 								}
+								Text(Strings.MapView.buildings)
+									.font(.appMediumTitle2)
+									.padding()
+								SearchView(
+									store: store.scope(
+										state: \.searchState,
+										action: MapBottomSheetAction.searchAction
+									)
+								).padding(.bottom, 10)
 							}
-							.horizontalPadding(.normal)
-						}
+							.onAppear {
+								self.topHeight = proxy.size.height + 95 // 95 is the one cell height 90 + 5 points of padding
+							}
 					}
+					
+					ScrollView(.vertical, showsIndicators: true) {
+						LazyVStack(spacing: 10) {
+							// optional selected cell
+							IfLetStore(
+								store.scope(
+									state: \.selectedId,
+									action: MapBottomSheetAction.selectedCellAction
+								),
+								then: MapBuildingCellView.init(store:),
+								else: { EmptyView() }
+							)
+							// available cells
+							ForEachStore(
+								store.scope(
+									state: \.filtered,
+									action: MapBottomSheetAction.cellAction(id:action:)
+								)
+							) { store in
+								MapBuildingCellView(
+									store: store
+								)
+							}
+						}
+						.horizontalPadding(.normal)
+					}.frame(minHeight: self.maxHeight * 0.75)
 				}
 				.frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
 				.background(Color.white)
 				.cornerRadius(Constants.radius, corners: [.topLeft, .topRight])
 				.frame(height: geometry.size.height, alignment: .bottom)
-				.offset(y: max((isOpenInternal.wrappedValue ? 0 : self.maxHeight - (self.maxHeight * Constants.minHeightRatio)) + self.translation, 0))
+				.offset(y: max((isOpenInternal.wrappedValue ? isFullViewInternal.wrappedValue ? 0 : maxHeight - topHeight : self.offset(maxHeight)) + self.translation, 0))
 				.animation(.default)
 				.gesture(
 					DragGesture().updating(self.$translation) { value, state, _ in
 						state = value.translation.height
 					}.onEnded { value in
 						let snapDistance = self.maxHeight * Constants.snapRatio
-						guard abs(value.translation.height) > snapDistance else {
-							return
+						let smallSnapDistance = self.topHeight * Constants.snapRatio
+						print(isFullViewInternal.wrappedValue)
+						if self.isFullViewInternal.wrappedValue {
+							guard abs(value.translation.height) > snapDistance else {
+								// this makes sure certain distance was exceded
+								return
+							}
+						}	else {
+							guard abs(value.translation.height) > smallSnapDistance else {
+								// this makes sure certain distance was exceded
+								return
+							}
 						}
+						
 						value.translation.height < 0 ? (isOpenInternal.wrappedValue = true) : (isOpenInternal.wrappedValue = false)
+						// this tells app in what direction was the sheet pulled
+						
+						isFullViewInternal.wrappedValue = true
+						// no matter the direction app resets isFullViewInternal to default value
 					}
 				)
 			}

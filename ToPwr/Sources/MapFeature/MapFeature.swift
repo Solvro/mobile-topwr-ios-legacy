@@ -9,6 +9,7 @@ public struct MapFeatureState: Equatable {
 	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
+	var isFullView: Bool = true
 	var selectionFromList: Bool = false
 	public init(){}
 }
@@ -24,6 +25,7 @@ public enum MapFeatureAction: Equatable {
 	case buildingListAction(MapBottomSheetAction)
 	case mapViewAction(MapAction)
 	case sheetOpenStatusChanged(Bool)
+	case fullViewChangeRequest(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -110,8 +112,11 @@ public let mapFeatureReducer = Reducer<
 		   let lon = buildingState.building.longitude
 		{
 			return .concatenate(
-				.init(value: .sheetOpenStatusChanged(false)),
+				.init(value: .fullViewChangeRequest(false)),
+				//.init(value: .sheetOpenStatusChanged(false)),
 				.init(value: .mapViewAction(.speciaUseNewselectionSetter(true))),
+				// why above effect calls button tapped on celected cell??
+				/// FIX THIS !!!
 				.init(value:
 						.mapViewAction(
 							.annotationTappedInList(
@@ -138,10 +143,14 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.newCellSelected(_)):
 		return .none
 	case .buildingListAction(.selectedCellAction(.buttonTapped)):
+		//state.isOpen = false
 		return .none
 	case .mapViewAction(.annotationDeselected):
 		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
 	case .buildingListAction(.forcedCellAction(id: let id, action: let action)):
+		return .none
+	case .fullViewChangeRequest(let isFull):
+		state.isFullView = isFull
 		return .none
 	}
 }
@@ -193,6 +202,10 @@ public struct MapFeatureView: View {
 					isOpen: Binding(
 						get: { viewStore.isOpen },
 						set: { viewStore.send(.sheetOpenStatusChanged($0)) }
+					),
+					isFullView: Binding(
+						get: { viewStore.isFullView },
+						set: { viewStore.send(.fullViewChangeRequest($0)) }
 					)
 				)
 			}
