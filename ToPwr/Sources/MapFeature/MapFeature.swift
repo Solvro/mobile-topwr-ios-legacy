@@ -112,11 +112,7 @@ public let mapFeatureReducer = Reducer<
 		   let lon = buildingState.building.longitude
 		{
 			return .concatenate(
-				.init(value: .fullViewChangeRequest(false)),
-				//.init(value: .sheetOpenStatusChanged(false)),
 				.init(value: .mapViewAction(.speciaUseNewselectionSetter(true))),
-				// why above effect calls button tapped on celected cell??
-				/// FIX THIS !!!
 				.init(value:
 						.mapViewAction(
 							.annotationTappedInList(
@@ -143,7 +139,7 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.newCellSelected(_)):
 		return .none
 	case .buildingListAction(.selectedCellAction(.buttonTapped)):
-		//state.isOpen = false
+		state.isFullView = true
 		return .none
 	case .mapViewAction(.annotationDeselected):
 		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
@@ -151,6 +147,9 @@ public let mapFeatureReducer = Reducer<
 		return .none
 	case .fullViewChangeRequest(let isFull):
 		state.isFullView = isFull
+		return .none
+	case .buildingListAction(.remoteCancelationConf):
+		state.isFullView = false
 		return .none
 	}
 }

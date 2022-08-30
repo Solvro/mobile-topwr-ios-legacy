@@ -32,6 +32,7 @@ public enum MapBottomSheetAction: Equatable {
 	case newCellSelected(Int?)
 	case selectedCellAction(MapBuildingCellAction)
 	case forcedCellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction) //enables imposing influance on the "selected cell" state without consequences from outside reducers
+	case remoteCancelationConf
 }
 
 //MARK: - ENVIRONMENT
@@ -95,7 +96,7 @@ public let mapBottomSheetReducer = Reducer<
 					state.filtered.append(oldSelection)
 				}
 			}
-			return .none
+			return .init(value: .remoteCancelationConf) // whenever new cell is selected sheet has to go down
 		case .selectedCellAction(.buttonTapped):
 			state.selectedId = nil
 			state.filtered = state.buildings
@@ -103,6 +104,11 @@ public let mapBottomSheetReducer = Reducer<
 			return .none
 		case .forcedCellAction(id: let id, action: let action):
 			return .init(value: .newCellSelected(id))
+		case .remoteCancelationConf:
+			// this effect ensures correct order of state modifications so that
+			// bottom sheet will close when selecting cell and open when sheet is closed
+			// and seleced cell is pressed
+			return .none
 		}
 	}
 )
