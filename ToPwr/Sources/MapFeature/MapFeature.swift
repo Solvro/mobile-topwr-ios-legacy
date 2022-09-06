@@ -6,9 +6,10 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapFeatureState: Equatable {
-	var mapBottomSheetState = MapBottomSheetState()
+	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	var isOpen: Bool = false
+	var isFullView: Bool = true
 	var selectionFromList: Bool = false
 	public init(){}
 }
@@ -24,6 +25,7 @@ public enum MapFeatureAction: Equatable {
 	case buildingListAction(MapBottomSheetAction)
 	case mapViewAction(MapAction)
 	case sheetOpenStatusChanged(Bool)
+	case fullViewChangeRequest(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -60,7 +62,8 @@ public let mapFeatureReducer = Reducer<
 		state.mapBottomSheetState = .init(
 			buildings: buildings.map {
 				MapBuildingCellState(building: $0)
-			}
+			},
+			selectedId: nil
 		)
 		state.mapViewState = MapState(
 			id: UUID(),
@@ -77,7 +80,7 @@ public let mapFeatureReducer = Reducer<
 		)
 		return .none
 	case .receivedBuildings(.failure(let error)):
-#warning("TODO: Show couldn't low data message")
+	#warning("TODO: Show couldn't load data message")
 		return .none
 	case .buildingListAction(.configureToSelectedAnnotationAcion(let annotaton)):
 		return .none
@@ -92,8 +95,7 @@ public let mapFeatureReducer = Reducer<
 		}	else {
 			if let annotation = annotation {
 				return .concatenate (
-					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped))),
-					.init(value: .sheetOpenStatusChanged(true))
+					.init(value: .buildingListAction(.forcedCellAction(id: annotation.id, action: .buttonTapped)))
 				)
 			}
 			return .none
@@ -110,7 +112,6 @@ public let mapFeatureReducer = Reducer<
 		   let lon = buildingState.building.longitude
 		{
 			return .concatenate(
-				.init(value: .sheetOpenStatusChanged(false)),
 				.init(value: .mapViewAction(.speciaUseNewselectionSetter(true))),
 				.init(value:
 						.mapViewAction(
@@ -138,10 +139,17 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.newCellSelected(_)):
 		return .none
 	case .buildingListAction(.selectedCellAction(.buttonTapped)):
+		state.isFullView = true
 		return .none
 	case .mapViewAction(.annotationDeselected):
 		return .init(value: .buildingListAction(.selectedCellAction(.buttonTapped)))
 	case .buildingListAction(.forcedCellAction(id: let id, action: let action)):
+		return .none
+	case .fullViewChangeRequest(let isFull):
+		state.isFullView = isFull
+		return .none
+	case .buildingListAction(.remoteCancelationConf):
+		state.isFullView = false
 		return .none
 	}
 }
@@ -193,6 +201,10 @@ public struct MapFeatureView: View {
 					isOpen: Binding(
 						get: { viewStore.isOpen },
 						set: { viewStore.send(.sheetOpenStatusChanged($0)) }
+					),
+					isFullView: Binding(
+						get: { viewStore.isFullView },
+						set: { viewStore.send(.fullViewChangeRequest($0)) }
 					)
 				)
 			}
