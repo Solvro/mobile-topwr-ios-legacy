@@ -3,7 +3,6 @@ import ComposableArchitecture
 import Combine
 import Common
 import HomeFeature
-import GameplayKit
 
 //MARK: - STATE
 public struct MapBottomSheetState: Equatable {
@@ -122,7 +121,6 @@ struct MapBottomSheetView: View {
 		static let snapRatio: CGFloat = 0.25
 		static let minHeightRatio: CGFloat = 0.3
 	}
-	
 	
 	@GestureState private var translation: CGFloat = 0
 	var isOpenInternal: Binding<Bool>
