@@ -3,7 +3,6 @@ import ComposableArchitecture
 
 //MARK: - STATE
 public struct SearchState: Equatable {
-	var search: String = ""
 	let placeholder: String
 	
 	public init(
@@ -37,10 +36,8 @@ public let searchReducer = Reducer<
 > { state, action, env in
 	switch action {
 	case .update(let text):
-		state.search = text
 		return .none
 	case .clearSearch:
-		state.search = ""
 		return .none
 	}
 }
@@ -48,6 +45,8 @@ public let searchReducer = Reducer<
 //MARK: - VIEW
 public struct SearchView: View {
 	let store: Store<SearchState, SearchAction>
+	// state property wrappers introduced in order to make textField work as intended within GeometryReader
+	@State var textInField: String = ""
 	
 	public init(
 		store: Store<SearchState, SearchAction>
@@ -64,18 +63,29 @@ public struct SearchView: View {
 				
 				TextField(
 					viewStore.placeholder,
-					text: viewStore.binding(
-						get: \.search,
-						send: SearchAction.update
+					text: Binding(
+						get: {
+							textInField
+						},
+						set: { newValue in
+							// updating local source of truth
+							textInField = newValue
+							
+							// sending global info about change
+							viewStore.send(.update(newValue))
+						}
 					)
 				)
 				.foregroundColor(K.SearchColors.textColor)
 				.padding(.trailing, 5)
 				
-				if !viewStore.search.isEmpty {
+				if !textInField.isEmpty {
 					Button(
 						action: {
+							// global info about clear action
 							viewStore.send(.clearSearch)
+							// updating local source of truth
+							textInField = ""
 						},
 						label: {
 							Image(systemName: "x.circle.fill")
@@ -83,7 +93,6 @@ public struct SearchView: View {
 								.padding(8)
 						}
 					)
-					
 				}
 			}
 			.background(K.SearchColors.lightGray)
