@@ -69,7 +69,7 @@ public struct InfoDetailsView: View {
                         url:  viewStore.info.photo?.url,
                         contentMode: .aspectFill
                     )
-                        .frame(height: Constants.backgroundImageHeigth)
+						.frame(height: Constants.backgroundImageHeigth)
                     HStack{
                         Text(viewStore.info.title)
                             .font(.appMediumTitle3)
