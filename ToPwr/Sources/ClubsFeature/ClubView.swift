@@ -22,12 +22,12 @@ public enum ClubsAction: Equatable {
 //MARK: - ENVIRONMENT
 public struct ClubsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
+    let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
+        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
@@ -52,7 +52,7 @@ public let ClubsReducer = Reducer<
             return .none
         }
     case .loadClubs:
-        return env.getClubs()
+        return env.getClubs(0)
             .receive(on: env.mainQueue)
             .catchToEffect()
             .map(ClubsAction.receivedClubs)
@@ -74,7 +74,8 @@ public let ClubsReducer = Reducer<
             environment: {
                 .init(
                     mainQueue: $0.mainQueue,
-                    getDepartment: $0.getDepartment
+                    getDepartment: $0.getDepartment,
+                    getClubs: $0.getClubs
                 )
             }
         )
@@ -122,7 +123,7 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension ClubsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getClubs: failing0,
+        getClubs: failing1,
         getDepartment: failing1
     )
 }
