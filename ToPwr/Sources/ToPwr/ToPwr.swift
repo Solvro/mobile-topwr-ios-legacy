@@ -3,6 +3,7 @@ import SplashFeature
 import CoreLogic
 import Common
 import Combine
+import Foundation
 
 private let coreLogic: CoreLogic = CoreLogic()
 
