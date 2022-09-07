@@ -31,6 +31,7 @@ public enum SplashAction: Equatable {
     case stopLoading
     case setWriting(Bool)
     case menuAction(MenuAction)
+	case delayWritingBy(Int)
 }
 
 //MARK: - ENVIRONMENT
@@ -99,6 +100,11 @@ public let splashReducer = Reducer<
         return .none
     case .menuAction:
         return .none
+	case .delayWritingBy(let delay):
+		return .task {
+			try await env.mainQueue.sleep(for: .seconds(delay))
+			return .setWriting(false)
+		}
     }
 }
 .combined(
@@ -278,13 +284,8 @@ public struct SplashView: View {
                         withAnimation(.easeInOut(duration: Constants.animationDuration)){
                             progress = 1.0
                         }
-//                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(Constants.checkIfLoadedAfter)) {
-//                            withAnimation {
-//                                viewStore.send(.setWriting(false))
-//                            }
-//                        }
+						viewStore.send(.delayWritingBy(Constants.checkIfLoadedAfter))
                     }
-                    
                 }else if viewStore.isLoading{
                     LoadingAnimation()
                 } else {

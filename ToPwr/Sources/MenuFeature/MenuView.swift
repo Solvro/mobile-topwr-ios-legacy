@@ -15,7 +15,9 @@ public struct MenuState: Equatable {
     var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
+	
 	var selection = 1
+	fileprivate let bottomSheetOnAppearUpSLideDelay = 0.5
     
     public init(){}
 }
@@ -77,12 +79,8 @@ public let menuReducer = Reducer<
     switch action {
 	case .homeAction(.buildingListAction(.listButtonTapped)):
 		state.selection = 2
-		return .task {
-			//do {
-				//try await Task.sleep(nanoseconds: 500000000)
-				try await environment.mainQueue.sleep(for: .seconds(1))
-//			}
-//			catch{}
+		return .task { [delay = state.bottomSheetOnAppearUpSLideDelay] in
+			try await environment.mainQueue.sleep(for: .seconds(delay))
 			return .mapAction(.sheetOpenStatusChanged(true))
 		}
 	case .homeAction:
