@@ -44,25 +44,18 @@ public struct WhatsNewHomeCellView: View {
                     .font(.appRegularTitle4)
                     .verticalPadding(.normal)
                     .multilineTextAlignment(.leading)
-                HStack {
-                    Button(
-                        action: {
-                        #warning("TO DO")
-                        },
-                        label: {
-                            HStack {
-                                Text(Strings.Other.readMore)
-                                    .font(.appMediumTitle4)
-                                    .foregroundColor(K.Colors.white)
-                            }
-                            .horizontalPadding(.normal)
-                            .frame(height: Constants.buttonHeight)
-                            .background(K.Colors.red)
-                            .cornerRadius(UIDimensions.normal.cornerRadius)
-                        }
-                    )
-                    Spacer()
-                }
+				HStack {
+					HStack {
+						Text(Strings.Other.readMore)
+							.font(.appMediumTitle4)
+							.foregroundColor(K.Colors.white)
+					}
+					.horizontalPadding(.normal)
+					.frame(height: Constants.buttonHeight)
+					.background(K.Colors.red)
+					.cornerRadius(UIDimensions.normal.cornerRadius)
+					Spacer()
+				}
             }
             .padding(.normal)
         }
