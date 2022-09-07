@@ -278,11 +278,11 @@ public struct SplashView: View {
                         withAnimation(.easeInOut(duration: Constants.animationDuration)){
                             progress = 1.0
                         }
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(Constants.checkIfLoadedAfter)) {
-                            withAnimation {
-                                viewStore.send(.setWriting(false))
-                            }
-                        }
+//                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(Constants.checkIfLoadedAfter)) {
+//                            withAnimation {
+//                                viewStore.send(.setWriting(false))
+//                            }
+//                        }
                     }
                     
                 }else if viewStore.isLoading{

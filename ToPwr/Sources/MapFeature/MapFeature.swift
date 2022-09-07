@@ -8,7 +8,7 @@ import HomeFeature
 public struct MapFeatureState: Equatable {
 	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
 	var mapViewState = MapState(id: UUID(), annotations: [])
-	var isOpen: Bool = false
+	public var isOpen: Bool = false
 	var isFullView: Bool = true
 	var selectionFromList: Bool = false
 	public init(){}

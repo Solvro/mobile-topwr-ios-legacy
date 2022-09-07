@@ -15,18 +15,19 @@ public struct MenuState: Equatable {
     var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
+	var selection = 1
     
     public init(){}
 }
 
 //MARK: - ACTION
-public enum MenuAction: Equatable, BindableAction {
+public enum MenuAction: Equatable {
     case homeAction(HomeAction)
     case mapAction(MapFeatureAction)
     case departmentsAction(DepartmentsAction)
     case clubsAction(ClubsAction)
     case infoAction(InfoAction)
-    case binding(BindingAction<MenuState>)
+	case newTabSelection(Int)
 }
 
 //MARK: - ENVIRONMENT
@@ -74,8 +75,18 @@ public let menuReducer = Reducer<
     MenuEnvironment
 > { state, action, environment in
     switch action {
-    case .homeAction:
-        return .none
+	case .homeAction(.buildingListAction(.listButtonTapped)):
+		state.selection = 2
+		return .task {
+			//do {
+				//try await Task.sleep(nanoseconds: 500000000)
+				try await environment.mainQueue.sleep(for: .seconds(1))
+//			}
+//			catch{}
+			return .mapAction(.sheetOpenStatusChanged(true))
+		}
+	case .homeAction:
+		return .none
     case .mapAction:
         return .none
     case .departmentsAction:
@@ -84,11 +95,11 @@ public let menuReducer = Reducer<
         return .none
     case .infoAction:
         return .none
-    case .binding:
-        return .none
+	case .newTabSelection(let selection):
+		state.selection = selection
+		return .none
     }
 }
-.binding()
 .combined(
     with: homeReducer
         .pullback(
@@ -172,64 +183,76 @@ public struct MenuView: View {
     }
     
     public var body: some View {
-        TabView {
-            HomeView(
-                store: self.store.scope(
-                    state: \.homeState,
-                    action: MenuAction.homeAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("SchoolIcon")
-                }
-            
-            MapFeatureView(
-                store: self.store.scope(
-                    state: \.mapState,
-                    action: MenuAction.mapAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("CompassIcon")
-                }
-            
-            DepartmentsView(
-                store: self.store.scope(
-                    state: \.departmentsState,
-                    action: MenuAction.departmentsAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("HatIcon")
-                }
-            
-            ClubsView(
-                store: self.store.scope(
-                    state: \.clubsState,
-                    action: MenuAction.clubsAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("RocketIcon")
-                }
-            InfoView(
-                store: self.store.scope(
-                    state: \.infoState,
-                    action: MenuAction.infoAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("InfoIcon")
-                }
-        }.onAppear(perform: {
-            UITabBar.appearance().backgroundColor = .systemBackground
-        })
-        .accentColor(K.Colors.firstColorDark)
+		WithViewStore(store) { viewStore in
+			TabView(
+				selection: Binding(
+					get: { viewStore.selection },
+					set: { viewStore.send(.newTabSelection($0))}
+				)
+			){
+				HomeView(
+					store: self.store.scope(
+						state: \.homeState,
+						action: MenuAction.homeAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("SchoolIcon")
+				}
+				.tag(1)
+				
+				MapFeatureView(
+					store: self.store.scope(
+						state: \.mapState,
+						action: MenuAction.mapAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("CompassIcon")
+				}
+				.tag(2)
+				
+				DepartmentsView(
+					store: self.store.scope(
+						state: \.departmentsState,
+						action: MenuAction.departmentsAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("HatIcon")
+				}
+				.tag(3)
+				
+				ClubsView(
+					store: self.store.scope(
+						state: \.clubsState,
+						action: MenuAction.clubsAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("RocketIcon")
+				}
+				.tag(4)
+				InfoView(
+					store: self.store.scope(
+						state: \.infoState,
+						action: MenuAction.infoAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("InfoIcon")
+				}
+				.tag(5)
+			}.onAppear(perform: {
+				UITabBar.appearance().backgroundColor = .systemBackground
+			})
+			.accentColor(K.Colors.firstColorDark)
+		}
     }
 }
 
