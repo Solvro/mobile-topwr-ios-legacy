@@ -6,13 +6,17 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapFeatureState: Equatable {
-	var mapBottomSheetState = MapBottomSheetState(selectedId: nil)
+	var mapBottomSheetState = MapBottomSheetState()
 	var mapViewState = MapState(id: UUID(), annotations: [])
 	public var isOpen: Bool = false
 	var isFullView: Bool = true
 	var selectionFromList: Bool = false
 	public let bottomSheetOnAppearUpSlideDelay = 0.5
-	public init(){}
+	let preselectionID: Int?
+	
+	public init(preselectionID: Int? = nil){
+		self.preselectionID = preselectionID
+	}
 }
 
 //MARK: - ACTION
@@ -79,7 +83,11 @@ public let mapFeatureReducer = Reducer<
 				)
 			})
 		)
-		return .none
+		if let preselectedID = state.preselectionID {
+			return .init(value: .buildingListAction(.cellAction(id: preselectedID, action: .buttonTapped)))
+		}	else {
+			return .none
+		}
 	case .receivedBuildings(.failure(let error)):
 	#warning("TODO: Show couldn't load data message")
 		return .none

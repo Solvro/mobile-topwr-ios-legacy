@@ -6,7 +6,7 @@ import Common
 public struct BuildingListState: Equatable {
     let title: String = Strings.HomeLists.buildingListTitle
     let buttonText: String = Strings.HomeLists.buildingListButton
-    var buildings: IdentifiedArrayOf<BuildingCellState> = []
+    public var buildings: IdentifiedArrayOf<BuildingCellState> = []
     
     var isLoading: Bool {
         buildings.isEmpty ? true : false

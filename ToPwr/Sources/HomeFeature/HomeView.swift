@@ -10,7 +10,7 @@ import WhatsNewFeature
 public struct HomeState: Equatable {
     var whatsNewListState = WhatsNewListState()
     var departmentListState = DepartmentHomeListState()
-    var buildingListState = BuildingListState()
+    public var buildingListState = BuildingListState()
     var clubHomeListState = ClubHomeListState()
     var exceptations: ExceptationDays?
     var sessionDay: SessionDay? = nil

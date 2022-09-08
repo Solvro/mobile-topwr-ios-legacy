@@ -84,6 +84,11 @@ public let menuReducer = Reducer<
 	case .homeAction(.departmentListAction(.listButtonTapped)):
 		state.selection = 3
 		return .none
+	case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
+		let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
+		state.mapState = MapFeatureState(preselectionID: id)
+		state.selection = 2
+		return .none
 	case .homeAction:
 		return .none
     case .mapAction:

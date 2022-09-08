@@ -15,7 +15,7 @@ public struct MapBottomSheetState: Equatable {
 	
 	public init(
 		buildings: [MapBuildingCellState] = [],
-		selectedId: MapBuildingCellState?
+		selectedId: MapBuildingCellState? = nil
 	){
 		self.buildings = .init(uniqueElements: buildings)
 		self.filtered = self.buildings
