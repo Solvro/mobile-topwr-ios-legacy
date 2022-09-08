@@ -15,10 +15,8 @@ public struct MenuState: Equatable {
     var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
-	
 	var selection = 1
-	fileprivate let bottomSheetOnAppearUpSlideDelay = 0.5
-    
+	
     public init(){}
 }
 
@@ -79,10 +77,13 @@ public let menuReducer = Reducer<
     switch action {
 	case .homeAction(.buildingListAction(.listButtonTapped)):
 		state.selection = 2
-		return .task { [delay = state.bottomSheetOnAppearUpSlideDelay] in
+		return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
 			try await environment.mainQueue.sleep(for: .seconds(delay))
 			return .mapAction(.sheetOpenStatusChanged(true))
 		}
+	case .homeAction(.departmentListAction(.listButtonTapped)):
+		state.selection = 3
+		return .none
 	case .homeAction:
 		return .none
     case .mapAction:
@@ -116,18 +117,20 @@ public let menuReducer = Reducer<
                         getWhatsNew: env.getWhatsNew
                     )
             }
-        )
+		)
 )
 .combined(
-    with: mapFeatureReducer
-        .pullback(
-            state: \.mapState,
-            action: /MenuAction.mapAction,
-            environment: { env in
-                    .init(getBuildings: env.getBuildings,
-                          mainQueue: env.mainQueue)
-            }
-        )
+	with: mapFeatureReducer
+		.pullback(
+			state: \.mapState,
+			action: /MenuAction.mapAction,
+			environment: { env in
+					.init(
+						getBuildings: env.getBuildings,
+						mainQueue: env.mainQueue
+					)
+			}
+		)
 )
 .combined(
     with: DepartmentsReducer

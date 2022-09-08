@@ -11,6 +11,7 @@ public struct MapFeatureState: Equatable {
 	public var isOpen: Bool = false
 	var isFullView: Bool = true
 	var selectionFromList: Bool = false
+	public let bottomSheetOnAppearUpSlideDelay = 0.5
 	public init(){}
 }
 
