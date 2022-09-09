@@ -21,12 +21,12 @@ public enum DepartmentsAction: Equatable {
 //MARK: - ENVIRONMENT
 public struct DepartmentsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getDepartments: () -> AnyPublisher<[Department], ErrorModel>
+    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartments: @escaping () -> AnyPublisher<[Department], ErrorModel>,
+        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     ) {
         self.mainQueue = mainQueue
@@ -51,7 +51,7 @@ public let DepartmentsReducer = Reducer<
             return .none
         }
     case .loadDepartments:
-        return env.getDepartments()
+        return env.getDepartments(0)
             .receive(on: env.mainQueue)
             .catchToEffect()
             .map(DepartmentsAction.receivedDepartments)
@@ -75,7 +75,8 @@ public let DepartmentsReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getScienceClub: env.getScienceClub
+                        getScienceClub: env.getScienceClub,
+                        getDepatrements: env.getDepartments
                     )
             }
         )
@@ -124,7 +125,7 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension DepartmentsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getDepartments: failing0,
+        getDepartments: failing1,
         getScienceClub: failing1
     )
 }

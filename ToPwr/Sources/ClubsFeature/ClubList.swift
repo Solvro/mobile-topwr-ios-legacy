@@ -120,9 +120,7 @@ clubDetailsReducer
                     state.isFetching = false
                     return .none
                 }
-                clubs.forEach { club in
-                    state.clubs.append(ClubDetailsState(club: club))
-                }
+                clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
                 state.filtered = state.clubs
                 state.isFetching = false
                 return .none
@@ -183,8 +181,8 @@ public struct ClubListView: View {
                                         }
                                 }
                             }
+                            if viewStore.isFetching { ProgressView() }
                         }
-                        if viewStore.isFetching { ProgressView() }
                     }
                 }
                 .barLogo()

@@ -13,6 +13,8 @@ public struct ClubHomeListState: Equatable {
     var isLoading: Bool {
         clubs.isEmpty ? true : false
     }
+    var isFetching = false
+    var noMoreFetches = false
     
     public init(
         clubs: [ClubDetailsState] = []
@@ -26,19 +28,25 @@ public enum ClubHomeListAction: Equatable {
     case buttonTapped
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
+    case receivedClubs(Result<[ScienceClub], ErrorModel>)
+    case loadMoreClubs
+    case fetchingOn
 }
 
 //MARK: - ENVIRONMENT
 public struct ClubHomeListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
+    let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
+        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getDepartment = getDepartment
+        self.getClubs = getClubs
     }
 }
 
@@ -78,6 +86,25 @@ clubDetailsReducer
             state.selection = nil
             return .none
         case .clubDetailsAction(_):
+            return .none
+        case .loadMoreClubs:
+            return env.getClubs(state.clubs.count)
+                .receive(on: env.mainQueue)
+                .catchToEffect()
+                .map(ClubHomeListAction.receivedClubs)
+        case .receivedClubs(.success(let clubs)):
+            if clubs.isEmpty {
+                state.noMoreFetches = true
+                state.isFetching = false
+                return .none
+            }
+            clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
+            state.isFetching = false
+            return .none
+        case .receivedClubs(.failure(_)):
+            return .none
+        case .fetchingOn:
+            state.isFetching = true
             return .none
         }
     }
@@ -121,8 +148,17 @@ public struct ClubHomeListView: View {
                             )
                         ) {
                             ClubHomeCellView(viewState: club)
+                                .onAppear {
+                                    if !viewStore.noMoreFetches {
+                                        viewStore.send(.fetchingOn)
+                                        if club.id == viewStore.clubs.last?.id {
+                                            viewStore.send(.loadMoreClubs)
+                                        }
+                                    }
+                                }
                         }
                     }
+                    if viewStore.isFetching { ProgressView() }
                 }
                 .horizontalPadding(.normal)
             }
