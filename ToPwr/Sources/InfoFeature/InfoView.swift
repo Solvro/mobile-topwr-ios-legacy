@@ -14,7 +14,9 @@ public struct InfoState: Equatable {
 public enum InfoAction: Equatable {
     case onAppear
     case loadInfos
+	case loadAboutUs
     case receivedInfos(Result<[Info], ErrorModel>)
+	case receiveAboutUs(Result<AboutUs, ErrorModel>)
     case listAction(InfoListAction)
     case dismissKeyboard
 	case showAlertStateChange(Bool)
@@ -24,13 +26,16 @@ public enum InfoAction: Equatable {
 public struct InfoEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>,
+		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getInfos = getInfos
+		self.getAboutUs = getAboutUs
     }
 }
 
@@ -41,14 +46,17 @@ public let infoReducer = Reducer<
     InfoEnvironment
 > { state, action, env in
     switch action {
-    case .listAction:
-        return .none
-    case .onAppear:
-        if state.listState.infos.isEmpty {
-            return .init(value: .loadInfos)
-        } else {
-            return .none
-        }
+	case .listAction:
+		return .none
+	case .onAppear:
+		if state.listState.infos.isEmpty {
+			return .concatenate (
+				.init(value: .loadInfos),
+				.init(value: .loadAboutUs)
+			)
+		} else {
+			return .none
+		}
     case .loadInfos:
         return env.getInfos()
             .receive(on: env.mainQueue)
@@ -66,7 +74,19 @@ public let infoReducer = Reducer<
 	case .showAlertStateChange(let newState):
 		state.showAlert = newState
 		return .none
-    }
+	case .loadAboutUs:
+		return env.getAboutUs()
+			.receive(on: env.mainQueue)
+			.catchToEffect()
+			.map(InfoAction.receiveAboutUs)
+	case .receiveAboutUs(.success(let aboutUs)):
+		print(aboutUs.content)
+		state.listState.aboutUs = aboutUs
+		return .none
+	case .receiveAboutUs(.failure(let error)):
+		print(error.localizedDescription)
+		return .none
+	}
 }
 .combined(
     with: InfoListReducer
@@ -139,7 +159,8 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension InfoEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getInfos: failing0
+		getInfos: failing0,
+		getAboutUs: failing0
     )
 }
 #endif

@@ -8,7 +8,8 @@ import Combine
 public struct InfoDetailsState: Equatable, Identifiable {
     public let id: UUID
     let info: Info
-    
+	
+	
     public init(
         id: UUID = UUID(),
         info: Info

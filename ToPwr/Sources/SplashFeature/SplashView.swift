@@ -43,6 +43,7 @@ public struct SplashEnvironment {
 	let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
 	let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
 	let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
 	
 	public init (
 		mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -55,7 +56,8 @@ public struct SplashEnvironment {
 		getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
 		getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
 		getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-		getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+		getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>,
+		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
 	) {
 		self.mainQueue = mainQueue
 		self.getApiVersion = getApiVersion
@@ -68,6 +70,7 @@ public struct SplashEnvironment {
 		self.getScienceClub = getScienceClub
 		self.getWhatsNew = getWhatsNew
 		self.getInfos = getInfos
+		self.getAboutUs = getAboutUs
 	}
 }
 
@@ -157,7 +160,8 @@ public let splashReducer = Reducer<
 					getDepartment: $0.getDepartment,
 					getScienceClub: $0.getScienceClub,
 					getWhatsNew: $0.getWhatsNew,
-					getInfos: $0.getInfos
+					getInfos: $0.getInfos,
+					getAboutUs: $0.getAboutUs
 				)
 			}
 		)
@@ -510,7 +514,8 @@ struct SplashView_Previews: PreviewProvider {
 					getDepartment: failing1,
 					getScienceClub: failing1,
 					getWhatsNew: failing0,
-					getInfos: failing0
+					getInfos: failing0,
+					getAboutUs: failing0
 				)
 			)
 		)

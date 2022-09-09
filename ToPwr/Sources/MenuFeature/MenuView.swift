@@ -42,6 +42,7 @@ public struct MenuEnvironment {
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
     let getInfos: () -> AnyPublisher<[Info], ErrorModel>
+	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -53,7 +54,8 @@ public struct MenuEnvironment {
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping () -> AnyPublisher<[Info], ErrorModel>,
+		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -65,6 +67,7 @@ public struct MenuEnvironment {
         self.getScienceClub = getScienceClub
         self.getWhatsNew = getWhatsNew
         self.getInfos = getInfos
+		self.getAboutUs = getAboutUs
     }
 }
 
@@ -173,7 +176,8 @@ public let menuReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getInfos: env.getInfos
+                        getInfos: env.getInfos,
+						getAboutUs: env.getAboutUs
                     )
             }
         )
@@ -280,7 +284,8 @@ struct MenuView_Previews: PreviewProvider {
                     getDepartment: failing1,
                     getScienceClub: failing1,
                     getWhatsNew: failing0,
-                    getInfos: failing0
+                    getInfos: failing0,
+					getAboutUs: failing0
                 )
             )
         )

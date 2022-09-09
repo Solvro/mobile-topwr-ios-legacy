@@ -353,6 +353,20 @@ public struct Info: Codable, Equatable, Identifiable {
     }
 }
 
+// MARK: - AboutUs
+
+public struct AboutUs: Codable, Equatable {
+	public let id: Int
+	public let content: String
+	public let photo: Photo?
+	
+	enum CodingKeys: String, CodingKey {
+		case id = "id"
+		case content = "content"
+		case photo = "photo"
+	}
+}
+
 // MARK: - EXTENSIONS
 public extension WeekDay {
     var date: Date? {

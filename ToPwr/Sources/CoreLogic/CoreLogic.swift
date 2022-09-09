@@ -119,4 +119,14 @@ public struct CoreLogic {
             }
             .eraseToAnyPublisher()
     }
+	
+	public func getAboutUs() -> AnyPublisher<AboutUs, ErrorModel> {
+		let path: String = "/about-us"
+		return api.fetch(path: path)
+			.decode(type: AboutUs.self, decoder: decoder)
+			.mapError { error in
+				ErrorModel(text: error.localizedDescription)
+			}
+			.eraseToAnyPublisher()
+	}
 }
