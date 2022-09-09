@@ -79,7 +79,7 @@ public struct InfoDetailsView: View {
                         Spacer()
                     }
                     
-                    Text(viewStore.info.description ?? "")
+                    Text(LocalizedStringKey(viewStore.info.description ?? ""))
                         .font(.appRegularTitle3)
                         .foregroundColor(.black)
                         .horizontalPadding(.big)
