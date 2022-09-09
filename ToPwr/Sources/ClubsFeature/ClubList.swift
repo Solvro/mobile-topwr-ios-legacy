@@ -10,7 +10,11 @@ public struct ClubListState: Equatable {
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
     var searchState = SearchState()
+    var clubTagsState = ClubTagFilterState()
+    
     var text: String = ""
+    var tags: [Tag] = []
+    
     var isFetching = false
     var noMoreFetches = false
     
@@ -34,7 +38,10 @@ public struct ClubListState: Equatable {
 public enum ClubListAction: Equatable {
     case listButtonTapped
     case fetchingOn
+    case updateFilteredSearch
+    case updateFilteredTags
     case searchAction(SearchAction)
+    case clubTags(ClubTagFilterAction)
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
     case receivedClubs(Result<[ScienceClub], ErrorModel>)
@@ -82,21 +89,48 @@ clubDetailsReducer
             switch action {
             case .listButtonTapped:
                 return .none
-            case .searchAction(.update(let text)):
-                state.text = text
-                
-                if text.count == 0 {
+            case .updateFilteredSearch:
+                if state.text.count == 0 {
                     state.filtered = state.clubs
                 } else {
                     state.filtered = .init(
                         uniqueElements: state.clubs.filter {
-                            $0.club.name?.contains(text) ?? false ||
-                            $0.club.description?.contains(text) ?? false
+                            $0.club.name?.contains(state.text) ?? false ||
+                            $0.club.description?.contains(state.text) ?? false
                         }
                     )
                 }
                 return .none
+            case .updateFilteredTags:
+                if state.tags.isEmpty {
+                    return .none
+                }
+                state.filtered = state.filtered.filter(
+                    { club in
+                        for tag in club.club.tags {
+                            if state.tags.contains(tag) {
+                                return true
+                            }
+                        }
+                        return false
+                    }
+                )
+                return .none
+            case .searchAction(.update(let text)):
+                state.text = text
+                return .concatenate(
+                    .init(value: .updateFilteredSearch),
+                    .init(value: .updateFilteredTags)
+                )
             case .searchAction:
+                return .none
+            case .clubTags(.updateFilter(let tags)):
+                state.tags = tags
+                return .concatenate(
+                    .init(value: .updateFilteredSearch),
+                    .init(value: .updateFilteredTags)
+                )
+            case .clubTags:
                 return .none
             case let .setNavigation(selection: .some(id)):
                 state.selection = Identified(nil, id: id)
@@ -123,7 +157,10 @@ clubDetailsReducer
                 clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
                 state.filtered = state.clubs
                 state.isFetching = false
-                return .none
+                let tags: [Tag] = state.clubs.flatMap {
+                    $0.club.tags
+                }
+                return .init(value: .clubTags(.updateTags(tags)))
             case .receivedClubs(.failure(_)):
                 return .none
             case .fetchingOn:
@@ -131,6 +168,14 @@ clubDetailsReducer
                 return .none
             }
         }
+    )
+    .combined(
+        with: clubTagFilterReducer
+            .pullback(
+                state: \.clubTagsState,
+                action: /ClubListAction.clubTags,
+                environment: { _ in .init() }
+            )
     )
 //MARK: - VIEW
 public struct ClubListView: View {
@@ -152,7 +197,16 @@ public struct ClubListView: View {
                                 state: \.searchState,
                                 action: ClubListAction.searchAction
                             )
-                        ).padding(.bottom, 16)
+                        )
+                        .padding(.bottom, 16)
+                        
+                        ClubTagFilterView(
+                            store: self.store.scope(
+                                state: \.clubTagsState,
+                                action: ClubListAction.clubTags
+                            )
+                        )
+                        
                         LazyVStack(spacing: 16) {
                             ForEach(viewStore.filtered) { club in
                                 NavigationLink(
