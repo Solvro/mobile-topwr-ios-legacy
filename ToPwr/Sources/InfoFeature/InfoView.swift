@@ -6,6 +6,7 @@ import Common
 //MARK: - STATE
 public struct InfoState: Equatable {
     var listState = InfoListState()
+	var showAlert = false
     
     public init(){}
 }
@@ -16,6 +17,7 @@ public enum InfoAction: Equatable {
     case receivedInfos(Result<[Info], ErrorModel>)
     case listAction(InfoListAction)
     case dismissKeyboard
+	case showAlertStateChange(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -55,11 +57,15 @@ public let infoReducer = Reducer<
     case .receivedInfos(.success(let Infos)):
         state.listState = .init(infos: Infos)
         return .none
-    case .receivedInfos:
+	case .receivedInfos(.failure(let error)):
+		state.showAlert = true
         return .none
     case .dismissKeyboard:
         UIApplication.shared.dismissKeyboard()
         return .none
+	case .showAlertStateChange(let newState):
+		state.showAlert = newState
+		return .none
     }
 }
 .combined(
@@ -97,6 +103,22 @@ public struct InfoView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+			.alert(
+				isPresented: Binding(
+					get: { viewStore.showAlert },
+					set: { viewStore.send(.showAlertStateChange($0)) }
+				)
+			) {
+				Alert(
+					title: Text("Problem z połączeniem"),
+					primaryButton: .default(
+						Text("Spróbuj ponownie"),
+						action: {
+							viewStore.send(.loadInfos)
+					} ),
+					secondaryButton: .cancel(Text("Anuluj"))
+				)
+			}
         }
     }
 }
