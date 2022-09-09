@@ -6,6 +6,7 @@ import Common
 //MARK: - STATE
 public struct DepartmentsState: Equatable {
     var listState = DepartmentListState()
+	var showAlert = false
     
     public init(){}
 }
@@ -16,6 +17,7 @@ public enum DepartmentsAction: Equatable {
     case receivedDepartments(Result<[Department], ErrorModel>)
     case listAction(DepartmentListAction)
     case dismissKeyboard
+	case showAlertStateChange(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -60,11 +62,15 @@ public let DepartmentsReducer = Reducer<
           departments: departments
         )
         return .none
-    case .receivedDepartments:
+	case .receivedDepartments(.failure(let error)):
+		state.showAlert = true
         return .none
     case .dismissKeyboard:
         UIApplication.shared.dismissKeyboard()
         return .none
+	case .showAlertStateChange(let newState):
+		state.showAlert = newState
+		return .none
     }
 }
 .combined(
@@ -92,20 +98,34 @@ public struct DepartmentsView: View {
     }
     
     public var body: some View {
-        WithViewStore(store) { viewStore in
-            ZStack {
-                DepartmentListView(
-                    store: self.store.scope(
-                        state: \.listState,
-                        action: DepartmentsAction.listAction
-                    )
-                )
-            }
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
-        }
-    }
+		WithViewStore(store) { viewStore in
+			DepartmentListView(
+				store: self.store.scope(
+					state: \.listState,
+					action: DepartmentsAction.listAction
+				)
+			)
+			.onAppear {
+				viewStore.send(.onAppear)
+			}
+			.alert(
+				isPresented: Binding(
+					get: { viewStore.showAlert },
+					set: { viewStore.send(.showAlertStateChange($0)) }
+				)
+			) {
+				Alert(
+					title: Text("Problem z połączeniem"),
+					primaryButton: .default(
+						Text("Spróbuj ponownie"),
+						action: {
+							viewStore.send(.loadDepartments)
+					} ),
+					secondaryButton: .cancel(Text("Anuluj"))
+				)
+			}
+		}
+	}
 }
 
 #if DEBUG
