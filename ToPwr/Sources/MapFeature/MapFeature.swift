@@ -12,7 +12,8 @@ public struct MapFeatureState: Equatable {
 	var isFullView: Bool = true
 	var selectionFromList: Bool = false
 	public let bottomSheetOnAppearUpSlideDelay = 0.5
-	let preselectionID: Int?
+	var preselectionID: Int?
+	var showAlert = false
 	
 	public init(preselectionID: Int? = nil){
 		self.preselectionID = preselectionID
@@ -31,6 +32,7 @@ public enum MapFeatureAction: Equatable {
 	case mapViewAction(MapAction)
 	case sheetOpenStatusChanged(Bool)
 	case fullViewChangeRequest(Bool)
+	case showAlertStateChange(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -84,12 +86,13 @@ public let mapFeatureReducer = Reducer<
 			})
 		)
 		if let preselectedID = state.preselectionID {
+			state.preselectionID = nil
 			return .init(value: .buildingListAction(.cellAction(id: preselectedID, action: .buttonTapped)))
 		}	else {
 			return .none
 		}
 	case .receivedBuildings(.failure(let error)):
-	#warning("TODO: Show couldn't load data message")
+		state.showAlert = true
 		return .none
 	case .buildingListAction(.configureToSelectedAnnotationAcion(let annotaton)):
 		return .none
@@ -160,6 +163,9 @@ public let mapFeatureReducer = Reducer<
 	case .buildingListAction(.remoteCancelationConf):
 		state.isFullView = false
 		return .none
+	case .showAlertStateChange(let newState):
+		state.showAlert = newState
+		return .none
 	}
 }
 .combined(
@@ -215,6 +221,20 @@ public struct MapFeatureView: View {
 						get: { viewStore.isFullView },
 						set: { viewStore.send(.fullViewChangeRequest($0)) }
 					)
+				)
+			}
+			.alert(isPresented: Binding(
+				get: { viewStore.showAlert },
+				set: { viewStore.send(.showAlertStateChange($0)) }
+			)) {
+				Alert(
+					title: Text("Problem z połączeniem"),
+					primaryButton: .default(
+						Text("Spróbuj ponownie"),
+						action: {
+							viewStore.send(.loadBuildings)
+					} ),
+					secondaryButton: .cancel(Text("Anuluj"))
 				)
 			}
 			.ignoresSafeArea(.keyboard)
