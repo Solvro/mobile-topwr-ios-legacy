@@ -7,7 +7,8 @@ import Common
 public struct ClubsState: Equatable {
     
     var listState = ClubListState()
-    
+    var showAlert = false
+	
     public init(){}
 }
 //MARK: - ACTION
@@ -17,6 +18,7 @@ public enum ClubsAction: Equatable {
     case receivedClubs(Result<[ScienceClub], ErrorModel>)
     case listAction(ClubListAction)
     case dismissKeyboard
+	case showAlertStateChange(Bool)
 }
 
 //MARK: - ENVIRONMENT
@@ -59,11 +61,15 @@ public let ClubsReducer = Reducer<
     case .receivedClubs(.success(let clubs)):
         state.listState = .init(clubs: clubs)
         return .none
-    case .receivedClubs:
+	case .receivedClubs(.failure(let error)):
+		state.showAlert = true
         return .none
     case .dismissKeyboard:
         UIApplication.shared.dismissKeyboard()
         return .none
+	case .showAlertStateChange(let newState):
+		state.showAlert = newState
+		return .none
     }
 }
 .combined(
@@ -103,6 +109,22 @@ public struct ClubsView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+			.alert(
+				isPresented: Binding(
+					get: { viewStore.showAlert },
+					set: { viewStore.send(.showAlertStateChange($0)) }
+				)
+			) {
+				Alert(
+					title: Text("Problem z połączeniem"),
+					primaryButton: .default(
+						Text("Spróbuj ponownie"),
+						action: {
+							viewStore.send(.loadClubs)
+					} ),
+					secondaryButton: .cancel(Text("Anuluj"))
+				)
+			}
         }
     }
 }
