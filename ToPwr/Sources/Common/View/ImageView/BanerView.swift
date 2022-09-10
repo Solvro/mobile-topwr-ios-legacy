@@ -25,16 +25,19 @@ public struct BanerView: View {
     
     public var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(
-                    colors: [
-                        color?.secondColor ?? K.Colors.firstColorLight,
-                        color?.firstColor ?? K.Colors.firstColorDark
-                    ]
-                ),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+			
+			if url != nil {
+				LinearGradient(
+					gradient: Gradient(
+						colors: [
+							color?.secondColor ?? K.Colors.firstColorLight,
+							color?.firstColor ?? K.Colors.firstColorDark
+						]
+					),
+					startPoint: .topLeading,
+					endPoint: .bottomTrailing
+				)
+			}
             
             ImageView(
                 url: url,
