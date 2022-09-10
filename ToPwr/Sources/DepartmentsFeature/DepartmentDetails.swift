@@ -125,21 +125,25 @@ public struct DepartmentDetailsView: View {
                         .offset(y: -(Constants.logoBackgroundSize/2))
                         .padding(.bottom, -(Constants.logoBackgroundSize/2))
                     
-                    Text(viewStore.department.name ?? "")
-                        .font(.appMediumTitle2)
-                        .horizontalPadding(.big)
+					if let departmentName = viewStore.department.name {
+						Text(departmentName)
+							.font(.appMediumTitle2)
+							.horizontalPadding(.big)
+					}
                     
-                    Text(viewStore.department.adress ?? "")
-                        .font(.appRegularTitle4)
-                        .horizontalPadding(.huge)
-                        .multilineTextAlignment(.center)
+					if let departmentAdress = viewStore.department.adress {
+						Text(departmentAdress)
+							.font(.appRegularTitle4)
+							.horizontalPadding(.huge)
+							.multilineTextAlignment(.center)
+					}
                     
                     ForEach(viewStore.department.infoSection) { section in
-                        VStack(spacing: UIDimensions.normal.spacing) {
-                            InfoSectionView(
-                                section: section
-                            )
-                        }
+							VStack(spacing: UIDimensions.normal.spacing) {
+								InfoSectionView(
+									section: section
+								)
+							}
                     }
                     
                     VStack {

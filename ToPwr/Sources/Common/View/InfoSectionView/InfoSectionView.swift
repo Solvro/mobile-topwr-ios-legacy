@@ -23,7 +23,7 @@ public struct InfoSectionView: View {
 					case .other, .addres:
 						InfoCellView(info: info)
 					case .website:
-						if let safeURL = URL(string: info.value ?? info.label ?? "") {
+						if let safeURL = info.getValueUrl() {
 							Link(
 								destination: safeURL,
 								label: {
@@ -32,7 +32,7 @@ public struct InfoSectionView: View {
 							)
 						}
 					case .phone:
-						if let safeUrl = URL(string: "tel:\(info.value ?? info.label ?? "")") {
+						if let safeUrl = info.getValueUrl() {
 							Link(
 								destination: safeUrl,
 								label: {
@@ -41,7 +41,7 @@ public struct InfoSectionView: View {
 							)
 						}
 					case .email:
-						if let safeUrl = URL(string: "mailto:\(info.value ?? info.label ?? "")") {
+						if let safeUrl = info.getValueUrl() {
 							Link(
 								destination: safeUrl,
 								label: {
@@ -52,6 +52,9 @@ public struct InfoSectionView: View {
 					}
 				}
 			}
+		}
+		.onAppear{
+			print(section.info)
 		}
 		.verticalPadding(.normal)
 		.background(K.Colors.lightGray)

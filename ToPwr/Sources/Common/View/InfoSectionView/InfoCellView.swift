@@ -35,10 +35,15 @@ public struct InfoCellView: View {
                             height: Constants.iconSize
                         )
                 }
-            Text(info.label ?? info.value ?? "")
-                .underline()
-                .foregroundColor(K.Colors.red)
-                .verticalPadding(.normal)
+			if info.type == .addres {
+				Text(info.value ?? info.label ?? "")
+					.verticalPadding(.normal)
+			}	else {
+				Text(info.value ?? info.label ?? "")
+					.underline()
+					.foregroundColor(K.Colors.red)
+					.verticalPadding(.normal)
+			}
         }
         .horizontalPadding(.normal)
     }

@@ -150,6 +150,29 @@ public extension InfoComponent {
     var type: InfoType {
         InfoType(rawValue: stringType ?? "other") ?? .other
     }
+	
+	func getValueUrl() -> URL? {
+		
+		guard let safeValue = self.value else {
+			return nil
+		}
+		
+		var uc = URLComponents()
+		
+		switch type {
+		case .website:
+			return URL(string: safeValue)
+		case .phone:
+			uc.scheme = "tel"
+		case .email:
+			uc.scheme = "mailto"
+		default:
+			return nil
+		}
+		
+		uc.path = safeValue
+		return uc.url
+	}
 }
 
 //MARK: - Science Clubs
