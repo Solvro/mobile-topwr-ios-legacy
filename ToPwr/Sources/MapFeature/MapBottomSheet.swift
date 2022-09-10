@@ -151,34 +151,34 @@ struct MapBottomSheetView: View {
 		self.minHeight = maxHeight * Constants.minHeightRatio
 		self.store = store
 		self.isOpenInternal = isOpen
-		self.topHeight = nil
 		self.isFullViewInternal = isFullView
+		self.topHeight = nil
 	}
 	
 	public var body: some View {
 		WithViewStore(store) { viewStore in
 			GeometryReader { geometry in
-				VStack(spacing: 0) {
+				VStack(spacing: 1) {
 					GeometryReader { proxy in
-							VStack(alignment: .leading, spacing: 0) {
-								HStack {
-									Spacer()
-									self.indicator.padding()
-									Spacer()
-								}
-								Text(Strings.MapView.buildings)
-									.font(.appMediumTitle2)
-									.padding()
-								SearchView(
-									store: store.scope(
-										state: \.searchState,
-										action: MapBottomSheetAction.searchAction
-									)
-								).padding(.bottom, 10)
+						VStack(alignment: .leading, spacing: 0) {
+							HStack {
+								Spacer()
+								self.indicator.padding()
+								Spacer()
 							}
-							.onAppear {
-								self.topHeight = proxy.size.height + 95 // 95 is the one cell height 90 + 5 points of padding
-							}
+							Text(Strings.MapView.buildings)
+								.font(.appMediumTitle2)
+								.padding()
+							SearchView(
+								store: store.scope(
+									state: \.searchState,
+									action: MapBottomSheetAction.searchAction
+								)
+							).padding(.bottom, 10)
+						}
+						.onAppear {
+							self.topHeight = proxy.size.height + 95 // 95 is the one cell height 90 + 5 points of padding
+						}
 					}
 					
 					ScrollView(.vertical, showsIndicators: true) {
@@ -205,7 +205,8 @@ struct MapBottomSheetView: View {
 							}
 						}
 						.horizontalPadding(.normal)
-					}.frame(minHeight: self.maxHeight * 0.75)
+					}
+					.frame(minHeight: self.maxHeight * 0.75)
 				}
 				.frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
 				.background(Color.white)
