@@ -32,7 +32,7 @@ public struct InfoSectionView: View {
 							)
 						}
 					case .phone:
-						if let safeUrl = URL(string: "tel:\(info.value ?? info.label ?? "")")!{
+						if let safeUrl = URL(string: "tel:\(info.value ?? info.label ?? "")") {
 							Link(
 								destination: safeUrl,
 								label: {
@@ -41,7 +41,7 @@ public struct InfoSectionView: View {
 							)
 						}
 					case .email:
-						if let safeUrl = URL(string: "mailto:\(info.value ?? info.label ?? "")")!{
+						if let safeUrl = URL(string: "mailto:\(info.value ?? info.label ?? "")") {
 							Link(
 								destination: safeUrl,
 								label: {
