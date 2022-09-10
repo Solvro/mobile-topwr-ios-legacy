@@ -63,7 +63,14 @@ public let infoReducer = Reducer<
             .catchToEffect()
             .map(InfoAction.receivedInfos)
     case .receivedInfos(.success(let Infos)):
-        state.listState = .init(infos: Infos)
+		var infos: IdentifiedArrayOf<InfoDetailsState> = .init(
+			uniqueElements: Infos.map {
+				InfoDetailsState(info: $0)
+			}
+		)
+		state.listState.infos = infos
+		state.listState.filtered = infos
+//		state.listState = .init(infos: Infos)
         return .none
 	case .receivedInfos(.failure(let error)):
 		state.showAlert = true
@@ -80,8 +87,16 @@ public let infoReducer = Reducer<
 			.catchToEffect()
 			.map(InfoAction.receiveAboutUs)
 	case .receiveAboutUs(.success(let aboutUs)):
-		print(aboutUs.content)
-		state.listState.aboutUs = aboutUs
+		state.listState.aboutUs = InfoDetailsState(
+			info: Info(
+				id: aboutUs.id,
+				title: "O Nas!",
+				description: aboutUs.content,
+				infoSection: [],
+				photo: aboutUs.photo,
+				shortDescription: ""
+			)
+		)
 		return .none
 	case .receiveAboutUs(.failure(let error)):
 		print(error.localizedDescription)

@@ -8,7 +8,7 @@ public struct InfoListState: Equatable {
 	var infos: IdentifiedArrayOf<InfoDetailsState> = .init(uniqueElements: [])
 	var filtered: IdentifiedArrayOf<InfoDetailsState> = .init(uniqueElements: [])
 	var selection: Identified<InfoDetailsState.ID, InfoDetailsState?>?
-	var aboutUs: AboutUs?
+	var aboutUs: InfoDetailsState?
 	
 	var searchState = SearchState()
 	var text: String = ""
@@ -26,7 +26,18 @@ public struct InfoListState: Equatable {
 				InfoDetailsState(info: $0)
 			}
 		)
-		self.aboutUs = aboutUs
+		if let safeAboutUs = aboutUs {
+			self.aboutUs = InfoDetailsState(
+				info: Info(
+					id: safeAboutUs.id,
+					title: "O Nas!",
+					description: safeAboutUs.content,
+					infoSection: [],
+					photo: safeAboutUs.photo,
+					shortDescription: ""
+				)
+			)
+		}
 		self.filtered = self.infos
 	}
 }
@@ -125,6 +136,25 @@ public struct InfoListView: View {
 							)
 						).padding(.bottom, 16)
 						LazyVStack(spacing: 16) {
+							NavigationLink {
+								IfLetStore(
+									self.store.scope(
+										state: \.aboutUs,
+										action: InfoListAction.infoDetailsAction
+									),
+									then: InfoDetailsView.init(store:),
+									else: ProgressView.init
+								)
+							} label: {
+								if viewStore.aboutUs != nil {
+									InfoCellView(
+										title: "O Nas!",
+										url: viewStore.aboutUs?.info.photo?.url,
+										isAboutUs: true
+									)
+								}
+							}
+							
 							ForEach(viewStore.filtered) { club in
 								NavigationLink(
 									destination: IfLetStore(
@@ -141,7 +171,11 @@ public struct InfoListView: View {
 										send: InfoListAction.setNavigation(selection:)
 									)
 								) {
-									InfoCellView(viewState: club)
+									InfoCellView(
+										title: club.info.title,
+										url: club.info.photo?.url,
+										description: club.info.shortDescription
+									)
 								}
 							}
 						}
