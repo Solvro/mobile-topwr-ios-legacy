@@ -10,6 +10,8 @@ public struct WhatsNewHomeCellView: View {
         static let viewWidth: CGFloat = 275
         static let banerHeight: CGFloat = 135
         static let buttonHeight: CGFloat = 32
+		static let dateHeight: CGFloat = 20
+		static let dateWidth: CGFloat = 100
     }
     
     public init(
@@ -20,7 +22,7 @@ public struct WhatsNewHomeCellView: View {
     
     public var body: some View {
         VStack {
-            VStack {
+            ZStack {
                 ImageView(
                     url: viewState.news.photo?.url,
                     contentMode: .aspectFill
@@ -30,6 +32,28 @@ public struct WhatsNewHomeCellView: View {
                         corners: [.topLeft, .topRight]
                     )
                     .frame(height: Constants.banerHeight)
+					.overlay {
+						if let safeDate = viewState.news.dateLabel {
+							VStack {
+								HStack {
+									Spacer()
+									Capsule()
+										.frame(
+											width: Constants.dateWidth,
+											height: Constants.dateHeight
+										)
+										.padding(.small)
+										.foregroundColor(K.Colors.dateDark)
+										.overlay {
+											Text(safeDate)
+												.foregroundColor(.white)
+												.font(.appMediumTitle3)
+										}
+								}
+								Spacer()
+							}
+						}
+					}
             }
             .padding(3)
             Spacer()
