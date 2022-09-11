@@ -13,7 +13,7 @@ public struct ClubListState: Equatable {
     var clubTagsState = ClubTagFilterState()
     
     var text: String = ""
-    var tags: [Tag] = []
+    var tag: Tag? = nil
     
     var isFetching = false
     var noMoreFetches = false
@@ -38,8 +38,7 @@ public struct ClubListState: Equatable {
 public enum ClubListAction: Equatable {
     case listButtonTapped
     case fetchingOn
-    case updateFilteredSearch
-    case updateFilteredTags
+    case updateFiltered
     case searchAction(SearchAction)
     case clubTags(ClubTagFilterAction)
     case setNavigation(selection: UUID?)
@@ -89,10 +88,11 @@ clubDetailsReducer
             switch action {
             case .listButtonTapped:
                 return .none
-            case .updateFilteredSearch:
-                if state.text.count == 0 {
+            case .updateFiltered:
+                if state.text.count == 0 && state.tag == nil {
                     state.filtered = state.clubs
-                } else {
+                }
+                else if state.text.count != 0 && state.tag == nil {
                     state.filtered = .init(
                         uniqueElements: state.clubs.filter {
                             $0.club.name?.contains(state.text) ?? false ||
@@ -100,36 +100,43 @@ clubDetailsReducer
                         }
                     )
                 }
-                return .none
-            case .updateFilteredTags:
-                if state.tags.isEmpty {
-                    return .none
-                }
-                state.filtered = state.filtered.filter(
-                    { club in
-                        for tag in club.club.tags {
-                            if state.tags.contains(tag) {
-                                return true
+                else if state.text.count == 0 && state.tag != nil {
+                    state.filtered = .init(
+                        uniqueElements: state.clubs.filter {
+                            if let tag = state.tag {
+                                return $0.club.tags.contains(tag)
+                            } else {
+                                return false
                             }
                         }
-                        return false
-                    }
-                )
+                    )
+                }
+                else if state.text.count != 0 && state.tag != nil {
+                    state.filtered = .init(
+                        uniqueElements: state.clubs.filter {
+                            $0.club.name?.contains(state.text) ?? false ||
+                            $0.club.description?.contains(state.text) ?? false
+                        }
+                    )
+                    state.filtered = .init(
+                        uniqueElements: state.filtered.filter {
+                            if let tag = state.tag {
+                                return $0.club.tags.contains(tag)
+                            } else {
+                                return false
+                            }
+                        }
+                    )
+                }
                 return .none
             case .searchAction(.update(let text)):
                 state.text = text
-                return .concatenate(
-                    .init(value: .updateFilteredSearch),
-                    .init(value: .updateFilteredTags)
-                )
+                return .init(value: .updateFiltered)
             case .searchAction:
                 return .none
-            case .clubTags(.updateFilter(let tags)):
-                state.tags = tags
-                return .concatenate(
-                    .init(value: .updateFilteredSearch),
-                    .init(value: .updateFilteredTags)
-                )
+            case .clubTags(.updateFilter(let tag)):
+                state.tag = tag
+                return .init(value: .updateFiltered)
             case .clubTags:
                 return .none
             case let .setNavigation(selection: .some(id)):

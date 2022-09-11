@@ -13,7 +13,7 @@ import Common
 //MARK: - STATE
 public struct ClubTagFilterState: Equatable {
     var allTags: [Tag] = []
-    var selectedTags: [Tag] = []
+    var selectedTag: Tag? = nil
     
     let initialTag: Tag = .init(
         id: 0,
@@ -27,7 +27,7 @@ public enum ClubTagFilterAction: Equatable {
     case onAppear
     case updateTags([Tag])
     case choosedTag(Tag)
-    case updateFilter([Tag])
+    case updateFilter(Tag?)
 }
 
 //MARK: - ENVIRONMENT
@@ -50,26 +50,18 @@ public let clubTagFilterReducer = Reducer<
     case .updateTags(let tags):
         state.allTags = [state.initialTag]
         state.allTags.append(contentsOf: Array(Set(tags)))
-        if state.selectedTags.isEmpty {
-            state.selectedTags = [state.initialTag]
+        if state.selectedTag == nil {
+            state.selectedTag = state.initialTag
         }
         return .none
     case .choosedTag(let tag):
-        if tag == state.initialTag {
-            state.selectedTags = [state.initialTag]
-            return .init(value: .updateFilter([]))
-        }
-        if state.selectedTags.contains(tag) {
-            state.selectedTags.removeAll(where: { $0.id == tag.id })
+        if tag == state.initialTag || state.selectedTag == tag {
+            state.selectedTag = state.initialTag
+            return .init(value: .updateFilter(nil))
         } else {
-            state.selectedTags.append(tag)
+            state.selectedTag = tag
         }
-        if state.selectedTags.isEmpty {
-            state.selectedTags = [state.initialTag]
-        } else {
-            state.selectedTags.removeAll(where: { $0 == state.initialTag })
-        }
-        return .init(value: .updateFilter(state.selectedTags))
+        return .init(value: .updateFilter(state.selectedTag))
     case .updateFilter:
         return .none
     }
@@ -93,7 +85,7 @@ public struct ClubTagFilterView: View {
                         ForEach(viewStore.allTags, id: \.self) { tag in
                             TagItemView(
                                 text: tag.name ?? String(tag.id),
-                                isSelected: viewStore.selectedTags.contains(tag),
+                                isSelected: viewStore.selectedTag == tag,
                                 action: { viewStore.send(.choosedTag(tag)) }
                             )
                         }
