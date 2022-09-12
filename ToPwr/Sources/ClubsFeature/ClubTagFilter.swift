@@ -96,7 +96,7 @@ public struct ClubTagFilterView: View {
             }
         }
     }
-    
+
     struct TagItemView: View {
         
         let text: String
@@ -122,7 +122,7 @@ public struct ClubTagFilterView: View {
                 }
                 .background(
                     Capsule()
-                        .stroke(Color.gray, lineWidth: 1)
+						.strokeBorder(K.Colors.tagGray, lineWidth: 1)
                 )
             }
         }
