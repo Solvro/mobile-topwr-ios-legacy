@@ -184,6 +184,7 @@ public struct InfoListView: View {
 							}
 							if let safeVerion = Constants.appVersion {
 								Text("Version \(safeVerion)")
+									.font(.appRegularTitle6)
 									.foregroundColor(.gray)
 									.padding(.bottom, 16)
 							}
