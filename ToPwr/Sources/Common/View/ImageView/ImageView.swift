@@ -44,13 +44,14 @@ public struct ImageView<Placeholder: View>: View {
     }
 }
 
-public extension ImageView where Placeholder == EmptyView {
+public extension ImageView where Placeholder == EmptyView{
     init(
         url: URL?,
         contentMode: ImageResizingMode = .aspectFit
     ) {
         self.url = url
         self.contentMode = contentMode
-        self.placeholder = nil
+		self.placeholder = nil
     }
 }
+

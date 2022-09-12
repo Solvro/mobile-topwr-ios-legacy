@@ -36,11 +36,17 @@ public struct BanerView: View {
 					startPoint: .topLeading,
 					endPoint: .bottomTrailing
 				)
+			} else {
+				Rectangle()
+					.foregroundColor(.gray)
 			}
             
-            ImageView(
+			ImageView(
                 url: url,
-                contentMode: .aspectFit
+                contentMode: .aspectFit,
+				placeholder: {
+					EmptyView()
+				}
             )
             .opacity(0.1)
             .offset(
