@@ -16,6 +16,7 @@ public struct ClubListState: Equatable {
     var tag: Tag? = nil
     
     var isFetching = false
+	var fetchedAll = false
     var noMoreFetches = false
     
     var isLoading: Bool {
@@ -44,7 +45,9 @@ public enum ClubListAction: Equatable {
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
     case receivedClubs(Result<[ScienceClub], ErrorModel>)
+	case receiveAllClubs(Result<[ScienceClub], ErrorModel>)
     case loadMoreClubs
+	case loadAllClubs
 }
 
 //MARK: - ENVIRONMENT
@@ -92,7 +95,6 @@ clubDetailsReducer
             case .listButtonTapped:
                 return .none
             case .updateFiltered:
-				//
                 if state.text.count == 0 && state.tag == nil {
                     state.filtered = state.clubs
                 }
@@ -129,12 +131,16 @@ clubDetailsReducer
                 state.text = text
                 return .init(value: .updateFiltered)
             case .searchAction:
-                return .none
+				return .none
             case .clubTags(.updateFilter(let tag)):
-                state.tag = tag
-                return .init(value: .updateFiltered)
+				state.tag = tag
+				if state.fetchedAll {
+					return .init(value: .updateFiltered)
+				}	else{
+					return .init(value: .loadAllClubs)
+				}
             case .clubTags:
-                return .none
+				return .none
             case let .setNavigation(selection: .some(id)):
                 state.selection = Identified(nil, id: id)
                 guard let id = state.selection?.id,
@@ -155,6 +161,7 @@ clubDetailsReducer
                 if clubs.isEmpty {
                     state.noMoreFetches = true
                     state.isFetching = false
+					state.fetchedAll = true
                     return .none
                 }
                 clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
@@ -169,6 +176,19 @@ clubDetailsReducer
             case .fetchingOn:
                 state.isFetching = true
                 return .none
+			case .loadAllClubs:
+				return env.getAllClubs()
+					.receive(on: env.mainQueue)
+					.catchToEffect()
+					.map(ClubListAction.receiveAllClubs)
+			case .receiveAllClubs(.success(let clubs)):
+				state.clubs = IdentifiedArrayOf<ClubDetailsState>.init(uniqueElements: clubs.compactMap { ClubDetailsState(club: $0)})
+				state.filtered = state.clubs
+				state.fetchedAll = true
+				state.noMoreFetches = true
+				return .init(value: .updateFiltered)
+			case .receiveAllClubs(.failure(let error)):
+				return .none
             }
         }
     )
@@ -229,7 +249,7 @@ public struct ClubListView: View {
                                 ) {
                                     ClubCellView(viewState: club)
                                         .onAppear {
-											if !viewStore.noMoreFetches && viewStore.clubs.count == viewStore.filtered.count {
+											if !viewStore.noMoreFetches && viewStore.clubs.count == viewStore.filtered.count{
                                                 viewStore.send(.fetchingOn)
                                                 if club.id == viewStore.clubs.last?.id {
                                                     viewStore.send(.loadMoreClubs)
