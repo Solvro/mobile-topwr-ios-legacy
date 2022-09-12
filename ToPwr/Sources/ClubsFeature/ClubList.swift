@@ -249,7 +249,7 @@ public struct ClubListView: View {
                                 ) {
                                     ClubCellView(viewState: club)
                                         .onAppear {
-											if !viewStore.noMoreFetches && viewStore.clubs.count == viewStore.filtered.count{
+											if !viewStore.noMoreFetches{
                                                 viewStore.send(.fetchingOn)
                                                 if club.id == viewStore.clubs.last?.id {
                                                     viewStore.send(.loadMoreClubs)
