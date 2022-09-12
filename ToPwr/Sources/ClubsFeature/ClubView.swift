@@ -23,16 +23,19 @@ public enum ClubsAction: Equatable {
 public struct ClubsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
+	let getAllClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
+		getAllClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getClubs = getClubs
         self.getDepartment = getDepartment
+		self.getAllClubs = getAllClubs
     }
 }
 
@@ -75,7 +78,8 @@ public let ClubsReducer = Reducer<
                 .init(
                     mainQueue: $0.mainQueue,
                     getDepartment: $0.getDepartment,
-                    getClubs: $0.getClubs
+					getClubs: $0.getClubs,
+					getAllClubs: $0.getAllClubs
                 )
             }
         )
@@ -123,7 +127,8 @@ struct DepartmentsView_Previews: PreviewProvider {
 public extension ClubsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getClubs: failing1,
+		getClubs: failing1,
+		getAllClubs: failing0,
         getDepartment: failing1
     )
 }

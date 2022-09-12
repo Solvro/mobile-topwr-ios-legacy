@@ -52,15 +52,18 @@ public struct ClubListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
+	let getAllClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
-        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
+        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
+		getAllClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getClubs = getClubs
         self.getDepartment = getDepartment
+		self.getAllClubs = getAllClubs
     }
 }
 //MARK: - REDUCER
@@ -89,6 +92,7 @@ clubDetailsReducer
             case .listButtonTapped:
                 return .none
             case .updateFiltered:
+				//
                 if state.text.count == 0 && state.tag == nil {
                     state.filtered = state.clubs
                 }
@@ -100,34 +104,26 @@ clubDetailsReducer
                         }
                     )
                 }
-                else if state.text.count == 0 && state.tag != nil {
-                    state.filtered = .init(
-                        uniqueElements: state.clubs.filter {
-                            if let tag = state.tag {
-                                return $0.club.tags.contains(tag)
-                            } else {
-                                return false
-                            }
-                        }
-                    )
-                }
-                else if state.text.count != 0 && state.tag != nil {
-                    state.filtered = .init(
-                        uniqueElements: state.clubs.filter {
-                            $0.club.name?.contains(state.text) ?? false ||
-                            $0.club.description?.contains(state.text) ?? false
-                        }
-                    )
-                    state.filtered = .init(
-                        uniqueElements: state.filtered.filter {
-                            if let tag = state.tag {
-                                return $0.club.tags.contains(tag)
-                            } else {
-                                return false
-                            }
-                        }
-                    )
-                }
+				else if state.text.count == 0 && state.tag != nil {
+					state.filtered = .init(
+						uniqueElements: state.clubs.filter {
+							$0.club.tags.contains(state.tag!)
+						}
+					)
+				}
+				else if state.text.count != 0 && state.tag != nil {
+					state.filtered = .init(
+						uniqueElements: state.clubs.filter {
+							$0.club.name?.contains(state.text) ?? false ||
+							$0.club.description?.contains(state.text) ?? false
+						}
+					)
+					state.filtered = .init(
+						uniqueElements: state.filtered.filter {
+							$0.club.tags.contains(state.tag!)
+						}
+					)
+				}
                 return .none
             case .searchAction(.update(let text)):
                 state.text = text
@@ -233,7 +229,7 @@ public struct ClubListView: View {
                                 ) {
                                     ClubCellView(viewState: club)
                                         .onAppear {
-                                            if !viewStore.noMoreFetches {
+											if !viewStore.noMoreFetches && viewStore.clubs.count == viewStore.filtered.count {
                                                 viewStore.send(.fetchingOn)
                                                 if club.id == viewStore.clubs.last?.id {
                                                     viewStore.send(.loadMoreClubs)
