@@ -3,6 +3,7 @@ import SplashFeature
 import CoreLogic
 import Common
 import Combine
+import Foundation
 
 private let coreLogic: CoreLogic = CoreLogic()
 
@@ -31,7 +32,8 @@ private func env() -> SplashEnvironment {
         getDepartment: coreLogic.getDepartment,
         getScienceClub: coreLogic.getScienceClub,
         getWhatsNew: coreLogic.getWhatsNew,
-        getInfos: coreLogic.getInfos
+        getInfos: coreLogic.getInfos,
+		getAboutUs: coreLogic.getAboutUs
     )
 }
 

@@ -15,18 +15,19 @@ public struct MenuState: Equatable {
     var departmentsState = DepartmentsState()
     var clubsState = ClubsState()
     var infoState = InfoState()
-    
+	var selection = 1
+	
     public init(){}
 }
 
 //MARK: - ACTION
-public enum MenuAction: Equatable, BindableAction {
+public enum MenuAction: Equatable {
     case homeAction(HomeAction)
     case mapAction(MapFeatureAction)
     case departmentsAction(DepartmentsAction)
     case clubsAction(ClubsAction)
     case infoAction(InfoAction)
-    case binding(BindingAction<MenuState>)
+	case newTabSelection(Int)
 }
 
 //MARK: - ENVIRONMENT
@@ -42,6 +43,7 @@ public struct MenuEnvironment {
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
     let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
+	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -54,7 +56,8 @@ public struct MenuEnvironment {
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
         getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>
+        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>,
+		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getSessionDate = getSessionDate
@@ -67,6 +70,7 @@ public struct MenuEnvironment {
         self.getScienceClub = getScienceClub
         self.getWhatsNew = getWhatsNew
         self.getInfos = getInfos
+		self.getAboutUs = getAboutUs
     }
 }
 
@@ -77,8 +81,22 @@ public let menuReducer = Reducer<
     MenuEnvironment
 > { state, action, environment in
     switch action {
-    case .homeAction:
-        return .none
+	case .homeAction(.buildingListAction(.listButtonTapped)):
+		state.selection = 2
+		return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
+			try await environment.mainQueue.sleep(for: .seconds(delay))
+			return .mapAction(.sheetOpenStatusChanged(true))
+		}
+	case .homeAction(.departmentListAction(.listButtonTapped)):
+		state.selection = 3
+		return .none
+	case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
+		let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
+		state.mapState = MapFeatureState(preselectionID: id)
+		state.selection = 2
+		return .none
+	case .homeAction:
+		return .none
     case .mapAction:
         return .none
     case .departmentsAction:
@@ -87,11 +105,11 @@ public let menuReducer = Reducer<
         return .none
     case .infoAction:
         return .none
-    case .binding:
-        return .none
+	case .newTabSelection(let selection):
+		state.selection = selection
+		return .none
     }
 }
-.binding()
 .combined(
     with: homeReducer
         .pullback(
@@ -110,18 +128,20 @@ public let menuReducer = Reducer<
                         getWhatsNew: env.getWhatsNew
                     )
             }
-        )
+		)
 )
 .combined(
-    with: mapFeatureReducer
-        .pullback(
-            state: \.mapState,
-            action: /MenuAction.mapAction,
-            environment: { env in
-                    .init(getBuildings: env.getBuildings,
-                          mainQueue: env.mainQueue)
-            }
-        )
+	with: mapFeatureReducer
+		.pullback(
+			state: \.mapState,
+			action: /MenuAction.mapAction,
+			environment: { env in
+					.init(
+						getBuildings: env.getBuildings,
+						mainQueue: env.mainQueue
+					)
+			}
+		)
 )
 .combined(
     with: DepartmentsReducer
@@ -160,7 +180,8 @@ public let menuReducer = Reducer<
             environment: { env in
                     .init(
                         mainQueue: env.mainQueue,
-                        getInfos: env.getInfos
+                        getInfos: env.getInfos,
+						getAboutUs: env.getAboutUs
                     )
             }
         )
@@ -176,64 +197,76 @@ public struct MenuView: View {
     }
     
     public var body: some View {
-        TabView {
-            HomeView(
-                store: self.store.scope(
-                    state: \.homeState,
-                    action: MenuAction.homeAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("SchoolIcon")
-                }
-            
-            MapFeatureView(
-                store: self.store.scope(
-                    state: \.mapState,
-                    action: MenuAction.mapAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("CompassIcon")
-                }
-            
-            DepartmentsView(
-                store: self.store.scope(
-                    state: \.departmentsState,
-                    action: MenuAction.departmentsAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("HatIcon")
-                }
-            
-            ClubsView(
-                store: self.store.scope(
-                    state: \.clubsState,
-                    action: MenuAction.clubsAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("RocketIcon")
-                }
-            InfoView(
-                store: self.store.scope(
-                    state: \.infoState,
-                    action: MenuAction.infoAction
-                )
-            )
-                .preferredColorScheme(.light)
-                .tabItem {
-                    Image("InfoIcon")
-                }
-        }.onAppear(perform: {
-            UITabBar.appearance().backgroundColor = .systemBackground
-        })
-        .accentColor(K.Colors.firstColorDark)
+		WithViewStore(store) { viewStore in
+			TabView(
+				selection: Binding(
+					get: { viewStore.selection },
+					set: { viewStore.send(.newTabSelection($0))}
+				)
+			){
+				HomeView(
+					store: self.store.scope(
+						state: \.homeState,
+						action: MenuAction.homeAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("SchoolIcon")
+				}
+				.tag(1)
+				
+				MapFeatureView(
+					store: self.store.scope(
+						state: \.mapState,
+						action: MenuAction.mapAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("CompassIcon")
+				}
+				.tag(2)
+				
+				DepartmentsView(
+					store: self.store.scope(
+						state: \.departmentsState,
+						action: MenuAction.departmentsAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("HatIcon")
+				}
+				.tag(3)
+				
+				ClubsView(
+					store: self.store.scope(
+						state: \.clubsState,
+						action: MenuAction.clubsAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("RocketIcon")
+				}
+				.tag(4)
+				InfoView(
+					store: self.store.scope(
+						state: \.infoState,
+						action: MenuAction.infoAction
+					)
+				)
+				.preferredColorScheme(.light)
+				.tabItem {
+					Image("InfoIcon")
+				}
+				.tag(5)
+			}.onAppear(perform: {
+				UITabBar.appearance().backgroundColor = .systemBackground
+			})
+			.accentColor(K.Colors.firstColorDark)
+		}
     }
 }
 
@@ -256,7 +289,8 @@ struct MenuView_Previews: PreviewProvider {
                     getDepartment: failing1,
                     getScienceClub: failing1,
                     getWhatsNew: failing0,
-                    getInfos: failing1
+                    getInfos: failing1,
+					getAboutUs: failing0
                 )
             )
         )

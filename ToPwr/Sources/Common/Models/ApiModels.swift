@@ -150,6 +150,29 @@ public extension InfoComponent {
     var type: InfoType {
         InfoType(rawValue: stringType ?? "other") ?? .other
     }
+	
+	func getValueUrl() -> URL? {
+		
+		guard let safeValue = self.value else {
+			return nil
+		}
+		
+		var uc = URLComponents()
+		
+		switch type {
+		case .website:
+			return URL(string: safeValue)
+		case .phone:
+			uc.scheme = "tel"
+		case .email:
+			uc.scheme = "mailto"
+		default:
+			return nil
+		}
+		
+		uc.path = safeValue
+		return uc.url
+	}
 }
 
 //MARK: - Science Clubs
@@ -351,6 +374,7 @@ public struct Info: Codable, Equatable, Identifiable {
     public let description: String?
     public let infoSection: [InfoSection]
     public let photo: Photo?
+	public let shortDescription: String
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -358,7 +382,38 @@ public struct Info: Codable, Equatable, Identifiable {
         case description = "description"
         case infoSection = "infoSection"
         case photo = "photo"
+		case shortDescription = "shortDescription"
     }
+	
+	public init(
+		id: Int,
+		title: String,
+		description: String?,
+		infoSection: [InfoSection],
+		photo: Photo?,
+		shortDescription: String
+	) {
+		self.id = id
+		self.title = title
+		self.description = description
+		self.infoSection = infoSection
+		self.photo = photo
+		self.shortDescription = shortDescription
+	}
+}
+
+// MARK: - AboutUs
+
+public struct AboutUs: Codable, Equatable {
+	public let id: Int
+	public let content: String
+	public let photo: Photo?
+	
+	enum CodingKeys: String, CodingKey {
+		case id = "id"
+		case content = "content"
+		case photo = "photo"
+	}
 }
 
 // MARK: - EXTENSIONS

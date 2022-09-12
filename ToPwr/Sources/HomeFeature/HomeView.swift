@@ -10,7 +10,7 @@ import WhatsNewFeature
 public struct HomeState: Equatable {
     var whatsNewListState = WhatsNewListState()
     var departmentListState = DepartmentHomeListState()
-    var buildingListState = BuildingListState()
+    public var buildingListState = BuildingListState()
     var clubHomeListState = ClubHomeListState()
     var exceptations: ExceptationDays?
     var sessionDay: SessionDay? = nil
@@ -138,8 +138,9 @@ public let homeReducer = Reducer<
       state.sessionDay = sessionDate
       return .none
   case .receivedDepartments(.success(let departments)):
+	  let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
       state.departmentListState = .init(
-        departments: departments.map {
+        departments: sortedDepartments.map {
             DepartmentDetailsState(department: $0)
         }
       )

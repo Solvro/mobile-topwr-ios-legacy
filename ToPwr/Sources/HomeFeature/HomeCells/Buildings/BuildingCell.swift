@@ -5,7 +5,7 @@ import Common
 //MARK: - STATE
 public struct BuildingCellState: Equatable, Identifiable {
     public let id: Int
-    let building: Map
+	let building: Map
     
     public init(
         building: Map

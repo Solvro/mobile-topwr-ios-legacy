@@ -6,7 +6,7 @@ import Common
 public struct BuildingListState: Equatable {
     let title: String = Strings.HomeLists.buildingListTitle
     let buttonText: String = Strings.HomeLists.buildingListButton
-    var buildings: IdentifiedArrayOf<BuildingCellState> = []
+    public var buildings: IdentifiedArrayOf<BuildingCellState> = []
     
     var isLoading: Bool {
         buildings.isEmpty ? true : false
@@ -80,12 +80,16 @@ public struct BuildingListView: View {
                     .font(.appMediumTitle2)
                     .foregroundColor(K.FontColors.primary)
                 Spacer()
-                Text(viewStore.buttonText)
-                    .foregroundColor(.gray)
-                    .font(.appRegularTitle3)
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.gray)
-            }
+				Button {
+					viewStore.send(.listButtonTapped)
+				} label: {
+					Text(viewStore.buttonText)
+						.foregroundColor(.gray)
+						.font(.appRegularTitle3)
+					Image(systemName: "chevron.right")
+						.foregroundColor(.gray)
+				}
+	        }
             .horizontalPadding(.normal)
             
             ScrollView(.horizontal, showsIndicators: false) {

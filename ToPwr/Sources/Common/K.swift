@@ -12,7 +12,8 @@ public struct K {
         public static let logoBlue = Color(hex: "3f6499")
         public static let firstGreen = Color(hex: "027c3d")
 		public static let tagGray = Color(hex: "D9DCE0")
-        
+		public static let dateDark = Color(hex: "2E405A")
+
         public static let gradient = LinearGradient(
             colors: [K.Colors.firstColorLight, K.Colors.firstColorDark],
             startPoint: .leading,

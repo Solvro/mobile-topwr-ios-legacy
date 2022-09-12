@@ -6,7 +6,7 @@ let package = Package(
     name: "ToPwr",
     defaultLocalization: "pl",
     platforms: [
-        .iOS(.v14),
+        .iOS("15.0"),
     ],
     products: [
         .library(

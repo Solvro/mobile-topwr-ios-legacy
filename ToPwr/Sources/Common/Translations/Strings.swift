@@ -55,6 +55,9 @@ public extension Strings.Other {
     static let aboutUs = translation(from: "about_us")
     static let fields = translation(from: "fields")
     static let readMore = translation(from: "read_more")
+	static let networkError = translation(from: "network_error")
+	static let tryAgain = translation(from: "try_again")
+	static let cancel = translation(from: "cancel")
 }
 
 public extension Strings.MapView {
