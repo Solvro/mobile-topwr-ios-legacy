@@ -2,10 +2,11 @@ import Foundation
 import Combine
 import ComposableArchitecture
 import Common
+import StoreKit
 
 public struct Api {
-    private let scheme = "https://"
-    private let host = "to-pwr-backend.herokuapp.com"
+    // MARK: API TYPE (stage/prod)
+    let type: BackendURL = .init(type: .stage)
     private let session: URLSession
     
     public init() {
@@ -14,7 +15,7 @@ public struct Api {
     
     public func fetch(path: String, start: Int? = nil, limit: Int? = nil) -> AnyPublisher<Data, ErrorModel> {
         guard let url: URL = .init(
-            string: scheme + host + path
+            string: type.urlString + path
         )
         else {
             return Fail(error: ErrorModel(text: "Couldn't generate url"))
@@ -51,4 +52,26 @@ public struct Api {
     }
 }
 
+struct BackendURL {
+    public let urlString: String
+    enum ApiType {
+    case prod
+    case stage
+    }
+    
+    public init(
+        type: ApiType
+    ) {
+        if type == .stage {
+            urlString = BackedAPIs.stage
+        } else {
+            urlString = BackedAPIs.prod
+        }
+    }
+}
+
+enum BackedAPIs {
+    static let stage = "https://to-pwr-backend.herokuapp.com"
+    static let prod = "http://217.182.78.179:1337"
+}
 
