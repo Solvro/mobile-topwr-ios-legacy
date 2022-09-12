@@ -9,7 +9,6 @@ public struct InfoListState: Equatable {
 	var filtered: IdentifiedArrayOf<InfoDetailsState> = .init(uniqueElements: [])
 	var selection: Identified<InfoDetailsState.ID, InfoDetailsState?>?
 	var aboutUs: InfoDetailsState?
-	
 	var searchState = SearchState()
 	var text: String = ""
 	
@@ -116,6 +115,11 @@ infoDetailsReducer
 	)
 //MARK: - VIEW
 public struct InfoListView: View {
+	
+	private enum Constants {
+		static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+	}
+	
 	let store: Store<InfoListState, InfoListAction>
 	
 	public init(
@@ -177,6 +181,11 @@ public struct InfoListView: View {
 										description: club.info.shortDescription
 									)
 								}
+							}
+							if let safeVerion = Constants.appVersion {
+								Text("Version \(safeVerion)")
+									.foregroundColor(.gray)
+									.padding(.bottom, 16)
 							}
 						}
 					}
