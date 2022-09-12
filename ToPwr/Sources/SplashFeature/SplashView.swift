@@ -41,6 +41,7 @@ public struct SplashEnvironment {
     let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
     let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
     let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
+	let getAllScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
     let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
     let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
@@ -54,6 +55,7 @@ public struct SplashEnvironment {
         getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
         getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
         getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
+		getAllScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
         getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
         getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
@@ -66,6 +68,7 @@ public struct SplashEnvironment {
         self.getDepartments = getDepartments
         self.getBuildings = getBuildings
         self.getScienceClubs = getScienceClubs
+		self.getAllScienceClubs = getAllScienceClubs
         self.getWelcomeDayText = getWelcomeDayText
         self.getDepartment = getDepartment
         self.getScienceClub = getScienceClub
@@ -112,7 +115,8 @@ public let splashReducer = Reducer<
                         getSessionDate: $0.getSessionDate,
                         getDepartments: $0.getDepartments,
                         getBuildings: $0.getBuildings,
-                        getScienceClubs: $0.getScienceClubs,
+						getScienceClubs: $0.getScienceClubs,
+						getAllScienceClubs: $0.getAllScienceClubs,
                         getWelcomeDayText: $0.getWelcomeDayText,
                         getDepartment: $0.getDepartment,
                         getScienceClub: $0.getScienceClub,
@@ -463,7 +467,8 @@ struct SplashView_Previews: PreviewProvider {
                     getSessionDate: failing0,
                     getDepartments: failing1,
                     getBuildings: failing0,
-                    getScienceClubs: failing1,
+					getScienceClubs: failing1,
+					getAllScienceClubs: failing0,
                     getWelcomeDayText: failing0,
                     getDepartment: failing1,
                     getScienceClub: failing1,

@@ -177,13 +177,21 @@ public struct ScienceClub: Codable, Equatable {
     }
 }
 
-public struct Tag: Codable, Equatable {
+public struct Tag: Codable, Equatable, Identifiable, Hashable {
     public let id: Int
     public let name: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
+    }
+    
+    public init (
+        id: Int,
+        name: String?
+    ) {
+        self.id = id
+        self.name = name
     }
 }
 
