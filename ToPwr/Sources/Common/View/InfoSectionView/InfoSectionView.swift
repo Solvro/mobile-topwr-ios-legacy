@@ -31,16 +31,7 @@ public struct InfoSectionView: View {
 								}
 							)
 						}
-					case .phone:
-						if let safeUrl = info.getValueUrl() {
-							Link(
-								destination: safeUrl,
-								label: {
-									InfoCellView(info: info)
-								}
-							)
-						}
-					case .email:
+					default:
 						if let safeUrl = info.getValueUrl() {
 							Link(
 								destination: safeUrl,

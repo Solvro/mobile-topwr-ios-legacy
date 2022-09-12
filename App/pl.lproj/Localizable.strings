@@ -46,3 +46,6 @@
 "read_more"="Czytaj dalej";
 "building"="Budynek";
 "buildings"="Budynki";
+"network_error"="Problem z połączeniem";
+"try_again"="Spróbuj ponownie";
+"cancel"="Anuluj";

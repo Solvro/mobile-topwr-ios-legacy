@@ -116,13 +116,13 @@ public struct DepartmentsView: View {
 				)
 			) {
 				Alert(
-					title: Text("Problem z połączeniem"),
+					title: Text(Strings.Other.networkError),
 					primaryButton: .default(
-						Text("Spróbuj ponownie"),
+						Text(Strings.Other.tryAgain),
 						action: {
 							viewStore.send(.loadDepartments)
 					} ),
-					secondaryButton: .cancel(Text("Anuluj"))
+					secondaryButton: .cancel(Text(Strings.Other.cancel))
 				)
 			}
 		}

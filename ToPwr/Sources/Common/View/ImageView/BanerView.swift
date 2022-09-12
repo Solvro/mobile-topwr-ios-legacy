@@ -25,7 +25,6 @@ public struct BanerView: View {
     
     public var body: some View {
         ZStack {
-			
 			if url != nil {
 				LinearGradient(
 					gradient: Gradient(

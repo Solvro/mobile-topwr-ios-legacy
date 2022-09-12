@@ -70,7 +70,6 @@ public let infoReducer = Reducer<
 		)
 		state.listState.infos = infos
 		state.listState.filtered = infos
-//		state.listState = .init(infos: Infos)
         return .none
 	case .receivedInfos(.failure(let error)):
 		state.showAlert = true
@@ -145,13 +144,13 @@ public struct InfoView: View {
 				)
 			) {
 				Alert(
-					title: Text("Problem z połączeniem"),
+					title: Text(Strings.Other.networkError),
 					primaryButton: .default(
-						Text("Spróbuj ponownie"),
+						Text(Strings.Other.tryAgain),
 						action: {
 							viewStore.send(.loadInfos)
 					} ),
-					secondaryButton: .cancel(Text("Anuluj"))
+					secondaryButton: .cancel(Text(Strings.Other.cancel))
 				)
 			}
         }
