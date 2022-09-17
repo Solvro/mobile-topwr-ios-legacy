@@ -63,6 +63,7 @@ public extension Strings.Other {
 public extension Strings.MapView {
     static let buildings = translation(from: "buildings")
     static let building = translation(from: "building")
+    static let navigateMe = translation(from: "navigate_me")
 }
 
 func translation(
