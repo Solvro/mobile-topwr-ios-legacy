@@ -4,6 +4,5 @@ import Foundation
 final class CommonTests: XCTestCase {
     
     func test_Example() {
-        XCTAssertEqual(ToPwr().text, "Hello, World!")
     }
 }
