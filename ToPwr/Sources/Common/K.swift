@@ -11,7 +11,7 @@ public struct K {
         public static let red = Color(hex: "#DB2B10")
         public static let logoBlue = Color(hex: "3f6499")
         public static let firstGreen = Color(hex: "027c3d")
-        public static let tagGray = Color(hex: "D9DCE0")
+        public static let tagGrey = Color(hex: "D9DCE0")
         public static let dateDark = Color(hex: "2E405A")
         public static let shadow = Color(hex: "#C62D2E")
 
@@ -23,7 +23,7 @@ public struct K {
     }
     
     public struct SearchColors {
-        public static let darkGray = Color(hex: "#979fac")
+        public static let darkGrey = Color(hex: "#979fac")
         public static let lightGray = Color(hex: "#f7f7f8")
         public static let textColor = Color(hex: "#e56353")
     }
