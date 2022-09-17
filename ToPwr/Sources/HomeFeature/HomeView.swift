@@ -295,6 +295,7 @@ public struct HomeView: View {
                             )
                         )
                     }
+                    .padding(.bottom, UIDimensions.normal.size)
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
