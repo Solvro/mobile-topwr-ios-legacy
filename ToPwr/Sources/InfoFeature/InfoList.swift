@@ -204,6 +204,7 @@ public struct InfoListView: View {
 									.padding(.bottom, 16)
 							}
 						}
+                        .padding(.bottom, UIDimensions.normal.size)
 					}
 				}
 				.barLogo()

@@ -77,7 +77,7 @@ public struct WhatsNewDetailsView: View {
                                 width: Constants.dateWidth,
                                 height: Constants.dateHeight
                             )
-                            .background(Color.gray)
+                            .background(K.Colors.dateDark)
                             .cornerRadius(UIDimensions.huge.cornerRadius)
                             .horizontalPadding(.big)
                             .verticalPadding(.small)

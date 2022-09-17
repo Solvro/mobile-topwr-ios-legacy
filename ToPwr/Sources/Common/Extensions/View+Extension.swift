@@ -35,13 +35,14 @@ public extension View {
     }
     
     func shadow(_ type: ShadowType, radius: CGFloat = 3) -> some View {
+        let shadowColor: Color = .black.opacity(0.20)
         switch type {
         case .complex:
-            return self.shadow(radius: radius)
+            return self.shadow(color: shadowColor, radius: radius)
         case .up:
-            return self.shadow(radius: radius, x: 0, y: -5)
+            return self.shadow(color: shadowColor, radius: radius, x: 0, y: -5)
         case .down:
-            return self.shadow(radius: radius, x: 0, y: 5)
+            return self.shadow(color: shadowColor, radius: radius, x: 2, y: 2)
         }
     }
 }
