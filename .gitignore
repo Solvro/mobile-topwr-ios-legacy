@@ -1,0 +1,10 @@
+UserInterfaceState.xcuserstate
+.DS_Store
+*.swp
+*~.nib
+
+.bundle/
+build/
+xcuserdata/
+Package.resolved 
+
