@@ -6,6 +6,7 @@ import HomeFeature
 
 //MARK: - STATE
 public struct MapBottomSheetState: Equatable {
+    let navigateButtonTitle: String = Strings.MapView.navigateMe
 	var searchState = SearchState()
 	var text: String = ""
 	
@@ -120,6 +121,7 @@ struct MapBottomSheetView: View {
 		static let indicatorWidth: CGFloat = 60
 		static let snapRatio: CGFloat = 0.25
 		static let minHeightRatio: CGFloat = 0.3
+        static let navigateIcon: String = "paperplane.fill"
 	}
 	
 	@GestureState private var translation: CGFloat = 0
@@ -166,9 +168,39 @@ struct MapBottomSheetView: View {
 								self.indicator.padding()
 								Spacer()
 							}
-							Text(Strings.MapView.buildings)
-								.font(.appMediumTitle2)
-								.padding()
+                            HStack {
+                                Text(Strings.MapView.buildings)
+                                    .font(.appMediumTitle2)
+                                    .padding()
+                                Spacer()
+                                if let selected = viewStore.selectedId {
+                                    Button(
+                                        action: {
+                                            let lat: String = String(format: "%.3f", selected.building.latitude ?? "0")
+                                            let lon: String = String(format: "%.3f", selected.building.longitude ?? "0")
+                                            guard
+                                                let url = URL(
+                                                    string: "maps://?saddr=&daddr=\(lat),\(lon)"
+                                                ),
+                                                UIApplication.shared.canOpenURL(url)
+                                            else {
+                                                print("Could't load map")
+                                                return
+                                            }
+                                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                        },
+                                        label: {
+                                            HStack {
+                                                Text(viewStore.navigateButtonTitle)
+                                                    .font(.appBoldTitle4)
+                                                Image(systemName: Constants.navigateIcon)
+                                                    .foregroundColor(K.Colors.red)
+                                            }
+                                        }
+                                    )
+                                    .padding()
+                                }
+                            }
 							SearchView(
 								store: store.scope(
 									state: \.searchState,

@@ -6,6 +6,7 @@ import Common
 //MARK: - STATE
 public struct ClubHomeListState: Equatable {
     let title: String = Strings.HomeLists.scienceClubsTitle
+    let buttonText: String = Strings.HomeLists.departmentListButton
     
     var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
@@ -25,7 +26,7 @@ public struct ClubHomeListState: Equatable {
 
 //MARK: - ACTION
 public enum ClubHomeListAction: Equatable {
-    case buttonTapped
+    case listButtonTapped
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)
     case receivedClubs(Result<[ScienceClub], ErrorModel>)
@@ -73,8 +74,7 @@ clubDetailsReducer
     ClubHomeListEnvironment
     > { state, action, env in
         switch action {
-        case .buttonTapped:
-            print("CELL TAPPED")
+        case .listButtonTapped:
             return .none
         case let .setNavigation(selection: .some(id)):
             state.selection = Identified(nil, id: id)
@@ -126,6 +126,18 @@ public struct ClubHomeListView: View {
                     .font(.appMediumTitle2)
                     .foregroundColor(K.FontColors.primary)
                 Spacer()
+                Button(
+                    action: {
+                        viewStore.send(.listButtonTapped)
+                    },
+                    label: {
+                        Text(viewStore.buttonText)
+                            .foregroundColor(K.Colors.red)
+                            .font(.appRegularTitle3)
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(K.Colors.red)
+                    }
+                )
             }
             .horizontalPadding(.normal)
             

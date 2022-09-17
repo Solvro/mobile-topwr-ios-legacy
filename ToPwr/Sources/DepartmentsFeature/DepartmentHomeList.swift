@@ -133,10 +133,10 @@ public struct DepartmentHomeListView: View {
                     },
                     label: {
                         Text(viewStore.buttonText)
-                            .foregroundColor(.gray)
+                            .foregroundColor(K.Colors.red)
                             .font(.appRegularTitle3)
                         Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
+                            .foregroundColor(K.Colors.red)
                     }
                 )
             }

@@ -258,6 +258,7 @@ public struct ClubListView: View {
                                         }
                                 }
                             }
+                            .padding(.bottom, UIDimensions.normal.size)
                             if viewStore.isFetching { ProgressView() }
                         }
                     }

@@ -122,7 +122,7 @@ public struct ClubTagFilterView: View {
                 }
                 .background(
                     Capsule()
-						.strokeBorder(K.Colors.tagGray, lineWidth: 1)
+						.strokeBorder(K.Colors.tagGrey, lineWidth: 1)
                 )
             }
         }

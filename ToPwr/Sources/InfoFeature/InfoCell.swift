@@ -33,7 +33,7 @@ public struct InfoCellView: View {
 						.padding(.bottom, 5) // small is to big
 					
 					Text(description ?? "")
-						.font(.appMediumTitle4)
+						.font(.appRegularTitle4)
 						.foregroundColor(.black)
 						.multilineTextAlignment(.leading)
 						.padding(.leading, UIDimensions.normal.spacing)
