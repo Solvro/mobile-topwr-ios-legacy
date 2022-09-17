@@ -118,7 +118,7 @@ extension DaysToSessionView {
 
 //Counter View - showing numbers only
 private struct CounterView: View {
-    let shadowColor: Color = K.Colors.shadow.opacity(0.40)
+    let shadowColor: Color = K.Colors.shadowCounter.opacity(0.40)
     
     var first: String
     var second: String
