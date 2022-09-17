@@ -118,6 +118,8 @@ extension DaysToSessionView {
 
 //Counter View - showing numbers only
 private struct CounterView: View {
+    let shadowColor: Color = K.Colors.shadow.opacity(0.40)
+    
     var first: String
     var second: String
     var third: String
@@ -136,7 +138,7 @@ private struct CounterView: View {
             .frame(width: width, height: height)
             .background(Color.white)
             .cornerRadius(4)
-            .shadow(radius: 2, y: 2)
+            .shadow(color: shadowColor, radius: 1, x: -1, y: 1)
             
             ZStack {
                 Text(second)
@@ -147,8 +149,7 @@ private struct CounterView: View {
             .frame(width: width, height: height)
             .background(Color.white)
             .cornerRadius(4)
-            .shadow(radius: 2, y: 2)
-            
+            .shadow(color: shadowColor, radius: 1, x: -1, y: 1)
             
             ZStack {
                 Text(third)
@@ -158,7 +159,7 @@ private struct CounterView: View {
             .frame(width: width, height: height)
             .background(Color.white)
             .cornerRadius(4)
-            .shadow(radius: 2, y: 2)
+            .shadow(color: shadowColor, radius: 1, x: -1, y: 1)
         }
     }
 }

@@ -258,7 +258,7 @@ public struct HomeView: View {
                         WelcomeView(
                             exceptations: viewStore.exceptations
                         )
-                            .verticalPadding(.big)
+                            .verticalPadding(.normal)
                             .horizontalPadding(.normal)
                         
                         DaysToSessionView(session: viewStore.sessionDay)
