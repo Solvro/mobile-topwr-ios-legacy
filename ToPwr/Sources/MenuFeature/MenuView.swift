@@ -81,22 +81,25 @@ public let menuReducer = Reducer<
     MenuEnvironment
 > { state, action, environment in
     switch action {
-	case .homeAction(.buildingListAction(.listButtonTapped)):
-		state.selection = 2
-		return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
-			try await environment.mainQueue.sleep(for: .seconds(delay))
-			return .mapAction(.sheetOpenStatusChanged(true))
-		}
-	case .homeAction(.departmentListAction(.listButtonTapped)):
-		state.selection = 3
-		return .none
-	case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
-		let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
-		state.mapState = MapFeatureState(preselectionID: id)
-		state.selection = 2
-		return .none
-	case .homeAction:
-		return .none
+    case .homeAction(.buildingListAction(.listButtonTapped)):
+        state.selection = 2
+        return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
+            try await environment.mainQueue.sleep(for: .seconds(delay))
+            return .mapAction(.sheetOpenStatusChanged(true))
+        }
+    case .homeAction(.departmentListAction(.listButtonTapped)):
+        state.selection = 3
+        return .none
+    case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
+        let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
+        state.mapState = MapFeatureState(preselectionID: id)
+        state.selection = 2
+        return .none
+    case .homeAction(.clubHomeListAction(.listButtonTapped)):
+        state.selection = 4
+        return .none
+    case .homeAction:
+        return .none
     case .mapAction:
         return .none
     case .departmentsAction:

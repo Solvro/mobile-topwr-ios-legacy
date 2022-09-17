@@ -58,7 +58,7 @@ public struct SearchView: View {
 		WithViewStore(store) { viewStore in
 			HStack {
 				Image(systemName: "magnifyingglass")
-					.foregroundColor(K.SearchColors.darkGray)
+					.foregroundColor(K.SearchColors.darkGrey)
 					.padding(8)
 				
 				TextField(
@@ -89,7 +89,7 @@ public struct SearchView: View {
 						},
 						label: {
 							Image(systemName: "x.circle.fill")
-								.foregroundColor(K.SearchColors.darkGray)
+								.foregroundColor(K.SearchColors.darkGrey)
 								.padding(8)
 						}
 					)
