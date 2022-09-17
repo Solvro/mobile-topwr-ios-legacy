@@ -35,7 +35,7 @@ public extension View {
     }
     
     func shadow(_ type: ShadowType, radius: CGFloat = 3) -> some View {
-        let shadowColor: Color = .black.opacity(0.40)
+        let shadowColor: Color = .black.opacity(0.20)
         switch type {
         case .complex:
             return self.shadow(color: shadowColor, radius: radius)
