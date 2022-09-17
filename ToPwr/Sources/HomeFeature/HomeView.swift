@@ -258,7 +258,6 @@ public struct HomeView: View {
                         WelcomeView(
                             exceptations: viewStore.exceptations
                         )
-                            .verticalPadding(.big)
                             .horizontalPadding(.normal)
                         
                         DaysToSessionView(session: viewStore.sessionDay)
@@ -296,6 +295,7 @@ public struct HomeView: View {
                             )
                         )
                     }
+                    .padding(.bottom, UIDimensions.normal.size)
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {

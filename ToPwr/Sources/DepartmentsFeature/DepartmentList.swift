@@ -197,6 +197,7 @@ public struct DepartmentListView: View {
                                 }
                             }
                         }
+                        .padding(.bottom, UIDimensions.normal.size)
                         if viewStore.isFetching { ProgressView() }
                     }
                 }
