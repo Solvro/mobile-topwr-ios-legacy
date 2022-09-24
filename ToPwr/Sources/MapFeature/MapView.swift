@@ -29,7 +29,7 @@ struct MapView: UIViewRepresentable {
 	}
 	
 	func updateUIView(_ view: MKMapView, context: Context) {
-		view.addOverlays(MapCoordinator().parseGeoJSON())
+//		view.addOverlays(MapCoordinator().parseGeoJSON())
 		view.addAnnotations(annotations)
 		view.pointOfInterestFilter = .excludingAll
 		view.translatesAutoresizingMaskIntoConstraints = false
