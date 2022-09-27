@@ -34,17 +34,13 @@ public struct ImageView<Placeholder: View>: View {
             if let placeholder = placeholder {
                 placeholder
             } else {
-                Image("placeholder", bundle: Bundle.module)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipped()
-                    .background(K.Colors.firstColorDark)
+                K.Colors.lightGray
             }
         }
     }
 }
 
-public extension ImageView where Placeholder == EmptyView{
+public extension ImageView where Placeholder == EmptyView {
     init(
         url: URL?,
         contentMode: ImageResizingMode = .aspectFit
