@@ -7,7 +7,7 @@ import Combine
 //MARK: - STATE
 public struct ClubDetailsState: Equatable, Identifiable {
     public let id: UUID
-    let club: ScienceClub
+    public let club: ScienceClub
     var department: Department?
     var isLoading: Bool = true
     

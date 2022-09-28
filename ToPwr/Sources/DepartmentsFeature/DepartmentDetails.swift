@@ -9,8 +9,6 @@ import ClubsFeature
 public struct DepartmentDetailsState: Equatable, Identifiable {
     public let id: UUID
     public let department: Department
-    var items: IdentifiedArrayOf<TileState> = []
-    //    var clubs: [ScienceClub] = []
     var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
     var clubSelection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
@@ -21,6 +19,23 @@ public struct DepartmentDetailsState: Equatable, Identifiable {
         self.id = id
         self.department = department
     }
+}
+
+extension DepartmentDetailsState {
+    struct ViewState: Equatable {
+        let department: Department
+        let clubs: IdentifiedArrayOf<ClubDetailsState>
+        let selectionID: ClubDetailsState.ID?
+    }
+    
+    var viewState: ViewState {
+        ViewState(
+            department: self.department,
+            clubs: self.clubs,
+            selectionID: self.clubSelection?.id
+        )
+    }
+    
 }
 
 // MARK: - Actions
@@ -81,21 +96,20 @@ clubDetailsReducer
                 }
                 return .concatenate(actions)
             case .loadClub(let id):
-                //                print("LOAD SCIENCE CLUB: \(id)")
                 return env.getScienceClub(id)
                     .receive(on: env.mainQueue)
                     .catchToEffect()
                     .map(DepartmentDetailsAction.receivedClub)
             case .receivedClub(.success(let club)):
-                state.clubs.append(ClubDetailsState(club: club, department: state.department))
-                state.items.updateOrAppend(
-                    .init(
-                        id: club.id,
-                        imageURL: club.photo?.url,
-                        title: club.name ?? "",
-                        description: club.description ?? ""
+                let clubs = state.clubs
+                if !clubs.contains(where: { $0.club.id == club.id }) {
+                    state.clubs.append(
+                        ClubDetailsState(
+                            club: club,
+                            department: state.department
+                        )
                     )
-                )
+                }
                 return .none
             case .receivedClub(.failure(let error)):
                 print(error)
@@ -131,7 +145,7 @@ public struct DepartmentDetailsView: View {
     }
     
     public var body: some View {
-        WithViewStore(store) { viewStore in
+        WithViewStore(store.scope(state: \.viewState)) { viewStore in
             ScrollView {
                 VStack {
                     DetailsMapView(
@@ -211,7 +225,7 @@ public struct DepartmentDetailsView: View {
                                         ),
                                         tag: club.id,
                                         selection: viewStore.binding(
-                                            get: \.clubSelection?.id,
+                                            get: \.selectionID,
                                             send: DepartmentDetailsAction.setNavigation(selection:)
                                         )
                                     ) {
