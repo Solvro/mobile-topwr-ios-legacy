@@ -3,13 +3,16 @@ import Combine
 import SwiftUI
 import Common
 import IdentifiedCollections
+import ClubsFeature
 
 // MARK: - State
 public struct DepartmentDetailsState: Equatable, Identifiable {
     public let id: UUID
     public let department: Department
     var items: IdentifiedArrayOf<TileState> = []
-    var clubs: [ScienceClub] = []
+    //    var clubs: [ScienceClub] = []
+    var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
+    var clubSelection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
     public init(
         id: UUID = UUID(),
@@ -26,36 +29,48 @@ public enum DepartmentDetailsAction: Equatable {
     case getClubs
     case loadClub(Int)
     case receivedClub(Result<ScienceClub, ErrorModel>)
-    case clubAction(id: TileState.ID, action: TileAction)
+    case setNavigation(selection: UUID?)
+    case clubAction(ClubDetailsAction)
 }
 
 // MARK: - Environment
 public struct DepartmentDetailsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getScienceClub = getScienceClub
+        self.getDepartment = getDepartment
     }
 }
 
 // MARK: - Reducer
-public let departmentDetailsReducer = Reducer<
-    DepartmentDetailsState,
-    DepartmentDetailsAction,
-    DepartmentDetailsEnvironment
->
-    .combine(
-        tileReducer.forEach(
-            state: \.items,
-            action: /DepartmentDetailsAction.clubAction(id:action:),
-            environment: { _ in .init() }
-        ),
-        Reducer{ state, action, env in
+public let departmentDetailsReducer =
+clubDetailsReducer
+    .optional()
+    .pullback(state: \Identified.value, action: .self, environment: { $0 })
+    .optional()
+    .pullback(
+        state: \.clubSelection,
+        action: /DepartmentDetailsAction.clubAction,
+        environment: { env in
+            ClubDetailsEnvironment(
+                mainQueue: env.mainQueue,
+                getDepartment: env.getDepartment
+            )
+        })
+    .combined(
+        with:Reducer<
+        DepartmentDetailsState,
+        DepartmentDetailsAction,
+        DepartmentDetailsEnvironment
+        > { state, action, env in
             switch action {
             case .onAppear:
                 return .init(value: .getClubs)
@@ -66,13 +81,13 @@ public let departmentDetailsReducer = Reducer<
                 }
                 return .concatenate(actions)
             case .loadClub(let id):
-                print("LOAD SCIENCE CLUB: \(id)")
+                //                print("LOAD SCIENCE CLUB: \(id)")
                 return env.getScienceClub(id)
                     .receive(on: env.mainQueue)
                     .catchToEffect()
                     .map(DepartmentDetailsAction.receivedClub)
             case .receivedClub(.success(let club)):
-                state.clubs.append(club)
+                state.clubs.append(ClubDetailsState(club: club, department: state.department))
                 state.items.updateOrAppend(
                     .init(
                         id: club.id,
@@ -84,6 +99,15 @@ public let departmentDetailsReducer = Reducer<
                 return .none
             case .receivedClub(.failure(let error)):
                 print(error)
+                return .none
+            case let .setNavigation(selection: .some(id)):
+                state.clubSelection = Identified(nil, id: id)
+                guard let id = state.clubSelection?.id,
+                      let new = state.clubs[id: id] else { return .none }
+                state.clubSelection?.value = new
+                return .none
+            case .setNavigation(selection: .none):
+                state.clubSelection = nil
                 return .none
             case .clubAction:
                 return .none
@@ -99,13 +123,13 @@ public struct DepartmentDetailsView: View {
         static let logoSize: CGFloat = 64
         static let fieldsHeight: CGFloat = 50
     }
-
+    
     let store: Store<DepartmentDetailsState, DepartmentDetailsAction>
-
+    
     public init(store: Store<DepartmentDetailsState, DepartmentDetailsAction>) {
         self.store = store
     }
-
+    
     public var body: some View {
         WithViewStore(store) { viewStore in
             ScrollView {
@@ -114,7 +138,7 @@ public struct DepartmentDetailsView: View {
                         lat: viewStore.department.latitude,
                         lon: viewStore.department.longitude
                     )
-                        .frame(height: Constants.backgroundImageHeith)
+                    .frame(height: Constants.backgroundImageHeith)
                     
                     LogoView(
                         url: viewStore.department.logo?.url,
@@ -122,28 +146,28 @@ public struct DepartmentDetailsView: View {
                         backgroundSize: Constants.logoBackgroundSize,
                         logoSize: Constants.logoSize
                     )
-                        .offset(y: -(Constants.logoBackgroundSize/2))
-                        .padding(.bottom, -(Constants.logoBackgroundSize/2))
+                    .offset(y: -(Constants.logoBackgroundSize/2))
+                    .padding(.bottom, -(Constants.logoBackgroundSize/2))
                     
-					if let departmentName = viewStore.department.name {
-						Text(departmentName)
-							.font(.appMediumTitle2)
-							.horizontalPadding(.big)
-					}
+                    if let departmentName = viewStore.department.name {
+                        Text(departmentName)
+                            .font(.appMediumTitle2)
+                            .horizontalPadding(.big)
+                    }
                     
-					if let departmentAdress = viewStore.department.adress {
-						Text(departmentAdress)
-							.font(.appRegularTitle4)
-							.horizontalPadding(.huge)
-							.multilineTextAlignment(.center)
-					}
+                    if let departmentAdress = viewStore.department.adress {
+                        Text(departmentAdress)
+                            .font(.appRegularTitle4)
+                            .horizontalPadding(.huge)
+                            .multilineTextAlignment(.center)
+                    }
                     
                     ForEach(viewStore.department.infoSection) { section in
-							VStack(spacing: UIDimensions.normal.spacing) {
-								InfoSectionView(
-									section: section
-								)
-							}
+                        VStack(spacing: UIDimensions.normal.spacing) {
+                            InfoSectionView(
+                                section: section
+                            )
+                        }
                     }
                     
                     VStack {
@@ -175,30 +199,41 @@ public struct DepartmentDetailsView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
-                                ForEachStore(
-                                    self.store.scope(
-                                        state: \.items,
-                                        action: DepartmentDetailsAction.clubAction(id:action:)
-                                    )
-                                ) { store in
-                                    TileView(store: store)
+                                ForEach(viewStore.clubs) { club in
+                                    NavigationLink(
+                                        destination: IfLetStore(
+                                            self.store.scope(
+                                                state: \.clubSelection?.value,
+                                                action: DepartmentDetailsAction.clubAction
+                                            ),
+                                            then: ClubDetailsView.init(store:),
+                                            else: ProgressView.init
+                                        ),
+                                        tag: club.id,
+                                        selection: viewStore.binding(
+                                            get: \.clubSelection?.id,
+                                            send: DepartmentDetailsAction.setNavigation(selection:)
+                                        )
+                                    ) {
+                                        Circle()
+                                            .frame(width: 50)
+                                    }
                                 }
+                                .horizontalPadding(.normal)
                             }
-                            .horizontalPadding(.normal)
+                            .verticalPadding(.normal)
                         }
-                        .verticalPadding(.normal)
+                        
                     }
-                    
+                    .onAppear {
+                        viewStore.send(.onAppear)
+                    }
+                    .navigationBarTitleDisplayMode(.inline)
                 }
-                .onAppear {
-                    viewStore.send(.onAppear)
-                }
-                .navigationBarTitleDisplayMode(.inline)
             }
-            
         }
     }
-    
+        
     //MARK: LogoView
     struct LogoView: View {
         let url: URL?
@@ -218,19 +253,19 @@ public struct DepartmentDetailsView: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                    .frame(
-                        width: backgroundSize,
-                        height: backgroundSize
-                    )
+                .frame(
+                    width: backgroundSize,
+                    height: backgroundSize
+                )
                 
                 ImageView(
                     url: url,
                     contentMode: .aspectFit
                 )
-                    .frame(
-                        width: logoSize,
-                        height: logoSize
-                    )
+                .frame(
+                    width: logoSize,
+                    height: logoSize
+                )
             }
             .clipShape(Circle())
             .shadow(.down)
@@ -262,7 +297,8 @@ public struct DepartmentDetailsView: View {
 public extension DepartmentDetailsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
-        getScienceClub: failing1
+        getScienceClub: failing1,
+        getDepartment: failing1
     )
 }
 #endif
