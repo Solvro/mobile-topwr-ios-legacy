@@ -118,13 +118,12 @@ departmentDetailsReducer
                 .receive(on: env.mainQueue)
                 .catchToEffect()
                 .map(DepartmentListAction.receivedDepartments)
-        case .receivedDepartments(.success(let clubs)):
-            if clubs.isEmpty {
+        case .receivedDepartments(.success(let department)):
+            if department.isEmpty {
                 state.isFetching = false
                 state.noMoreFetches = true
                 return .none
             }
-            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
             state.filtered = state.departments
             return .none
         case .fetchingOn:

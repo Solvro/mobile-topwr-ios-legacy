@@ -36,6 +36,7 @@ public struct Department: Codable, Equatable {
     public var clubsID: [Int]
     public var latitude: Float?
     public var longitude: Float?
+    public var displayOrder: Int?
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -52,6 +53,7 @@ public struct Department: Codable, Equatable {
         case clubsID = "scientificCircles"
         case latitude = "latitude"
         case longitude = "longitude"
+        case displayOrder = "displayOrder"
     }
 }
 
@@ -446,7 +448,8 @@ public extension Department {
         fieldOfStudy: [],
         color: nil,
         logo: nil,
-        clubsID: []
+        clubsID: [],
+        displayOrder: 0
     )
     
     static func mock(id: Int) -> Self {
@@ -462,7 +465,8 @@ public extension Department {
             fieldOfStudy: [],
             color: nil,
             logo: nil,
-            clubsID: []
+            clubsID: [],
+            displayOrder: id
         )
     }
 }
