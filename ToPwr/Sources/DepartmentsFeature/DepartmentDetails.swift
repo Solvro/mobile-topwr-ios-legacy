@@ -23,14 +23,28 @@ public struct DepartmentDetailsState: Equatable, Identifiable {
 
 extension DepartmentDetailsState {
     struct ViewState: Equatable {
-        let department: Department
+        let latitude: Float?
+        let longitude: Float?
+        let logoUrl: URL?
+        let color: GradientColor?
+        let name: String?
+        let adress: String?
+        let infoSection: [InfoSection]
+        let fieldOfStudy: [FieldOfStudy]
         let clubs: IdentifiedArrayOf<ClubDetailsState>
         let selectionID: ClubDetailsState.ID?
     }
     
     var viewState: ViewState {
         ViewState(
-            department: self.department,
+            latitude: self.department.latitude,
+            longitude: self.department.longitude,
+            logoUrl: self.department.logo?.url,
+            color: self.department.color,
+            name: self.department.name,
+            adress: self.department.adress,
+            infoSection: self.department.infoSection,
+            fieldOfStudy: self.department.fieldOfStudy,
             clubs: self.clubs,
             selectionID: self.clubSelection?.id
         )
@@ -149,34 +163,34 @@ public struct DepartmentDetailsView: View {
             ScrollView {
                 VStack {
                     DetailsMapView(
-                        lat: viewStore.department.latitude,
-                        lon: viewStore.department.longitude
+                        lat: viewStore.latitude,
+                        lon: viewStore.longitude
                     )
                     .frame(height: Constants.backgroundImageHeith)
                     
                     LogoView(
-                        url: viewStore.department.logo?.url,
-                        color: viewStore.department.color,
+                        url: viewStore.logoUrl,
+                        color: viewStore.color,
                         backgroundSize: Constants.logoBackgroundSize,
                         logoSize: Constants.logoSize
                     )
                     .offset(y: -(Constants.logoBackgroundSize/2))
                     .padding(.bottom, -(Constants.logoBackgroundSize/2))
                     
-                    if let departmentName = viewStore.department.name {
+                    if let departmentName = viewStore.name {
                         Text(departmentName)
                             .font(.appMediumTitle2)
                             .horizontalPadding(.big)
                     }
                     
-                    if let departmentAdress = viewStore.department.adress {
+                    if let departmentAdress = viewStore.adress {
                         Text(departmentAdress)
                             .font(.appRegularTitle4)
                             .horizontalPadding(.huge)
                             .multilineTextAlignment(.center)
                     }
                     
-                    ForEach(viewStore.department.infoSection) { section in
+                    ForEach(viewStore.infoSection) { section in
                         VStack(spacing: UIDimensions.normal.spacing) {
                             InfoSectionView(
                                 section: section
@@ -193,7 +207,7 @@ public struct DepartmentDetailsView: View {
                         .verticalPadding(.normal)
                         
                         VStack {
-                            ForEach(viewStore.department.fieldOfStudy) { department in
+                            ForEach(viewStore.fieldOfStudy) { department in
                                 FieldView(
                                     title: department.name2 ?? "",
                                     height: Constants.fieldsHeight
