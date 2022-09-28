@@ -58,7 +58,7 @@ public let DepartmentsReducer = Reducer<
             .catchToEffect()
             .map(DepartmentsAction.receivedDepartments)
     case .receivedDepartments(.success(let departments)):
-		let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
+        let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
         state.listState = .init(
           departments: sortedDepartments
         )

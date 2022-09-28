@@ -125,6 +125,8 @@ departmentDetailsReducer
                 return .none
             }
             clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
+            let sortedDepartments = state.departments.sorted(by: { $0.department.id < $1.department.id})
+            state.departments = IdentifiedArrayOf(uniqueElements: sortedDepartments)
             state.filtered = state.departments
             return .none
         case .fetchingOn:
