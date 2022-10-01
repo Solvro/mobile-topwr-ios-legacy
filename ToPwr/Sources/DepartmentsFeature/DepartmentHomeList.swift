@@ -40,15 +40,18 @@ public struct DepartmentHomeListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
     let getDepatrements: (Int) -> AnyPublisher<[Department], ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getDepatrements: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>
+        getDepatrements: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getScienceClub = getScienceClub
         self.getDepatrements = getDepatrements
+        self.getDepartment = getDepartment
     }
 }
 
@@ -65,7 +68,8 @@ departmentDetailsReducer
   environment: {
       .init(
         mainQueue: $0.mainQueue,
-        getScienceClub: $0.getScienceClub
+        getScienceClub: $0.getScienceClub,
+        getDepartment: $0.getDepartment
       )
   }
 )
