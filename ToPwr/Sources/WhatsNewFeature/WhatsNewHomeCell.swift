@@ -25,7 +25,7 @@ public struct WhatsNewHomeCellView: View {
             ZStack {
                 ImageView(
                     url: viewState.news.photo?.url,
-                    contentMode: .aspectFill
+                    contentMode: .fill
                 )
                 .cornerRadius(
                     UIDimensions.normal.cornerRadius - 3,

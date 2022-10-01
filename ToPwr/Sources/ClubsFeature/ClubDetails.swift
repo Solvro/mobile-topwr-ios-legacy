@@ -103,13 +103,13 @@ public struct ClubDetailsView: View {
                     VStack {
                         ImageView(
                             url: viewStore.club.background?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
                             .frame(height: Constants.backgroundImageHeith)
                         
                         ImageView(
                             url: viewStore.club.photo?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
                             .frame(
                                 width: Constants.avatarSize,

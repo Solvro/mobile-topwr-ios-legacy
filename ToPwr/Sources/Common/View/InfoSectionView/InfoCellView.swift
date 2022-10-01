@@ -1,5 +1,4 @@
 import SwiftUI
-import NukeUI
 
 public struct InfoCellView: View {
 	private enum Constants {
@@ -28,7 +27,7 @@ public struct InfoCellView: View {
 				
 				ImageView(
 					url: info.icon?.url,
-					contentMode: .aspectFit
+					contentMode: .fit
 				)
 				.foregroundColor(.red)
 				.frame(

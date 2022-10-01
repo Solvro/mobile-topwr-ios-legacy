@@ -63,7 +63,7 @@ public struct WhatsNewDetailsView: View {
                 VStack{
                     ImageView(
                         url:  viewStore.news.photo?.url,
-                        contentMode: .aspectFill
+                        contentMode: .fill
                     )
                         .frame(height: Constants.backgroundImageHeigth)
                     HStack{

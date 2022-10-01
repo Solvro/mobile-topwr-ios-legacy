@@ -300,7 +300,7 @@ public struct DepartmentDetailsView: View {
                 
                 ImageView(
                     url: url,
-                    contentMode: .aspectFit
+                    contentMode: .fit
                 )
                 .frame(
                     width: logoSize,

@@ -41,7 +41,7 @@ public struct InfoCellView: View {
 				Spacer()
 				ImageView(
 					url: photoUrl,
-					contentMode: .aspectFill
+					contentMode: .fill
 				)
 				.frame(width: 90, height: 90)
 				.cornerRadius(8, corners: [.topRight, .bottomRight])

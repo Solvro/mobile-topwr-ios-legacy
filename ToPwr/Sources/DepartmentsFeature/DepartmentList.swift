@@ -149,7 +149,6 @@ departmentDetailsReducer
             }
         )
 )
-
 //MARK: - VIEW
 public struct DepartmentListView: View {
     let store: Store<DepartmentListState, DepartmentListAction>

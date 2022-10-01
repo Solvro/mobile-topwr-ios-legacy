@@ -66,7 +66,7 @@ public struct InfoDetailsView: View {
 				VStack{
 					ImageView(
 						url:  viewStore.info.photo?.url,
-						contentMode: .aspectFill
+						contentMode: .fill
 					)
 					.frame(height: Constants.backgroundImageHeigth)
 					HStack{

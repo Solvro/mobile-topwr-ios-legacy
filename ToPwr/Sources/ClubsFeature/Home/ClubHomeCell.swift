@@ -23,7 +23,7 @@ public struct ClubHomeCellView: View {
             ZStack {
                 ImageView(
                     url: viewState.club.photo?.url,
-                    contentMode: .aspectFill
+                    contentMode: .fill
                 )
                     .cornerRadius(
                         UIDimensions.normal.cornerRadius - 3,

@@ -62,7 +62,7 @@ public struct BuildingCellView: View {
                     ZStack(alignment: .bottomLeading) {
                         ImageView(
                             url: viewStore.building.photo?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
                         
                         LinearGradient(
