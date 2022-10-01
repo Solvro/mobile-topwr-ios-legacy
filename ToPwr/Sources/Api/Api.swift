@@ -6,7 +6,7 @@ import StoreKit
 
 public struct Api {
     // MARK: API TYPE (stage/prod)
-    let type: BackendURL = .init(type: .prod)
+    let type: BackendURL = .init(type: .stage)
     private let session: URLSession
     
     public init() {
