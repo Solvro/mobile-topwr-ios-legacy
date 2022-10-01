@@ -10,7 +10,8 @@ public struct DepartmentDetailsState: Equatable, Identifiable {
     public let id: UUID
     public let department: Department
     var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
-    var clubSelection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
+    var clubDetailsState: ClubDetailsState?
+    var isClubDetailsActive: Bool = false
     
     public init(
         id: UUID = UUID(),
@@ -32,7 +33,8 @@ extension DepartmentDetailsState {
         let infoSection: [InfoSection]
         let fieldOfStudy: [FieldOfStudy]
         let clubs: IdentifiedArrayOf<ClubDetailsState>
-        let selectionID: ClubDetailsState.ID?
+        var clubDetailsState: ClubDetailsState?
+        var isClubDetailsActive: Bool = false
     }
     
     var viewState: ViewState {
@@ -46,7 +48,8 @@ extension DepartmentDetailsState {
             infoSection: self.department.infoSection,
             fieldOfStudy: self.department.fieldOfStudy,
             clubs: self.clubs,
-            selectionID: self.clubSelection?.id
+            clubDetailsState: self.clubDetailsState,
+            isClubDetailsActive: self.isClubDetailsActive
         )
     }
     
@@ -58,8 +61,9 @@ public enum DepartmentDetailsAction: Equatable {
     case getClubs
     case loadClub(Int)
     case receivedClub(Result<ScienceClub, ErrorModel>)
-    case setNavigation(selection: UUID?)
     case clubAction(ClubDetailsAction)
+    case isClubDetailsActive(Bool)
+    case clubTapped(ClubDetailsState?)
 }
 
 // MARK: - Environment
@@ -80,68 +84,68 @@ public struct DepartmentDetailsEnvironment {
 }
 
 // MARK: - Reducer
-public let departmentDetailsReducer =
-clubDetailsReducer
-    .optional()
-    .pullback(state: \Identified.value, action: .self, environment: { $0 })
-    .optional()
-    .pullback(
-        state: \.clubSelection,
-        action: /DepartmentDetailsAction.clubAction,
-        environment: { env in
-            ClubDetailsEnvironment(
-                mainQueue: env.mainQueue,
-                getDepartment: env.getDepartment
-            )
-        })
-    .combined(
-        with:Reducer<
-        DepartmentDetailsState,
-        DepartmentDetailsAction,
-        DepartmentDetailsEnvironment
-        > { state, action, env in
-            switch action {
-            case .onAppear:
-                return .init(value: .getClubs)
-            case .getClubs:
-                var actions: [Effect<DepartmentDetailsAction, Never>] = []
-                for id in state.department.clubsID {
-                    actions.append(.init(value: .loadClub(id)))
-                }
-                return .concatenate(actions)
-            case .loadClub(let id):
-                return env.getScienceClub(id)
-                    .receive(on: env.mainQueue)
-                    .catchToEffect()
-                    .map(DepartmentDetailsAction.receivedClub)
-            case .receivedClub(.success(let club)):
-                let clubs = state.clubs
-                if !clubs.contains(where: { $0.club.id == club.id }) {
-                    state.clubs.append(
-                        ClubDetailsState(
-                            club: club,
-                            department: state.department
-                        )
-                    )
-                }
-                return .none
-            case .receivedClub(.failure(let error)):
-                print(error)
-                return .none
-            case let .setNavigation(selection: .some(id)):
-                state.clubSelection = Identified(nil, id: id)
-                guard let id = state.clubSelection?.id,
-                      let new = state.clubs[id: id] else { return .none }
-                state.clubSelection?.value = new
-                return .none
-            case .setNavigation(selection: .none):
-                state.clubSelection = nil
-                return .none
-            case .clubAction:
-                return .none
-            }
+public let departmentDetailsReducer = Reducer<
+    DepartmentDetailsState,
+    DepartmentDetailsAction,
+    DepartmentDetailsEnvironment
+> { state, action, env in
+    switch action {
+    case .onAppear:
+        return .init(value: .getClubs)
+    case .getClubs:
+        var actions: [Effect<DepartmentDetailsAction, Never>] = []
+        for id in state.department.clubsID {
+            actions.append(.init(value: .loadClub(id)))
         }
-    )
+        return .concatenate(actions)
+    case .loadClub(let id):
+        return env.getScienceClub(id)
+            .receive(on: env.mainQueue)
+            .catchToEffect()
+            .map(DepartmentDetailsAction.receivedClub)
+    case .receivedClub(.success(let club)):
+        let clubs = state.clubs
+        if !clubs.contains(where: { $0.club.id == club.id }) {
+            state.clubs.append(
+                ClubDetailsState(
+                    club: club,
+                    department: state.department
+                )
+            )
+        }
+        return .none
+    case .receivedClub(.failure(let error)):
+        print(error)
+        return .none
+    case .clubAction:
+        return .none
+    case .isClubDetailsActive(let active):
+        state.isClubDetailsActive = active
+        return .none
+    case .clubTapped(let club):
+        if let club = club {
+            state.clubDetailsState = club
+            return .init(value: .isClubDetailsActive(true))
+        } else {
+            state.isClubDetailsActive = false
+            return .init(value: .isClubDetailsActive(false))
+        }
+    }
+}
+.combined(
+    with: clubDetailsReducer
+        .optional()
+        .pullback(
+            state: \.clubDetailsState,
+            action: /DepartmentDetailsAction.clubAction,
+            environment: { env in
+                ClubDetailsEnvironment(
+                    mainQueue: env.mainQueue,
+                    getDepartment: env.getDepartment
+                )
+            }
+        )
+)
 
 // MARK: - View
 public struct DepartmentDetailsView: View {
@@ -228,24 +232,18 @@ public struct DepartmentDetailsView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
                                 ForEach(viewStore.clubs) { club in
-                                    NavigationLink(
-                                        destination: IfLetStore(
-                                            self.store.scope(
-                                                state: \.clubSelection?.value,
-                                                action: DepartmentDetailsAction.clubAction
-                                            ),
-                                            then: ClubDetailsView.init(store:),
-                                            else: ProgressView.init
-                                        ),
-                                        tag: club.id,
-                                        selection: viewStore.binding(
-                                            get: \.selectionID,
-                                            send: DepartmentDetailsAction.setNavigation(selection:)
-                                        )
-                                    ) {
-                                        Circle()
-                                            .frame(width: 50)
-                                    }
+                                    Button(
+                                        action: {
+                                            viewStore.send(.clubTapped(club))
+                                        },
+                                        label: {
+                                            VStack {
+                                                Text(club.club.name ?? "Club")
+                                            }
+                                            .padding()
+                                            .background(K.Colors.firstColorDark)
+                                        }
+                                    )
                                 }
                                 .horizontalPadding(.normal)
                             }
@@ -257,6 +255,24 @@ public struct DepartmentDetailsView: View {
                         viewStore.send(.onAppear)
                     }
                     .navigationBarTitleDisplayMode(.inline)
+                }
+                .sheet(
+                    isPresented: Binding(
+                        get: { viewStore.isClubDetailsActive },
+                        set: { viewStore.send(.isClubDetailsActive($0)) }
+                    )
+                ) {
+                    IfLetStore(
+                        self.store.scope(
+                            state: {
+                                print($0.clubDetailsState)
+                                return $0.clubDetailsState
+                            },
+                            action: DepartmentDetailsAction.clubAction
+                        ),
+                        then: ClubDetailsView.init(store:),
+                        else: ProgressView.init
+                    )
                 }
             }
         }
