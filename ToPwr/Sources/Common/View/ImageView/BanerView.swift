@@ -41,7 +41,7 @@ public struct BanerView: View {
             
 			ImageView(
                 url: url,
-                contentMode: .fit,
+                contentMode: .fit
             )
             .opacity(0.1)
             .offset(
