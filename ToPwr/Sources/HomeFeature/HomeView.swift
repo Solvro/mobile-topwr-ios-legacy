@@ -200,7 +200,8 @@ public let homeReducer = Reducer<
                 .init(
                     mainQueue: $0.mainQueue,
                     getScienceClub: $0.getScienceClub,
-                    getDepatrements: $0.getDepartments
+                    getDepatrements: $0.getDepartments,
+                    getDepartment: $0.getDepartment
                 )
             }
         )

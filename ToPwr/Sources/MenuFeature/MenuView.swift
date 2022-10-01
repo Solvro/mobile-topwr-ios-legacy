@@ -155,7 +155,8 @@ public let menuReducer = Reducer<
                     .init(
                         mainQueue: env.mainQueue,
                         getDepartments: env.getDepartments,
-                        getScienceClub: env.getScienceClub
+                        getScienceClub: env.getScienceClub,
+                        getDepartment: env.getDepartment
                     )
             }
         )

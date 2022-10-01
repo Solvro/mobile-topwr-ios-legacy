@@ -7,16 +7,18 @@ import Combine
 //MARK: - STATE
 public struct ClubDetailsState: Equatable, Identifiable {
     public let id: UUID
-    let club: ScienceClub
+    public let club: ScienceClub
     var department: Department?
     var isLoading: Bool = true
     
     public init(
         id: UUID = UUID(),
-        club: ScienceClub
+        club: ScienceClub,
+        department: Department? = nil
     ){
         self.id = id
         self.club = club
+        self.department = department
     }
 }
 //MARK: - ACTION
@@ -48,15 +50,19 @@ public let clubDetailsReducer = Reducer<
 > { state, action, env in
     switch action {
     case .onAppear:
-        guard let departmentID = state.club.department else {
-            state.isLoading = false
-            return .none
-        }
-        return .init(
-            value: .loadDepartment(
-                departmentID
+        guard let clubDepartment = state.department else {
+            guard let departmentID = state.club.department else {
+                state.isLoading = false
+                return .none
+            }
+            return .init(
+                value: .loadDepartment(
+                    departmentID
+                )
             )
-        )
+        }
+        state.isLoading = false
+        return .none
     case .loadDepartment(let id):
         return env.getDepartment(id)
             .receive(on: env.mainQueue)
