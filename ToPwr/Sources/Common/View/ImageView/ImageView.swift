@@ -34,7 +34,11 @@ public struct ImageView<Placeholder: View>: View {
             if let placeholder = placeholder {
                 placeholder
             } else {
-                K.Colors.lightGray
+                LinearGradient(
+                    colors: [K.Colors.darkGray, K.Colors.lightGray],
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing
+                )
             }
         }
     }

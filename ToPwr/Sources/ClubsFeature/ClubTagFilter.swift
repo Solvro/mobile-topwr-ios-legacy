@@ -12,7 +12,7 @@ import Common
 
 //MARK: - STATE
 public struct ClubTagFilterState: Equatable {
-    var allTags: [Tag] = []
+    var allTags: [Tag]
     var selectedTag: Tag? = nil
     
     let initialTag: Tag = .init(
@@ -20,7 +20,13 @@ public struct ClubTagFilterState: Equatable {
         name: "All"
     )
     
-    public init(){}
+    public init(
+        allTags: [Tag] = [],
+        selectedTag: Tag? = nil
+    ){
+        self.allTags = allTags
+        self.selectedTag = selectedTag
+    }
 }
 //MARK: - ACTION
 public enum ClubTagFilterAction: Equatable {
@@ -43,9 +49,6 @@ public let clubTagFilterReducer = Reducer<
 > { state, action, env in
     switch action {
     case .onAppear:
-        if state.allTags.isEmpty {
-            state.allTags.append(state.initialTag)
-        }
         return .none
     case .updateTags(let tags):
         state.allTags = [state.initialTag]
@@ -66,7 +69,6 @@ public let clubTagFilterReducer = Reducer<
         return .none
     }
 }
-
 //MARK: - VIEW
 public struct ClubTagFilterView: View {
     let store: Store<ClubTagFilterState, ClubTagFilterAction>

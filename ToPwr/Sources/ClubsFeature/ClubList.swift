@@ -10,7 +10,7 @@ public struct ClubListState: Equatable {
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
     var searchState = SearchState()
-    var clubTagsState = ClubTagFilterState()
+    var clubTagsState: ClubTagFilterState
     
     var text: String = ""
     var tag: Tag? = nil
@@ -32,6 +32,11 @@ public struct ClubListState: Equatable {
             }
         )
         self.filtered = self.clubs
+        self.clubTagsState = .init(
+            allTags: clubs.flatMap {
+                $0.tags
+            }
+        )
     }
 }
 
@@ -164,7 +169,9 @@ clubDetailsReducer
 					state.fetchedAll = true
                     return .none
                 }
-                clubs.forEach { state.clubs.append(ClubDetailsState(club: $0)) }
+                clubs.forEach {
+                    state.clubs.append(ClubDetailsState(club: $0))
+                }
                 state.filtered = state.clubs
                 state.isFetching = false
                 let tags: [Tag] = state.clubs.flatMap {
@@ -258,9 +265,9 @@ public struct ClubListView: View {
                                         }
                                 }
                             }
-                            .padding(.bottom, UIDimensions.normal.size)
                             if viewStore.isFetching { ProgressView() }
                         }
+                        .padding(.bottom, UIDimensions.normal.size)
                     }
                 }
                 .barLogo()
