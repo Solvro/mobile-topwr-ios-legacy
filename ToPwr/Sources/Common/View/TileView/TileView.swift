@@ -88,23 +88,17 @@ public struct TileView: View {
                         .font(.appRegularTitle4)
                         .verticalPadding(.normal)
                     
-                    HStack {
-                        Button(
-                            action: {
-                                viewStore.send(.buttonTapped)
-                            },
-                            label: {
-                                HStack {
-                                    Text(Strings.Other.readMore)
-                                        .font(.appMediumTitle4)
-                                        .foregroundColor(K.Colors.white)
-                                }
-                                .horizontalPadding(.normal)
-                                .frame(height: Constants.buttonHeight)
-                                .background(K.Colors.red)
-                                .cornerRadius(UIDimensions.normal.cornerRadius)
-                            }
-                        )
+                    HStack {   
+                        HStack {
+                            Text(Strings.Other.readMore)
+                                .font(.appMediumTitle4)
+                                .foregroundColor(K.Colors.white)
+                        }
+                        .horizontalPadding(.normal)
+                        .frame(height: Constants.buttonHeight)
+                        .background(K.Colors.red)
+                        .cornerRadius(UIDimensions.normal.cornerRadius)
+                        
                         Spacer()
                     }
                 }
