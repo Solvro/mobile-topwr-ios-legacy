@@ -1,6 +1,4 @@
 import SwiftUI
-import Nuke
-import NukeUI
 
 ///This struct returns view which contains logo with gradient on the background.
 ///Logo is transparent 10% and offset depends on square
@@ -43,10 +41,7 @@ public struct BanerView: View {
             
 			ImageView(
                 url: url,
-                contentMode: .aspectFit,
-				placeholder: {
-					EmptyView()
-				}
+                contentMode: .fit
             )
             .opacity(0.1)
             .offset(

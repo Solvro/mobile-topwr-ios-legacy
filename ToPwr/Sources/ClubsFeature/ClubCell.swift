@@ -27,7 +27,7 @@ public struct ClubCellView: View {
                     ZStack {
                         ImageView(
                             url: viewState.club.photo?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
                             .frame(width: 90, height: 90)
                             .cornerRadius(8, corners: [.topRight, .bottomRight])

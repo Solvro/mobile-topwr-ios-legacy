@@ -1,57 +1,40 @@
 import SwiftUI
-import Nuke
-import NukeUI
 
 // MARK: - ImageView
-public struct ImageView<Placeholder: View>: View {
+public struct ImageView: View {
     let url: URL?
-    let contentMode: ImageResizingMode
-    let placeholder: Placeholder?
+    let contentMode: ContentMode
     
     public init(
         url: URL?,
-        contentMode: ImageResizingMode = .aspectFit,
-        placeholder: (() -> Placeholder)? = nil
+        contentMode: ContentMode = .fit
     ) {
         self.url = url
         self.contentMode = contentMode
-        self.placeholder = placeholder?()
     }
     
     public var body: some View {
         if let url = url {
-            LazyImage(
-                source: url,
-                content: { (state: LazyImageState) in
-                    if let image = state.image {
-                        image
-                            .resizingMode(contentMode)
+            AsyncImage(
+                url: url,
+                content: { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: contentMode)
+                },
+                placeholder: {
+                    ZStack {
+                        K.Colors.lightGray
+                        ProgressView()
                     }
                 }
             )
-            .onDisappear(nil)
         } else {
-            if let placeholder = placeholder {
-                placeholder
-            } else {
-                Image("placeholder", bundle: Bundle.module)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipped()
-                    .background(K.Colors.firstColorDark)
+            ZStack {
+                K.Colors.lightGray
+                ProgressView()
             }
         }
-    }
-}
-
-public extension ImageView where Placeholder == EmptyView{
-    init(
-        url: URL?,
-        contentMode: ImageResizingMode = .aspectFit
-    ) {
-        self.url = url
-        self.contentMode = contentMode
-		self.placeholder = nil
     }
 }
 

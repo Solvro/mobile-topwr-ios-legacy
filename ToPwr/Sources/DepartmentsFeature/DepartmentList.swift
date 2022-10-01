@@ -122,15 +122,13 @@ departmentDetailsReducer
                 .receive(on: env.mainQueue)
                 .catchToEffect()
                 .map(DepartmentListAction.receivedDepartments)
-        case .receivedDepartments(.success(let clubs)):
-            if clubs.isEmpty {
+        case .receivedDepartments(.success(let department)):
+            if department.isEmpty {
                 state.isFetching = false
                 state.noMoreFetches = true
                 return .none
             }
-            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
-            let sortedDepartments = state.departments.sorted(by: { $0.department.id < $1.department.id})
-            state.departments = IdentifiedArrayOf(uniqueElements: sortedDepartments)
+            state.departments = IdentifiedArrayOf(uniqueElements: department)
             state.filtered = state.departments
             return .none
         case .fetchingOn:
@@ -151,7 +149,6 @@ departmentDetailsReducer
             }
         )
 )
-
 //MARK: - VIEW
 public struct DepartmentListView: View {
     let store: Store<DepartmentListState, DepartmentListAction>

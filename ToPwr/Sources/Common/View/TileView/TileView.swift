@@ -67,7 +67,7 @@ public struct TileView: View {
                 VStack {
                     ImageView(
                         url: viewStore.imageURL,
-                        contentMode: .aspectFill
+                        contentMode: .fill
                     )
                         .cornerRadius(
                             UIDimensions.normal.cornerRadius - 3,

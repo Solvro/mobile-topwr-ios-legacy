@@ -31,8 +31,8 @@ public struct CoreLogic {
     }
     
     public func getDepartments(startingFrom start: Int) -> AnyPublisher<[Department], ErrorModel> {
-        let path: String = "/departments"
-        return api.fetch(path: path, start: start, limit: fetchLimit)
+        let path: String = "/departments?"
+        return api.fetch(path: path, order: "displayOrder", start: start, limit: fetchLimit)
             .decode(type: [Department].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
@@ -82,6 +82,7 @@ public struct CoreLogic {
     
     public func getDepartment(id: Int) -> AnyPublisher<Department, ErrorModel> {
         let path: String = "/departments/\(id)"
+        print("GET DEPARTMENT: \(path)")
         return api.fetch(path: path)
             .decode(type: Department.self, decoder: decoder)
             .mapError { error in

@@ -1,10 +1,10 @@
 import SwiftUI
-import NukeUI
 
 public struct InfoCellView: View {
 	private enum Constants {
 		static let iconBackgroundSize: CGFloat = 35
 		static let iconSize: CGFloat = 20
+        static let minimumScaleFactor: CGFloat = 0.7
 	}
 	let info: InfoComponent
 	
@@ -27,7 +27,7 @@ public struct InfoCellView: View {
 				
 				ImageView(
 					url: info.icon?.url,
-					contentMode: .aspectFit
+					contentMode: .fit
 				)
 				.foregroundColor(.red)
 				.frame(
@@ -38,11 +38,13 @@ public struct InfoCellView: View {
 			if info.type == .addres {
 				Text(info.value ?? info.label ?? "")
 					.verticalPadding(.normal)
+                    .minimumScaleFactor(Constants.minimumScaleFactor)
 			}	else {
 				Text(info.value ?? info.label ?? "")
 					.underline()
 					.foregroundColor(K.Colors.red)
 					.verticalPadding(.normal)
+                    .minimumScaleFactor(Constants.minimumScaleFactor)
 			}
 		}
 		.horizontalPadding(.normal)

@@ -55,22 +55,31 @@ public struct BuildingCellView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.buttonTapped)
-            }, label: {
-                ZStack(alignment: .bottomLeading) {
-                    ImageView(
-                        url: viewStore.building.photo?.url,
-                        contentMode: .aspectFill
-                    )
+            Button(
+                action: {
+                    viewStore.send(.buttonTapped)
+                }, label: {
+                    ZStack(alignment: .bottomLeading) {
+                        ImageView(
+                            url: viewStore.building.photo?.url,
+                            contentMode: .fill
+                        )
+                        
+                        LinearGradient(
+                            colors: [Color.black.opacity(0.3), Color.clear],
+                            startPoint: .bottom,
+                            endPoint: .center
+                        )
+                        
+                        Text(viewStore.building.code ?? "")
+                            .font(.appMediumTitle2)
+                            .foregroundColor(.white)
+                            .padding()
+                    }
                     .cornerRadius(8)
-                    
-                    Text(viewStore.building.code ?? "")
-                        .font(.appMediumTitle2)
-                        .foregroundColor(.white)
-                        .padding()
                 }
-            }) .frame(width: 120, height: 120)
+            )
+            .frame(width: 120, height: 120)
         }
     }
 }
