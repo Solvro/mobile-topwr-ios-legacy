@@ -237,11 +237,7 @@ public struct DepartmentDetailsView: View {
                                             viewStore.send(.clubTapped(club))
                                         },
                                         label: {
-                                            VStack {
-                                                Text(club.club.name ?? "Club")
-                                            }
-                                            .padding()
-                                            .background(K.Colors.firstColorDark)
+                                            ClubCellView(viewState: club)
                                         }
                                     )
                                 }
