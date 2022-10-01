@@ -25,15 +25,18 @@ public struct DepartmentsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
     let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
     public init (
         mainQueue: AnySchedulerOf<DispatchQueue>,
         getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>
+        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
+        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
     ) {
         self.mainQueue = mainQueue
         self.getDepartments = getDepartments
         self.getScienceClub = getScienceClub
+        self.getDepartment = getDepartment
     }
 }
 
@@ -58,7 +61,7 @@ public let DepartmentsReducer = Reducer<
             .catchToEffect()
             .map(DepartmentsAction.receivedDepartments)
     case .receivedDepartments(.success(let departments)):
-		let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
+        let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
         state.listState = .init(
           departments: sortedDepartments
         )
@@ -83,7 +86,8 @@ public let DepartmentsReducer = Reducer<
                     .init(
                         mainQueue: env.mainQueue,
                         getScienceClub: env.getScienceClub,
-                        getDepatrements: env.getDepartments
+                        getDepatrements: env.getDepartments,
+                        getDepartment: env.getDepartment
                     )
             }
         )
@@ -147,7 +151,8 @@ public extension DepartmentsEnvironment {
     static let failing: Self = .init(
         mainQueue: .immediate,
         getDepartments: failing1,
-        getScienceClub: failing1
+        getScienceClub: failing1,
+        getDepartment: failing1
     )
 }
 #endif
