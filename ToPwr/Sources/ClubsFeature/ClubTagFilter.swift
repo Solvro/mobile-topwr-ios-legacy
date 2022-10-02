@@ -30,7 +30,6 @@ public struct ClubTagFilterState: Equatable {
 }
 //MARK: - ACTION
 public enum ClubTagFilterAction: Equatable {
-    case onAppear
     case updateTags([Tag])
     case choosedTag(Tag)
     case updateFilter(Tag?)
@@ -48,8 +47,6 @@ public let clubTagFilterReducer = Reducer<
     ClubTagFilterEnvironment
 > { state, action, env in
     switch action {
-    case .onAppear:
-        return .none
     case .updateTags(let tags):
         state.allTags = [state.initialTag]
         state.allTags.append(contentsOf: Array(Set(tags)))

@@ -10,7 +10,7 @@ public struct ClubListState: Equatable {
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
     var searchState = SearchState()
-    var clubTagsState: ClubTagFilterState
+    var clubTagsState = ClubTagFilterState()
     
     var text: String = ""
     var tag: Tag? = nil
@@ -32,11 +32,6 @@ public struct ClubListState: Equatable {
             }
         )
         self.filtered = self.clubs
-        self.clubTagsState = .init(
-            allTags: clubs.flatMap {
-                $0.tags
-            }
-        )
     }
 }
 
@@ -181,7 +176,9 @@ clubDetailsReducer
             case .receivedClubs(.failure(_)):
                 return .none
             case .fetchingOn:
-                state.isFetching = true
+                if !state.fetchedAll {
+                    state.isFetching = true
+                }
                 return .none
 			case .loadAllClubs:
 				return env.getAllClubs()

@@ -62,8 +62,7 @@ public let ClubsReducer = Reducer<
             .catchToEffect()
             .map(ClubsAction.receivedClubs)
     case .receivedClubs(.success(let clubs)):
-        state.listState = .init(clubs: clubs)
-        return .none
+        return .init(value: .listAction(.receivedClubs(.success(clubs))))
 	case .receivedClubs(.failure(let error)):
 		state.showAlert = true
         return .none
