@@ -38,7 +38,6 @@ public let buildingCellReducer = Reducer<
 > { state, action, environment in
   switch action {
   case .buttonTapped:
-      print("Building Button Tapped")
     return .none
   }
 }
@@ -63,13 +62,19 @@ public struct BuildingCellView: View {
                         url: viewStore.building.photo?.url,
                         contentMode: .aspectFill
                     )
-                    .cornerRadius(8)
+                    
+                    LinearGradient(
+                        colors: [Color.black.opacity(0.4), Color.black.opacity(0)],
+                        startPoint: .bottom,
+                        endPoint: .center
+                    )
                     
                     Text(viewStore.building.code ?? "")
                         .font(.appMediumTitle2)
                         .foregroundColor(.white)
                         .padding()
                 }
+                .cornerRadius(8)
             }) .frame(width: 120, height: 120)
         }
     }

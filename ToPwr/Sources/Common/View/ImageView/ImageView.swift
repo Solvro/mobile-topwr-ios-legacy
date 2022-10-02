@@ -34,11 +34,11 @@ public struct ImageView<Placeholder: View>: View {
             if let placeholder = placeholder {
                 placeholder
             } else {
-                Image("placeholder", bundle: Bundle.module)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipped()
-                    .background(K.Colors.firstColorDark)
+                LinearGradient(
+                    colors: [K.Colors.darkGray, K.Colors.lightGray],
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing
+                )
             }
         }
     }
