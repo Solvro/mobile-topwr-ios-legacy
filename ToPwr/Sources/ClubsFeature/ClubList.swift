@@ -176,9 +176,7 @@ clubDetailsReducer
             case .receivedClubs(.failure(_)):
                 return .none
             case .fetchingOn:
-                if !state.fetchedAll {
-                    state.isFetching = true
-                }
+                state.isFetching = true
                 return .none
 			case .loadAllClubs:
 				return env.getAllClubs()
