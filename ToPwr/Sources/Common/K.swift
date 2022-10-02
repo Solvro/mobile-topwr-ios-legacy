@@ -8,6 +8,7 @@ public struct K {
         public static let firstColorDark = Color(hex: "#E16257")
         public static let firstColorLight = Color(hex: "#FFA07E")
         public static let lightGray = Color(hex: "#f7f7f8")
+        public static let darkGray = Color(hex: "#d7d7d7")
         public static let red = Color(hex: "#DB2B10")
         public static let logoBlue = Color(hex: "3f6499")
         public static let firstGreen = Color(hex: "027c3d")
@@ -25,7 +26,7 @@ public struct K {
     public struct SearchColors {
         public static let darkGrey = Color(hex: "#979fac")
         public static let lightGray = Color(hex: "#f7f7f8")
-        public static let textColor = Color(hex: "#e56353")
+        public static let textColor = Color.black
     }
     
     public struct CellColors {

@@ -29,7 +29,9 @@ struct MapView: UIViewRepresentable {
 	}
 	
 	func updateUIView(_ view: MKMapView, context: Context) {
-		view.addOverlays(MapCoordinator().parseGeoJSON())
+        #warning("TODO: Overlays on maps")
+// it caused problem with map -> We should think about it how to add layers.
+//		view.addOverlays(MapCoordinator().parseGeoJSON())
 		view.addAnnotations(annotations)
 		view.pointOfInterestFilter = .excludingAll
 		view.translatesAutoresizingMaskIntoConstraints = false
