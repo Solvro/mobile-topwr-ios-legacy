@@ -31,8 +31,8 @@ public struct CoreLogic {
     }
     
     public func getDepartments(startingFrom start: Int) -> AnyPublisher<[Department], ErrorModel> {
-        let path: String = "/departments"
-        return api.fetch(path: path, start: start, limit: fetchLimit)
+        let path: String = "/departments?"
+        return api.fetch(path: path, order: "displayOrder", start: start, limit: fetchLimit)
             .decode(type: [Department].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
@@ -51,8 +51,8 @@ public struct CoreLogic {
     }
     
     public func getScienceClubs(startingFrom start: Int) -> AnyPublisher<[ScienceClub], ErrorModel> {
-        let path: String = "/scientific-Circles"
-        return api.fetch(path: path, start: start, limit: fetchLimit)
+        let path: String = "/scientific-Circles?"
+        return api.fetch(path: path, order: "id", start: start, limit: fetchLimit)
             .decode(type: [ScienceClub].self, decoder: decoder)
             .mapError { error in
                 ErrorModel(text: error.localizedDescription)
@@ -61,8 +61,8 @@ public struct CoreLogic {
     }
 	
 	public func getAllScienceClubs() -> AnyPublisher<[ScienceClub], ErrorModel> {
-		let path: String = "/scientific-Circles"
-		return api.fetch(path: path)
+		let path: String = "/scientific-Circles?"
+		return api.fetch(path: path, order: "id")
 			.decode(type: [ScienceClub].self, decoder: decoder)
 			.mapError { error in
 				ErrorModel(text: error.localizedDescription)
