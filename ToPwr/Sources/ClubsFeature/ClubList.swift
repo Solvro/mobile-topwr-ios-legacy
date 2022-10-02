@@ -131,16 +131,16 @@ clubDetailsReducer
                 state.text = text
                 return .init(value: .updateFiltered)
             case .searchAction:
-				return .none
+                return .none
             case .clubTags(.updateFilter(let tag)):
-				state.tag = tag
-				if state.fetchedAll {
-					return .init(value: .updateFiltered)
-				}	else{
-					return .init(value: .loadAllClubs)
-				}
+                state.tag = tag
+                if state.fetchedAll {
+                    return .init(value: .updateFiltered)
+                } else {
+                    return .init(value: .loadAllClubs)
+                }
             case .clubTags:
-				return .none
+                return .none
             case let .setNavigation(selection: .some(id)):
                 state.selection = Identified(nil, id: id)
                 guard let id = state.selection?.id,
@@ -188,6 +188,7 @@ clubDetailsReducer
 			case .receiveAllClubs(.success(let clubs)):
 				state.clubs = IdentifiedArrayOf<ClubDetailsState>.init(uniqueElements: clubs.compactMap { ClubDetailsState(club: $0)})
 				state.filtered = state.clubs
+                state.isFetching = false
 				state.fetchedAll = true
 				state.noMoreFetches = true
 				return .init(value: .updateFiltered)
