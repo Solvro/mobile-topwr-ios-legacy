@@ -13,7 +13,12 @@ public struct Api {
         self.session = URLSession.shared
     }
     
-    public func fetch(path: String, start: Int? = nil, limit: Int? = nil) -> AnyPublisher<Data, ErrorModel> {
+    public func fetch(
+        path: String,
+        order: String? = nil,
+        start: Int? = nil,
+        limit: Int? = nil
+    ) -> AnyPublisher<Data, ErrorModel> {
         guard let url: URL = .init(
             string: type.urlString + path
         )
@@ -23,17 +28,17 @@ public struct Api {
         }
         
         var request = URLRequest(url: url)
-        
-        if start != nil && limit != nil {
-            var urlComponents = URLComponents(string: url.absoluteString)!
-            urlComponents.queryItems = [
-                URLQueryItem(name: "_start", value: "\(start!)"),
-                URLQueryItem(name: "_limit", value: "\(limit!)")
-            ]
-            
-            request = URLRequest(url: urlComponents.url!)
+        var urlComponents = URLComponents(string: url.absoluteString)!
+        if let order = order {
+            urlComponents.queryItems?.append(URLQueryItem(name: "_sort", value: "\(order)"))
         }
-
+        if let start = start {
+            urlComponents.queryItems?.append(URLQueryItem(name: "_start", value: "\(start)"))
+        }
+        if let limit = limit {
+            urlComponents.queryItems?.append(URLQueryItem(name: "_limit", value: "\(limit)"))
+        }
+        request = URLRequest(url: urlComponents.url!)
         return URLSession.DataTaskPublisher(request: request, session: .shared)
             .tryMap { data, response in
                 guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
