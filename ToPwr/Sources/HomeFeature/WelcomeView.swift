@@ -54,7 +54,8 @@ extension WelcomeView {
             guard let day = Calendar.current.dateComponents([.weekday], from: currentDate).weekday else {
                 return ""
             }
-            let weekOfYear = (Calendar.current.component(.weekOfYear, from: currentDate) - 1)
+            let calendar = Calendar.current
+            let weekOfYear = calendar.component(.weekOfYear, from: Date(timeIntervalSinceNow: 0))
             var parity: Parity {
                 if (weekOfYear % 2 == 0) == true {
                     return .even
