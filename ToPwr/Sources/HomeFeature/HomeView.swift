@@ -21,6 +21,7 @@ public struct HomeState: Equatable {
 public enum HomeAction: Equatable {
     case onAppear
     case onDisappear
+    case onAppCameToForeground
     case loadApiData
     case loadSessionDate
     case loadDepartments
@@ -91,7 +92,8 @@ public let homeReducer = Reducer<
       }
   case .onDisappear:
       return .none
-      
+  case .onAppCameToForeground:
+      return .init(value: .loadApiData)
       //api load
   case .loadApiData:
       return .merge(
@@ -301,6 +303,9 @@ public struct HomeView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {
                     viewStore.send(.onAppear)
+                }
+                .onAppCameToForeground {
+                    viewStore.send(.onAppCameToForeground)
                 }
                 .barLogo()
             }
