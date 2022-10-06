@@ -282,7 +282,7 @@ public struct ExceptationDays: Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
-        case weekDays = "Weekday"
+        case weekDays = "weekday"
     }
     
     public func isExceptation(date: Date) -> WeekDay? {
@@ -307,9 +307,9 @@ public struct WeekDay: Codable, Equatable {
     public let day: String
     
     enum CodingKeys: String, CodingKey {
-        case dateString = "Date"
-        case parity = "Parity"
-        case day = "DayOfTheWeek"
+        case dateString = "date"
+        case parity = "parity"
+        case day = "dayOfTheWeek"
     }
     
     var isEven: Bool {
