@@ -207,7 +207,7 @@ public struct MenuView: View {
 					get: { viewStore.selection },
 					set: { viewStore.send(.newTabSelection($0))}
 				)
-			){
+			) {
 				HomeView(
 					store: self.store.scope(
 						state: \.homeState,
@@ -270,6 +270,7 @@ public struct MenuView: View {
 				UITabBar.appearance().backgroundColor = .systemBackground
 			})
 			.accentColor(K.Colors.firstColorDark)
+            .navigationViewStyle(StackNavigationViewStyle())
 		}
     }
 }
