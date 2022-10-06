@@ -135,7 +135,7 @@ extension WeekDay {
             return 2
         case "Tue":
             return 3
-        case "Wen":
+        case "Wed":
             return 4
         case "Thu":
             return 5
