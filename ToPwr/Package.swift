@@ -74,6 +74,10 @@ let package = Package(
         .package(
             url: "https://github.com/CodeSlicing/pure-swift-ui.git",
             from: "3.1.0"
+        ),
+        .package(
+            url: "https://github.com/firebase/firebase-ios-sdk",
+            from: "9.0.0"
         )
     ],
     targets: [
