@@ -258,16 +258,6 @@ public struct HomeView: View {
             NavigationView {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        
-                        Button {
-                            fatalError("Ding dong")
-                        } label: {
-                            Circle()
-                                .frame(width: 200, height: 200)
-                                .foregroundColor(.green)
-                        }
-
-                        
                         WelcomeView(
                             exceptations: viewStore.exceptations
                         )
