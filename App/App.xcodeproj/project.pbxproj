@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B55590928F84DD600DA8F51 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5B55590828F84DD600DA8F51 /* FirebaseCrashlytics */; };
+		5B98248728F86FB6006D21BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B98248628F86FB6006D21BC /* GoogleService-Info.plist */; };
 		5BDF5CDE28CCE66100A85DA3 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 5BDF5CDD28CCE66100A85DA3 /* ComposableArchitecture */; };
 		6AFDDF442708E17D006B2766 /* AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF432708E17D006B2766 /* AppApp.swift */; };
 		6AFDDF462708E17D006B2766 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AFDDF452708E17D006B2766 /* ContentView.swift */; };
@@ -39,6 +41,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5B55590628F8439800DA8F51 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5B98248628F86FB6006D21BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../.Trash/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6AFDDF402708E17D006B2766 /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6AFDDF432708E17D006B2766 /* AppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppApp.swift; sourceTree = "<group>"; };
 		6AFDDF452708E17D006B2766 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -62,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B55590928F84DD600DA8F51 /* FirebaseCrashlytics in Frameworks */,
 				5BDF5CDE28CCE66100A85DA3 /* ComposableArchitecture in Frameworks */,
 				6AFDDF712708F33A006B2766 /* ToPwr in Frameworks */,
 			);
@@ -87,6 +92,7 @@
 		6AFDDF372708E17D006B2766 = {
 			isa = PBXGroup;
 			children = (
+				5B98248628F86FB6006D21BC /* GoogleService-Info.plist */,
 				FABE4B9728148B0B005063B8 /* Fonts */,
 				DD514272273834F9001E0002 /* Localizable.strings */,
 				6AFDDF422708E17D006B2766 /* App */,
@@ -110,6 +116,7 @@
 		6AFDDF422708E17D006B2766 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				5B55590628F8439800DA8F51 /* GoogleService-Info.plist */,
 				6AFDDF432708E17D006B2766 /* AppApp.swift */,
 				6AFDDF452708E17D006B2766 /* ContentView.swift */,
 				6AFDDF472708E180006B2766 /* Assets.xcassets */,
@@ -172,6 +179,7 @@
 				6AFDDF3C2708E17D006B2766 /* Sources */,
 				6AFDDF3D2708E17D006B2766 /* Frameworks */,
 				6AFDDF3E2708E17D006B2766 /* Resources */,
+				5B55590A28F8668000DA8F51 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -181,6 +189,7 @@
 			packageProductDependencies = (
 				6AFDDF702708F33A006B2766 /* ToPwr */,
 				5BDF5CDD28CCE66100A85DA3 /* ComposableArchitecture */,
+				5B55590828F84DD600DA8F51 /* FirebaseCrashlytics */,
 			);
 			productName = App;
 			productReference = 6AFDDF402708E17D006B2766 /* App.app */;
@@ -255,6 +264,7 @@
 			packageReferences = (
 				DDEC26FA279C4CD3006DC3E6 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				5BDF5CDC28CCE66100A85DA3 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				5B55590728F84DD600DA8F51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 6AFDDF412708E17D006B2766 /* Products */;
 			projectDirPath = "";
@@ -278,6 +288,7 @@
 				DD514270273834F9001E0002 /* Localizable.strings in Resources */,
 				FABE4B9428148ABE005063B8 /* Rubik-Regular.ttf in Resources */,
 				FABE4B9228148863005063B8 /* Rubik-Medium.ttf in Resources */,
+				5B98248728F86FB6006D21BC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +307,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5B55590A28F8668000DA8F51 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}\n",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6AFDDF3C2708E17D006B2766 /* Sources */ = {
@@ -385,7 +418,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -476,8 +509,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
-				DEVELOPMENT_TEAM = N28QUP4TMD;
+				DEVELOPMENT_TEAM = FBLS5HS6W7;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ToPwr;
@@ -644,6 +678,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5B55590728F84DD600DA8F51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		5BDF5CDC28CCE66100A85DA3 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
@@ -663,6 +705,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5B55590828F84DD600DA8F51 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5B55590728F84DD600DA8F51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		5BDF5CDD28CCE66100A85DA3 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5BDF5CDC28CCE66100A85DA3 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
