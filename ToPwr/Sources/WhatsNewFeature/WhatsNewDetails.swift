@@ -46,7 +46,8 @@ public let whatsNewDetailsReducer = Reducer<
 public struct WhatsNewDetailsView: View {
     
     private enum Constants {
-        static let backgroundImageHeigth: CGFloat = 254
+        static let backgroundImageHeight: CGFloat = 254
+        static let backgroundImageWidth = UIScreen.main.bounds.width
         static let dateWidth: CGFloat = 100
         static let dateHeight: CGFloat = 30
     }
@@ -63,9 +64,11 @@ public struct WhatsNewDetailsView: View {
                 VStack{
                     ImageView(
                         url:  viewStore.news.photo?.url,
-                        contentMode: .aspectFill
+                        contentMode: .fill
                     )
-                        .frame(height: Constants.backgroundImageHeigth)
+                    .frame(height: Constants.backgroundImageHeight)
+                    .clipped()
+                    
                     HStack{
                         if let date = viewStore.news.dateLabel {
                             VStack {

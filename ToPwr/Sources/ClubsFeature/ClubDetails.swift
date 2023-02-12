@@ -73,7 +73,6 @@ public let clubDetailsReducer = Reducer<
         state.isLoading = false
         return .none
     case .resultDepartment(.failure(let error)):
-        print(error.localizedDescription)
         state.isLoading = false
         return .none
     }
@@ -83,6 +82,7 @@ public struct ClubDetailsView: View {
     
     private enum Constants {
         static let backgroundImageHeith: CGFloat = 254
+        static let backgroundImageWidth = UIScreen.main.bounds.width
         static let avatarSize: CGFloat = 120
     }
     
@@ -103,13 +103,16 @@ public struct ClubDetailsView: View {
                     VStack {
                         ImageView(
                             url: viewStore.club.background?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
-                            .frame(height: Constants.backgroundImageHeith)
+                        .frame(
+                            width: Constants.backgroundImageWidth,
+                            height: Constants.backgroundImageHeith
+                        )
                         
                         ImageView(
                             url: viewStore.club.photo?.url,
-                            contentMode: .aspectFill
+                            contentMode: .fill
                         )
                             .frame(
                                 width: Constants.avatarSize,

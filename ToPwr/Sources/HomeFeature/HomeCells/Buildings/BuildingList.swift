@@ -53,7 +53,6 @@ public let buildingListReducer = Reducer<
         Reducer{ state, action, environment in
             switch action {
             case .buttonTapped:
-                print("CELL TAPPED")
                 return .none
             case .listButtonTapped:
                 return .none

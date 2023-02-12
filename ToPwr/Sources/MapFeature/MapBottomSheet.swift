@@ -184,7 +184,6 @@ struct MapBottomSheetView: View {
                                                 ),
                                                 UIApplication.shared.canOpenURL(url)
                                             else {
-                                                print("Could't load map")
                                                 return
                                             }
                                             UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -252,7 +251,6 @@ struct MapBottomSheetView: View {
 					}.onEnded { value in
 						let snapDistance = self.maxHeight * Constants.snapRatio
 						let smallSnapDistance = self.topHeight * Constants.snapRatio
-						print(isFullViewInternal.wrappedValue)
 						if self.isFullViewInternal.wrappedValue {
 							guard abs(value.translation.height) > snapDistance else {
 								// this makes sure certain distance was exceded

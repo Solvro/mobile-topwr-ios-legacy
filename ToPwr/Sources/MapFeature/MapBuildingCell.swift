@@ -81,7 +81,7 @@ public struct MapBuildingCellView: View {
 							ZStack {
 								ImageView(
 									url: viewStore.building.photo?.url,
-									contentMode: .aspectFill
+									contentMode: .fill
 								)
 								.frame(width: 90, height: 90)
 								.cornerRadius(Constants.radius, corners: [.topRight, .bottomRight])

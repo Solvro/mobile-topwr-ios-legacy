@@ -21,27 +21,38 @@ public struct ClubHomeCellView: View {
     public var body: some View {
         VStack {
             ZStack {
+                Color.white
+                
                 ImageView(
                     url: viewState.club.photo?.url,
-                    contentMode: .aspectFill
+                    contentMode: .fit
                 )
-                    .cornerRadius(
-                        UIDimensions.normal.cornerRadius - 3,
-                        corners: [.topLeft, .topRight]
-                    )
-                    .frame(height: Constants.banerHeight)
+                .cornerRadius(
+                    UIDimensions.normal.cornerRadius - 3,
+                    corners: [.topLeft, .topRight]
+                )
+                .padding(5)
             }
-            .padding(3)
+            .frame(height: Constants.viewHeight/3)
+            .padding(5)
+            
+            Spacer()
+            
             VStack(alignment: .leading) {
                 HStack {
                     Text(viewState.club.name ?? "")
                         .font(.appMediumTitle3)
                     Spacer()
                 }
+                .foregroundColor(.pink)
+                
                 Text(viewState.club.description ?? "")
                     .font(.appRegularTitle4)
                     .verticalPadding(.normal)
                     .multilineTextAlignment(.leading)
+                
+                Spacer()
+                
                 HStack {
                     HStack {
                         Text(Strings.Other.readMore)

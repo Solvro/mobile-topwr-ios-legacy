@@ -6,7 +6,7 @@ public struct WhatsNewHomeCellView: View {
     let viewState: WhatsNewDetailsState
 
     private enum Constants {
-        static let viewHeight: CGFloat = 380
+        static let viewHeight: CGFloat = 345
         static let viewWidth: CGFloat = 275
         static let banerHeight: CGFloat = 135
         static let buttonHeight: CGFloat = 32
@@ -25,49 +25,51 @@ public struct WhatsNewHomeCellView: View {
             ZStack {
                 ImageView(
                     url: viewState.news.photo?.url,
-                    contentMode: .aspectFill
+                    contentMode: .fill
                 )
+                .frame(height: Constants.banerHeight)
                 .cornerRadius(
                     UIDimensions.normal.cornerRadius - 3,
                     corners: [.topLeft, .topRight]
                 )
-                .frame(height: Constants.banerHeight)
-                .overlay {
-                    if let safeDate = viewState.news.dateLabel {
-                        VStack {
-                            HStack {
-                                Spacer()
-                                Capsule()
-                                    .frame(
-                                        width: Constants.dateWidth,
-                                        height: Constants.dateHeight
-                                    )
-                                    .padding(.small)
-                                    .foregroundColor(K.Colors.dateDark)
-                                    .overlay {
-                                        Text(safeDate)
-                                            .foregroundColor(.white)
-                                            .font(.appMediumTitle3)
-                                    }
-                            }
+                
+                if let safeDate = viewState.news.dateLabel {
+                    VStack {
+                        HStack {
                             Spacer()
+                            Capsule()
+                                .frame(
+                                    width: Constants.dateWidth,
+                                    height: Constants.dateHeight
+                                )
+                                .padding(.small)
+                                .foregroundColor(K.Colors.dateDark)
+                                .overlay {
+                                    Text(safeDate)
+                                        .foregroundColor(.white)
+                                        .font(.appMediumTitle3)
+                                }
                         }
+                        Spacer()
                     }
                 }
             }
-            .padding(3)
-            Spacer()
+            .frame(height: Constants.banerHeight)
+            
             VStack(alignment: .leading) {
-                HStack {
-                    Text(viewState.news.title)
-                        .font(.appMediumTitle3)
-                        .multilineTextAlignment(.leading)
-                    Spacer()
-                }
+                
+                Text(viewState.news.title)
+                    .font(.appMediumTitle3)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.pink)
+                
                 Text(viewState.news.description ?? "")
                     .font(.appRegularTitle4)
                     .verticalPadding(.normal)
                     .multilineTextAlignment(.leading)
+                
+                Spacer()
+                
                 HStack {
                     HStack {
                         Text(Strings.Other.readMore)

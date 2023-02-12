@@ -64,7 +64,6 @@ whatsNewDetailsReducer
         case .onAppear:
             return .none
         case .buttonTapped:
-            print("CELL TAPPED")
             return .none
         case let .setNavigation(selection: .some(id)):
             state.selection = Identified(nil, id: id)

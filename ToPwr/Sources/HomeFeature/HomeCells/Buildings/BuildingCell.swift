@@ -54,14 +54,15 @@ public struct BuildingCellView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            Button(action: {
+            Button {
                 viewStore.send(.buttonTapped)
-            }, label: {
+            } label: {
                 ZStack(alignment: .bottomLeading) {
                     ImageView(
                         url: viewStore.building.photo?.url,
-                        contentMode: .aspectFill
+                        contentMode: .fill
                     )
+                    .frame(width: 120, height: 120)
                     
                     LinearGradient(
                         colors: [Color.black.opacity(0.4), Color.black.opacity(0)],
@@ -75,7 +76,8 @@ public struct BuildingCellView: View {
                         .padding()
                 }
                 .cornerRadius(8)
-            }) .frame(width: 120, height: 120)
+            }
+            .frame(width: 120, height: 120)
         }
     }
 }

@@ -44,9 +44,6 @@ public struct InfoSectionView: View {
 				}
 			}
 		}
-		.onAppear{
-			print(section.info)
-		}
 		.verticalPadding(.normal)
 		.background(K.Colors.lightGray)
 	}

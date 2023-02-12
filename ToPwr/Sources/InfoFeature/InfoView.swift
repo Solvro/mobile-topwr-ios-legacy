@@ -98,7 +98,6 @@ public let infoReducer = Reducer<
 		)
 		return .none
 	case .receiveAboutUs(.failure(let error)):
-		print(error.localizedDescription)
 		return .none
 	}
 }

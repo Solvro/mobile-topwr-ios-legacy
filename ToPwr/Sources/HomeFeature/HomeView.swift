@@ -174,12 +174,10 @@ public let homeReducer = Reducer<
   case .receivedBuildings(.failure(let error)):
       return .none
   case .receivedScienceClubs(.failure(let error)):
-      print(error)
       return .none
   case .receivedWelcomeDayText(.failure(let error)):
       return .none
   case .receivedNews(.failure(let error)):
-      print(error)
       return .none
   case .buttonTapped:
     return .none

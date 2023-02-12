@@ -115,7 +115,6 @@ public let departmentDetailsReducer = Reducer<
         }
         return .none
     case .receivedClub(.failure(let error)):
-        print(error)
         return .none
     case .clubAction:
         return .none
@@ -261,7 +260,6 @@ public struct DepartmentDetailsView: View {
                     IfLetStore(
                         self.store.scope(
                             state: {
-                                print($0.clubDetailsState)
                                 return $0.clubDetailsState
                             },
                             action: DepartmentDetailsAction.clubAction
@@ -300,7 +298,7 @@ public struct DepartmentDetailsView: View {
                 
                 ImageView(
                     url: url,
-                    contentMode: .aspectFit
+                    contentMode: .fit
                 )
                 .frame(
                     width: logoSize,

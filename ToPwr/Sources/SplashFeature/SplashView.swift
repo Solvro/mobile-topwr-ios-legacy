@@ -94,7 +94,6 @@ public let splashReducer = Reducer<
 	case .apiVersion(.success(let version)):
 		return .init(value: .stopLoading)
 	case .apiVersion(.failure(let error)):
-		print(error.localizedDescription)
 		return .none
 	case .stopLoading:
 		state.isLoading = false

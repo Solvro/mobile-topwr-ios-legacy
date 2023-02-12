@@ -1,16 +1,14 @@
 import SwiftUI
-import Nuke
-import NukeUI
 
 // MARK: - ImageView
 public struct ImageView<Placeholder: View>: View {
     let url: URL?
-    let contentMode: ImageResizingMode
+    let contentMode: ContentMode
     let placeholder: Placeholder?
     
     public init(
         url: URL?,
-        contentMode: ImageResizingMode = .aspectFit,
+        contentMode: ContentMode,
         placeholder: (() -> Placeholder)? = nil
     ) {
         self.url = url
@@ -20,16 +18,19 @@ public struct ImageView<Placeholder: View>: View {
     
     public var body: some View {
         if let url = url {
-            LazyImage(
-                source: url,
-                content: { (state: LazyImageState) in
-                    if let image = state.image {
-                        image
-                            .resizingMode(contentMode)
+            AsyncImage(url: url) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: contentMode)
+                }   else if phase.error != nil {
+                    if let placeholder {
+                        placeholder
                     }
+                }   else {
+                    ProgressView()
                 }
-            )
-            .onDisappear(nil)
+            }
         } else {
             if let placeholder = placeholder {
                 placeholder
@@ -47,7 +48,7 @@ public struct ImageView<Placeholder: View>: View {
 public extension ImageView where Placeholder == EmptyView{
     init(
         url: URL?,
-        contentMode: ImageResizingMode = .aspectFit
+        contentMode: ContentMode
     ) {
         self.url = url
         self.contentMode = contentMode

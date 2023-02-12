@@ -68,10 +68,6 @@ let package = Package(
             from: "0.25.0"
         ),
         .package(
-            url: "https://github.com/kean/NukeUI",
-            from: "0.7.0"
-        ),
-        .package(
             url: "https://github.com/CodeSlicing/pure-swift-ui.git",
             from: "3.1.0"
         ),
@@ -103,11 +99,7 @@ let package = Package(
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
-                ),
-                .product(
-                    name: "NukeUI",
-                    package: "NukeUI"
-                ),
+                )
             ]
         ),
         .testTarget(

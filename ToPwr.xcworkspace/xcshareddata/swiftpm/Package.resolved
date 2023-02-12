@@ -38,15 +38,6 @@
         }
       },
       {
-        "package": "Gifu",
-        "repositoryURL": "https://github.com/kaishin/Gifu",
-        "state": {
-          "branch": null,
-          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
-          "version": "3.3.1"
-        }
-      },
-      {
         "package": "GoogleAppMeasurement",
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
@@ -107,24 +98,6 @@
           "branch": null,
           "revision": "819d0a2173aff699fb8c364b6fb906f7cdb1a692",
           "version": "2.30909.0"
-        }
-      },
-      {
-        "package": "Nuke",
-        "repositoryURL": "https://github.com/kean/Nuke.git",
-        "state": {
-          "branch": null,
-          "revision": "958ca90df22fc77fdf33b5b9a6d70102b7743851",
-          "version": "10.9.0"
-        }
-      },
-      {
-        "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI",
-        "state": {
-          "branch": null,
-          "revision": "17f26c07e6b1d3b9258287f99f528111fcd7b7ad",
-          "version": "0.8.1"
         }
       },
       {
