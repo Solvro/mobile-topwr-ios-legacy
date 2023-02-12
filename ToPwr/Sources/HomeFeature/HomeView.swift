@@ -258,11 +258,9 @@ public struct HomeView: View {
             NavigationView {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        WelcomeView(
-                            exceptations: viewStore.exceptations
-                        )
+                        WelcomeView(exceptations: viewStore.exceptations)
                             .horizontalPadding(.normal)
-                        
+						
                         DaysToSessionView(session: viewStore.sessionDay)
                             .horizontalPadding(.normal)
                         
