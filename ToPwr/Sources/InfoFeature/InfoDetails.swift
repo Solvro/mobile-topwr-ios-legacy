@@ -2,48 +2,34 @@ import Foundation
 import SwiftUI
 import Common
 import ComposableArchitecture
-import Combine
 
-//MARK: - STATE
-public struct InfoDetailsState: Equatable, Identifiable {
-	public let id: UUID
-	let info: Info
-	
-	public init(
-		id: UUID = UUID(),
-		info: Info
-	){
-		self.id = id
-		self.info = info
-	}
-}
-//MARK: - ACTION
-public enum InfoDetailsAction: Equatable {
-	case onAppear
-}
-
-//MARK: - ENVIRONMENT
-public struct InfoDetailsEnvironment {
-	let mainQueue: AnySchedulerOf<DispatchQueue>
-	
-	public init (
-		mainQueue: AnySchedulerOf<DispatchQueue>
-	) {
-		self.mainQueue = mainQueue
-	}
+public struct InfoDetailsFeature: ReducerProtocol {
+    public struct State: Equatable, Identifiable {
+        public let id: Int
+        let url: URL?
+        let title: String
+        let description: String?
+        let infoSection: [InfoSection]
+        
+        public init(id: Int, url: URL?, title: String, description: String?, infoSection: [InfoSection]) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.description = description
+            self.infoSection = infoSection
+        }
+    }
+    
+    public enum Action: Equatable {
+        // TODO: - Does this do anything?
+        case onAppear
+    }
+    
+    public var body: some ReducerProtocol<State, Action> {
+        EmptyReducer()
+    }
 }
 
-//MARK: - REDUCER
-public let infoDetailsReducer = Reducer<
-	InfoDetailsState,
-	InfoDetailsAction,
-	InfoDetailsEnvironment
-> { state, action, env in
-	switch action {
-	case .onAppear:
-		return .none
-	}
-}
 //MARK: - VIEW
 public struct InfoDetailsView: View {
 	private enum Constants {
@@ -52,25 +38,23 @@ public struct InfoDetailsView: View {
 		static let dateHeight: CGFloat = 30
 	}
 	
-	let store: Store<InfoDetailsState, InfoDetailsAction>
+	let store: StoreOf<InfoDetailsFeature>
 	
-	public init(
-		store: Store<InfoDetailsState, InfoDetailsAction>
-	) {
+	public init(store: StoreOf<InfoDetailsFeature>) {
 		self.store = store
 	}
 	
 	public var body: some View {
-		WithViewStore(store) { viewStore in
+		WithViewStore(store, observe: { $0 }) { viewStore in
 			ScrollView(showsIndicators: false) {
 				VStack{
 					ImageView(
-						url:  viewStore.info.photo?.url,
+						url:  viewStore.url,
 						contentMode: .aspectFill
 					)
 					.frame(height: Constants.backgroundImageHeigth)
 					HStack{
-						Text(viewStore.info.title)
+						Text(viewStore.title)
 							.font(.appMediumTitle3)
 							.foregroundColor(.black)
 							.horizontalPadding(.big)
@@ -78,12 +62,12 @@ public struct InfoDetailsView: View {
 						Spacer()
 					}
 					
-					Text(LocalizedStringKey(viewStore.info.description ?? ""))
+					Text(LocalizedStringKey(viewStore.description ?? ""))
 						.font(.appRegularTitle3)
 						.foregroundColor(.black)
 						.horizontalPadding(.big)
 					
-					ForEach(viewStore.info.infoSection) { section in
+					ForEach(viewStore.infoSection) { section in
 						VStack(spacing: UIDimensions.normal.spacing) {
 							InfoSectionView(section: section)
 						}

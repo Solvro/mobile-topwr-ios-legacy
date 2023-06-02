@@ -9,7 +9,8 @@ public struct ClubListState: Equatable {
     var filtered: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
     var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
     
-    var searchState = SearchState()
+    // FIXME: - What placehodler?
+    var searchState = SearchFeature.State(placeholder: "")
     var clubTagsState = ClubTagFilterState()
     
     var text: String = ""
@@ -40,7 +41,7 @@ public enum ClubListAction: Equatable {
     case listButtonTapped
     case fetchingOn
     case updateFiltered
-    case searchAction(SearchAction)
+    case searchAction(SearchFeature.Action)
     case clubTags(ClubTagFilterAction)
     case setNavigation(selection: UUID?)
     case clubDetailsAction(ClubDetailsAction)

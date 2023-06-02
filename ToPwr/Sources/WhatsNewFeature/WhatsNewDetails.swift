@@ -3,7 +3,7 @@ import ComposableArchitecture
 import SwiftUI
 import Common
 
-public struct WhatsNewDetailsFeature: Reducer {
+public struct WhatsNewDetailsFeature: ReducerProtocol {
     public struct State: Equatable, Identifiable {
         public let id: UUID
         let news: WhatsNew
@@ -22,7 +22,7 @@ public struct WhatsNewDetailsFeature: Reducer {
         case onDisappear
     }
     
-    public var body: some ReducerOf<WhatsNewDetailsFeature> {
+    public var body: some ReducerProtocol<State, Action> {
         EmptyReducer()
     }
 }

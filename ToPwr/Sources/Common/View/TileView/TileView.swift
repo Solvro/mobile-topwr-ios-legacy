@@ -3,7 +3,7 @@ import SwiftUI
 
 // FIXME: - This file is not used anywhere. Should we remove it?
 
-public struct TileFeature: Reducer {
+public struct TileFeature: ReducerProtocol {
     public struct State: Equatable {
         public let id: Int
         let imageURL: URL?
@@ -28,7 +28,7 @@ public struct TileFeature: Reducer {
         case buttonTapped
     }
     
-    public var body: some ReducerOf<TileFeature> {
+    public var body: some ReducerProtocol<State, Action> {
         EmptyReducer()
     }
 }

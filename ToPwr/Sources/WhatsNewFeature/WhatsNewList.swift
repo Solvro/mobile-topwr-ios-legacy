@@ -4,7 +4,7 @@ import Combine
 import SwiftUI
 import Common
 
-public struct WhatsNewListFeature: Reducer {
+public struct WhatsNewListFeature: ReducerProtocol {
     public struct State: Equatable {
         let title: String = Strings.HomeLists.whatsnewListTitle
         let news: IdentifiedArrayOf<WhatsNew>
@@ -24,12 +24,14 @@ public struct WhatsNewListFeature: Reducer {
         }
     }
     
+    public init() {}
+    
     public enum Action: Equatable {
         case cellTapped(id: WhatsNewHomeCellFeature.State.ID, action: WhatsNewHomeCellFeature.Action)
         case navigateToDetails(WhatsNewDetailsFeature.State)
     }
     
-    public var body: some ReducerOf<WhatsNewListFeature> {
+    public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case let .cellTapped(id: id, action: .cellTapped):

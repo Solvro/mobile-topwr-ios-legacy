@@ -2,7 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 import Common
 
-public struct WhatsNewHomeCellFeature: Reducer {
+public struct WhatsNewHomeCellFeature: ReducerProtocol {
     public struct State: Equatable, Identifiable {
         let url: URL?
         let dateLabel: String?
@@ -23,7 +23,7 @@ public struct WhatsNewHomeCellFeature: Reducer {
         case cellTapped
     }
     
-    public var body: some ReducerOf<WhatsNewHomeCellFeature> {
+    public var body: some ReducerProtocol<State, Action> {
         EmptyReducer()
     }
 }
