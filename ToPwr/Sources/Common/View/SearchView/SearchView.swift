@@ -1,56 +1,32 @@
 import SwiftUI
 import ComposableArchitecture
 
-//MARK: - STATE
-public struct SearchState: Equatable {
-	let placeholder: String
-	
-	public init(
-		placeholder: String = Strings.Other.searching
-	){
-		self.placeholder = placeholder
-	}
-}
-//MARK: - ACTION
-public enum SearchAction: Equatable {
-	case update(String)
-	case clearSearch
-}
-
-//MARK: - ENVIRONMENT
-public struct SearchEnvironment {
-	var mainQueue: AnySchedulerOf<DispatchQueue>
-	
-	public init (
-		mainQueue: AnySchedulerOf<DispatchQueue>
-	) {
-		self.mainQueue = mainQueue
-	}
-}
-
-//MARK: - REDUCER
-public let searchReducer = Reducer<
-	SearchState,
-	SearchAction,
-	SearchEnvironment
-> { state, action, env in
-	switch action {
-	case .update(let text):
-		return .none
-	case .clearSearch:
-		return .none
-	}
+public struct SearchFeature: Reducer {
+    public struct State: Equatable {
+        let placeholder: String
+        
+        public init(placeholder: String) {
+            self.placeholder = placeholder
+        }
+    }
+    
+    public enum Action: Equatable {
+        case update(String)
+        case clearSearch
+    }
+    
+    public var body: some ReducerOf<SearchFeature> {
+        EmptyReducer()
+    }
 }
 
 //MARK: - VIEW
 public struct SearchView: View {
-	let store: Store<SearchState, SearchAction>
+	let store: StoreOf<SearchFeature>
 	// state property wrappers introduced in order to make textField work as intended within GeometryReader
 	@State var textInField: String = ""
 	
-	public init(
-		store: Store<SearchState, SearchAction>
-	) {
+	public init(store: StoreOf<SearchFeature>) {
 		self.store = store
 	}
 #warning("Implement rounded search field in the better way")
@@ -104,21 +80,16 @@ public struct SearchView: View {
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
+
+extension SearchFeature.State {
+    static let mock: Self = .init(placeholder: "Mock placeholder")
+}
+
 struct SearchView_Previews: PreviewProvider {
 	static var previews: some View {
 		SearchView(
-			store: Store(
-				initialState: .init(),
-				reducer: searchReducer,
-				environment: .failing
-			)
+            store: .init(initialState: .mock, reducer: SearchFeature())
 		)
 	}
-}
-
-public extension SearchEnvironment {
-	static let failing: Self = .init(
-		mainQueue: .immediate
-	)
 }
 #endif

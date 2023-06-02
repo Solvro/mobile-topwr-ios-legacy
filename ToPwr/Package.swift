@@ -64,8 +64,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git",
-            from: "0.25.0"
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            .branch("prerelease/1.0")
         ),
         .package(
             url: "https://github.com/kean/NukeUI",
