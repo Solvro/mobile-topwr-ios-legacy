@@ -8,7 +8,7 @@ import WhatsNewFeature
 
 //MARK: - STATE
 public struct HomeState: Equatable {
-    var whatsNewListState = WhatsNewListState()
+    var whatsNewListState = WhatsNewListFeature.State()
     var departmentListState = DepartmentHomeListState()
     public var buildingListState = BuildingListState()
     var clubHomeListState = ClubHomeListState()
@@ -36,7 +36,7 @@ public enum HomeAction: Equatable {
     case receivedWelcomeDayText(Result<ExceptationDays, ErrorModel>)
     case receivedNews(Result<[WhatsNew], ErrorModel>)
     case buttonTapped
-    case whatsNewListAction(WhatsNewListAction)
+    case whatsNewListAction(WhatsNewListFeature.Action)
     case departmentListAction(DepartmentHomeListAction)
     case buildingListAction(BuildingListAction)
     case clubHomeListAction(ClubHomeListAction)
@@ -233,14 +233,10 @@ public let homeReducer = Reducer<
         )
 )
 .combined(
-    with: whatsNewListReducer
-        .pullback(
-            state: \.whatsNewListState,
-            action: /HomeAction.whatsNewListAction,
-            environment: {
-                .init(mainQueue: $0.mainQueue)
-            }
-        )
+    with: AnyReducer { env in
+        WhatsNewListFeature()
+    }
+        .pullback(state: \.whatsNewListState, action: /HomeAction.whatsNewListAction, environment: { $0 })
 )
 
 //MARK: - VIEW

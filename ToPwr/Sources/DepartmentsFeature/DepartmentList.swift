@@ -9,7 +9,8 @@ public struct DepartmentListState: Equatable {
     var filtered: IdentifiedArrayOf<DepartmentDetailsState>
     var selection: Identified<DepartmentDetailsState.ID, DepartmentDetailsState?>?
     
-    var searchState = SearchState()
+    // FIXME: - What placeholder?
+    var searchState = SearchFeature.State(placeholder: "")
     var text: String = ""
     var isFetching = false
     var noMoreFetches = false
@@ -33,7 +34,7 @@ public struct DepartmentListState: Equatable {
 //MARK: - ACTION
 public enum DepartmentListAction: Equatable {
     case listButtonTapped
-    case searchAction(SearchAction)
+    case searchAction(SearchFeature.Action)
     case setNavigation(selection: UUID?)
     case departmentDetailsAction(DepartmentDetailsAction)
     case receivedDepartments(Result<[Department], ErrorModel>)
@@ -141,16 +142,16 @@ departmentDetailsReducer
         }
     }
 )
-.combined(
-    with: searchReducer
-        .pullback(
-            state: \.searchState,
-            action: /DepartmentListAction.searchAction,
-            environment: { env in
-                    .init(mainQueue: env.mainQueue)
-            }
-        )
-)
+//.combined(
+//    with: searchReducer
+//        .pullback(
+//            state: \.searchState,
+//            action: /DepartmentListAction.searchAction,
+//            environment: { env in
+//                    .init(mainQueue: env.mainQueue)
+//            }
+//        )
+//)
 
 //MARK: - VIEW
 public struct DepartmentListView: View {

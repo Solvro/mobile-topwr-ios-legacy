@@ -7,7 +7,8 @@ import HomeFeature
 //MARK: - STATE
 public struct MapBottomSheetState: Equatable {
     let navigateButtonTitle: String = Strings.MapView.navigateMe
-	var searchState = SearchState()
+    // FIXME: - What placeholder?
+    var searchState = SearchFeature.State(placeholder: "")
 	var text: String = ""
 	
 	var buildings: IdentifiedArrayOf<MapBuildingCellState> = []
@@ -26,7 +27,7 @@ public struct MapBottomSheetState: Equatable {
 
 //MARK: - ACTION
 public enum MapBottomSheetAction: Equatable {
-	case searchAction(SearchAction)
+    case searchAction(SearchFeature.Action)
 	case cellAction(id: MapBuildingCellState.ID, action: MapBuildingCellAction)
 	case configureToSelectedAnnotationAcion(CustomAnnotation?)
 	case newCellSelected(Int?)

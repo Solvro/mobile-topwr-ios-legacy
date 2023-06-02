@@ -1,7 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-public struct SearchFeature: Reducer {
+public struct SearchFeature: ReducerProtocol {
     public struct State: Equatable {
         let placeholder: String
         
@@ -10,12 +10,14 @@ public struct SearchFeature: Reducer {
         }
     }
     
+    public init() {}
+    
     public enum Action: Equatable {
         case update(String)
         case clearSearch
     }
     
-    public var body: some ReducerOf<SearchFeature> {
+    public var body: some ReducerProtocol<State, Action> {
         EmptyReducer()
     }
 }
