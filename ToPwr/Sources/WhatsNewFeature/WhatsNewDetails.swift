@@ -3,42 +3,27 @@ import ComposableArchitecture
 import SwiftUI
 import Common
 
-// MARK: - State
-public struct WhatsNewDetailsState: Equatable, Identifiable {
-    public let id: UUID
-    let news: WhatsNew
-    
-    public init(
-        id: UUID = UUID(),
-        news: WhatsNew
-    ) {
-        self.id = id
-        self.news = news
+public struct WhatsNewDetailsFeature: Reducer {
+    public struct State: Equatable, Identifiable {
+        public let id: UUID
+        let news: WhatsNew
+        
+        public init(
+            id: UUID = UUID(),
+            news: WhatsNew
+        ) {
+            self.id = id
+            self.news = news
+        }
     }
-}
-
-// MARK: - Actions
-public enum WhatsNewDetailsAction: Equatable {
-    case onAppear
-    case onDisappear
-}
-
-// MARK: - Environment
-public struct WhatsNewDetailsEnvironment {
-    public init () { }
-}
-
-// MARK: - Reducer
-public let whatsNewDetailsReducer = Reducer<
-    WhatsNewDetailsState,
-    WhatsNewDetailsAction,
-    WhatsNewDetailsEnvironment
-> { _, action, _ in
-    switch action {
-    case .onAppear:
-        return .none
-    case .onDisappear:
-        return .none
+    
+    public enum Action: Equatable {
+        case onAppear
+        case onDisappear
+    }
+    
+    public var body: some ReducerOf<WhatsNewDetailsFeature> {
+        EmptyReducer()
     }
 }
 
@@ -51,9 +36,9 @@ public struct WhatsNewDetailsView: View {
         static let dateHeight: CGFloat = 30
     }
     
-    let store: Store<WhatsNewDetailsState, WhatsNewDetailsAction>
+    let store: StoreOf<WhatsNewDetailsFeature>
     
-    public init(store: Store<WhatsNewDetailsState, WhatsNewDetailsAction>) {
+    public init(store: StoreOf<WhatsNewDetailsFeature>) {
         self.store = store
     }
     
@@ -112,26 +97,13 @@ public struct WhatsNewDetailsView: View {
 
 #if DEBUG
 // MARK: - Preview
-struct WhatsNewDetails_Previews: PreviewProvider {
-    static var previews: some View {
-        WhatsNewDetailsView(
-            store: Store(
-                initialState: WhatsNewDetailsState.mock,
-                reducer: whatsNewDetailsReducer,
-                environment: WhatsNewDetailsEnvironment.mock
-            )
-        )
-    }
-}
-// MARK: - State - MOCKS
-public extension WhatsNewDetailsState {
-    static let mock: Self = .init(
-        news: .mock
-    )
+extension WhatsNewDetailsFeature.State {
+    static let mock: Self = .init(news: .mock)
 }
 
-// MARK: - Environment - MOCKS
-public extension WhatsNewDetailsEnvironment {
-    static let mock: Self = .init()
+struct WhatsNewDetails_Previews: PreviewProvider {
+    static var previews: some View {
+        WhatsNewDetailsView(store: .init(initialState: .mock, reducer: WhatsNewDetailsFeature()))
+    }
 }
 #endif

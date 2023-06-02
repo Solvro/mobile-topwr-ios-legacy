@@ -1,48 +1,35 @@
 import ComposableArchitecture
 import SwiftUI
 
-// MARK: - State
-public struct TileState: Equatable, Identifiable {
-    public let id: Int
-    let imageURL: URL?
-    let title: String
-    let description: String
-    
-    public init(
-        id: Int,
-        imageURL: URL?,
-        title: String,
-        description: String
-    ){
-        self.id = id
-        self.imageURL = imageURL
-        self.title = title
-        self.description = description
+// FIXME: - This file is not used anywhere. Should we remove it?
+
+public struct TileFeature: Reducer {
+    public struct State: Equatable {
+        public let id: Int
+        let imageURL: URL?
+        let title: String
+        let description: String
+        
+        public init(
+            id: Int,
+            imageURL: URL?,
+            title: String,
+            description: String
+        ){
+            self.id = id
+            self.imageURL = imageURL
+            self.title = title
+            self.description = description
+        }
     }
-}
-
-// MARK: - Actions
-public enum TileAction: Equatable {
-    case onAppear
-    case buttonTapped
-}
-
-// MARK: - Environment
-public struct TileEnvironment {
-    public init () { }
-}
-
-// MARK: - Reducer
-public let tileReducer = Reducer<
-    TileState,
-    TileAction,
-    TileEnvironment
-> { _, action, _ in
-    switch action {
-    case .onAppear:
-        return .none
-    case .buttonTapped:
-        return .none
+    
+    public enum Action: Equatable {
+        case onAppear
+        case buttonTapped
+    }
+    
+    public var body: some ReducerOf<TileFeature> {
+        EmptyReducer()
     }
 }
 
@@ -55,14 +42,14 @@ public struct TileView: View {
         static let buttonHeight: CGFloat = 32
     }
 
-    let store: Store<TileState, TileAction>
+    let store: StoreOf<TileFeature>
 
-    public init(store: Store<TileState, TileAction>) {
+    public init(store: StoreOf<TileFeature>) {
         self.store = store
     }
 
     public var body: some View {
-        WithViewStore(store) { viewStore in
+        WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
                 VStack {
                     ImageView(
@@ -116,3 +103,6 @@ public struct TileView: View {
         }
     }
 }
+
+// TODO: - Write preview
+// TODO: - Write mock
