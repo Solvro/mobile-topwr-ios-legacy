@@ -2,53 +2,34 @@ import SwiftUI
 import ComposableArchitecture
 import Common
 
-//MARK: - STATE
-public struct BuildingCellState: Equatable, Identifiable {
-    public let id: Int
-	let building: Map
-    
-    public init(
-        building: Map
-    ) {
-        self.id = building.id
-        self.building = building
+public struct BuildingCell: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable, Identifiable {
+        public let id: Int
+        let building: Map
+        
+        public init(building: Map) {
+            self.id = building.id
+            self.building = building
+        }
     }
-}
-//MARK: - ACTION
-public enum BuildingCellAction: Equatable {
-    case buttonTapped
-}
-
-//MARK: - ENVIRONMENT
-public struct BuildingCellEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
     
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
-    ) {
-        self.mainQueue = mainQueue
+    // MARK: - Action
+    public enum Action: Equatable {
+        case buttonTapped
     }
-}
-
-//MARK: - REDUCER
-public let buildingCellReducer = Reducer<
-    BuildingCellState,
-    BuildingCellAction,
-    BuildingCellEnvironment
-> { state, action, environment in
-  switch action {
-  case .buttonTapped:
-    return .none
-  }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        EmptyReducer()
+    }
 }
 
 //MARK: - VIEW
 public struct BuildingCellView: View {
-    let store: Store<BuildingCellState, BuildingCellAction>
+    let store: StoreOf<BuildingCell>
     
-    public init(
-        store: Store<BuildingCellState, BuildingCellAction>
-    ) {
+    public init(store: StoreOf<BuildingCell>) {
         self.store = store
     }
     
@@ -80,11 +61,22 @@ public struct BuildingCellView: View {
     }
 }
 
-//MARK: - MOCKS & PREVIEW
 #if DEBUG
-public extension BuildingCellState {
-    static let mock: Self = .init(
-        building: .mock
-    )
+// MARK: - Mock
+extension BuildingCell.State {
+    static let mock: Self = .init(building: .mock)
 }
+
+// MARK: - Preview
+private struct BuildingCellView_Preview: PreviewProvider {
+    static var previews: some View {
+        BuildingCellView(
+            store: .init(
+                initialState: .mock,
+                reducer: BuildingCell()
+            )
+        )
+    }
+}
+
 #endif

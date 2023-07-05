@@ -10,10 +10,10 @@ import Common
 
 //MARK: - STATE
 public struct MenuState: Equatable {
-    var homeState = HomeState()
+    var homeState = Home.State()
     var mapState = MapFeatureState()
     var departmentsState = DepartmentsState()
-    var clubsState = ClubsState()
+    var clubsState = ClubFeature.State()
     var infoState = InfoState()
 	var selection = 1
 	
@@ -22,10 +22,10 @@ public struct MenuState: Equatable {
 
 //MARK: - ACTION
 public enum MenuAction: Equatable {
-    case homeAction(HomeAction)
+    case homeAction(Home.Action)
     case mapAction(MapFeatureAction)
     case departmentsAction(DepartmentsAction)
-    case clubsAction(ClubsAction)
+    case clubsAction(ClubFeature.Action)
     case infoAction(InfoAction)
 	case newTabSelection(Int)
 }
@@ -114,24 +114,10 @@ public let menuReducer = Reducer<
     }
 }
 .combined(
-    with: homeReducer
-        .pullback(
-            state: \.homeState,
-            action: /MenuAction.homeAction,
-            environment: { env in
-                    .init(
-                        mainQueue: env.mainQueue,
-                        getSessionDate: env.getSessionDate,
-                        getDepartments: env.getDepartments,
-                        getDepartment: env.getDepartment,
-                        getBuildings: env.getBuildings,
-                        getScienceClubs: env.getScienceClubs,
-                        getScienceClub: env.getScienceClub,
-                        getWelcomeDayText: env.getWelcomeDayText,
-                        getWhatsNew: env.getWhatsNew
-                    )
-            }
-		)
+    with: AnyReducer { env in
+        Home()
+    }
+        .pullback(state: \.homeState, action: /MenuAction.homeAction, environment: { $0 })
 )
 .combined(
 	with: mapFeatureReducer
@@ -162,19 +148,10 @@ public let menuReducer = Reducer<
         )
 )
 .combined(
-    with: ClubsReducer
-        .pullback(
-            state: \.clubsState,
-            action: /MenuAction.clubsAction,
-            environment: {
-                    .init(
-                        mainQueue: $0.mainQueue,
-						getClubs: $0.getScienceClubs,
-						getAllClubs: $0.getAllScienceClubs,
-                        getDepartment: $0.getDepartment
-                    )
-            }
-        )
+    with: AnyReducer { env in
+        ClubFeature()
+    }
+        .pullback(state: \.clubsState, action: /MenuAction.clubsAction, environment: { $0 })
 )
 .combined(
     with: infoReducer
@@ -277,28 +254,28 @@ public struct MenuView: View {
 
 //MARK: - MOCKS & PREVIEW
 #if DEBUG
-struct MenuView_Previews: PreviewProvider {
-    static var previews: some View {
-        MenuView(
-            store: Store(
-                initialState: .init(),
-                reducer: menuReducer,
-                environment: .init(
-                    mainQueue: .immediate,
-                    getSessionDate: failing0,
-                    getDepartments: failing1,
-                    getBuildings: failing0,
-					getScienceClubs: failing1,
-					getAllScienceClubs: failing0,
-                    getWelcomeDayText: failing0,
-                    getDepartment: failing1,
-                    getScienceClub: failing1,
-                    getWhatsNew: failing0,
-                    getInfos: failing1,
-					getAboutUs: failing0
-                )
-            )
-        )
-    }
-}
+//struct MenuView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MenuView(
+//            store: Store(
+//                initialState: .init(),
+//                reducer: menuReducer,
+//                environment: .init(
+//                    mainQueue: .immediate,
+//                    getSessionDate: failing0,
+//                    getDepartments: failing1,
+//                    getBuildings: failing0,
+//					getScienceClubs: failing1,
+//					getAllScienceClubs: failing0,
+//                    getWelcomeDayText: failing0,
+//                    getDepartment: failing1,
+//                    getScienceClub: failing1,
+//                    getWhatsNew: failing0,
+//                    getInfos: failing1,
+//					getAboutUs: failing0
+//                )
+//            )
+//        )
+//    }
+//}
 #endif

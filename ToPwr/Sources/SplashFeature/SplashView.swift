@@ -501,29 +501,29 @@ public struct SplashView: View {
 }
 
 #if DEBUG
-struct SplashView_Previews: PreviewProvider {
-    static var previews: some View {
-        SplashView(
-            store: Store(
-                initialState: .init(),
-                reducer: splashReducer,
-                environment: .init(
-                    mainQueue: .immediate,
-                    getApiVersion: failing0,
-                    getSessionDate: failing0,
-                    getDepartments: failing1,
-                    getBuildings: failing0,
-					getScienceClubs: failing1,
-					getAllScienceClubs: failing0,
-                    getWelcomeDayText: failing0,
-                    getDepartment: failing1,
-                    getScienceClub: failing1,
-                    getWhatsNew: failing0,
-                    getInfos: failing1,
-					getAboutUs: failing0
-                )
-            )
-        )
-    }
-}
+//struct SplashView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SplashView(
+//            store: Store(
+//                initialState: .init(),
+//                reducer: splashReducer,
+//                environment: .init(
+//                    mainQueue: .immediate,
+//                    getApiVersion: failing0,
+//                    getSessionDate: failing0,
+//                    getDepartments: failing1,
+//                    getBuildings: failing0,
+//					getScienceClubs: failing1,
+//					getAllScienceClubs: failing0,
+//                    getWelcomeDayText: failing0,
+//                    getDepartment: failing1,
+//                    getScienceClub: failing1,
+//                    getWhatsNew: failing0,
+//                    getInfos: failing1,
+//					getAboutUs: failing0
+//                )
+//            )
+//        )
+//    }
+//}
 #endif

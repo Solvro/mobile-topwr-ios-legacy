@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Common
 
 public struct ClubHomeCellView: View {
-    let viewState: ClubDetailsState
+    let viewState: ClubDetails.State
 
     private enum Constants {
         static let viewHeight: CGFloat = 380
@@ -12,9 +12,7 @@ public struct ClubHomeCellView: View {
         static let buttonHeight: CGFloat = 32
     }
     
-    public init(
-        viewState: ClubDetailsState
-    ) {
+    public init(viewState: ClubDetails.State) {
         self.viewState = viewState
     }
     

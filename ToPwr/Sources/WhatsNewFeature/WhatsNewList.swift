@@ -41,7 +41,6 @@ public struct WhatsNewListFeature: ReducerProtocol {
                 return .task {
                     .navigateToDetails(.init(news: news))
                 }
-                return .none
             case .navigateToDetails:
                 return .none
             }

@@ -36,22 +36,3 @@ private func env() -> SplashEnvironment {
 		getAboutUs: coreLogic.getAboutUs
     )
 }
-
-//
-//extension SplashEnvironment {
-//	static let mock: Self = .init(
-//		mainQueue: .main.eraseToAnyScheduler(),
-//		getApiVersion: {
-//			return Just(Ver)
-//		},
-//		getSessionDate: <#T##() -> AnyPublisher<SessionDay, ErrorModel>#>,
-//		getDepartments: <#T##() -> AnyPublisher<[Department], ErrorModel>#>,
-//		getBuildings: <#T##() -> AnyPublisher<[Map], ErrorModel>#>,
-//		getScienceClubs: <#T##() -> AnyPublisher<[ScienceClub], ErrorModel>#>,
-//		getWelcomeDayText: <#T##() -> AnyPublisher<ExceptationDays, ErrorModel>#>,
-//		getDepartment: <#T##(Int) -> AnyPublisher<Department, ErrorModel>#>,
-//		getScienceClub: <#T##(Int) -> AnyPublisher<ScienceClub, ErrorModel>#>,
-//		getWhatsNew: <#T##() -> AnyPublisher<[WhatsNew], ErrorModel>#>,
-//		getInfos: <#T##() -> AnyPublisher<[Info], ErrorModel>#>
-//	)
-//}

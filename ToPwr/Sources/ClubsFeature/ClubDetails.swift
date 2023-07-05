@@ -4,80 +4,72 @@ import Common
 import ComposableArchitecture
 import Combine
 
-//MARK: - STATE
-public struct ClubDetailsState: Equatable, Identifiable {
-    public let id: UUID
-    public let club: ScienceClub
-    var department: Department?
-    var isLoading: Bool = true
-    
-    public init(
-        id: UUID = UUID(),
-        club: ScienceClub,
-        department: Department? = nil
-    ){
-        self.id = id
-        self.club = club
-        self.department = department
+public struct ClubDetails: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable, Identifiable {
+        public let id: UUID
+        public let club: ScienceClub
+        var department: Department?
+        var isLoading: Bool = true
+        
+        public init(
+            id: UUID = UUID(),
+            club: ScienceClub,
+            department: Department? = nil
+        ){
+            self.id = id
+            self.club = club
+            self.department = department
+        }
     }
-}
-//MARK: - ACTION
-public enum ClubDetailsAction: Equatable {
-    case onAppear
-    case loadDepartment(Int)
-    case resultDepartment(Result<Department, ErrorModel>)
-}
-
-//MARK: - ENVIRONMENT
-public struct ClubDetailsEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
     
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getDepartment = getDepartment
+    public init() {}
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case onAppear
+        case loadDepartment(Int)
+        case resultDepartment(TaskResult<Department>)
     }
-}
-
-//MARK: - REDUCER
-public let clubDetailsReducer = Reducer<
-    ClubDetailsState,
-    ClubDetailsAction,
-    ClubDetailsEnvironment
-> { state, action, env in
-    switch action {
-    case .onAppear:
-        guard let clubDepartment = state.department else {
-            guard let departmentID = state.club.department else {
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .onAppear:
+                guard let clubDepartment = state.department else {
+                    guard let departmentID = state.club.department else {
+                        state.isLoading = false
+                        return .none
+                    }
+                    return .init(
+                        value: .loadDepartment(
+                            departmentID
+                        )
+                    )
+                }
+                state.isLoading = false
+                return .none
+            case .loadDepartment(let id):
+                // TODO: - Implement department loading
+//                return env.getDepartment(id)
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(ClubDetailsAction.resultDepartment)
+                return .none
+            case .resultDepartment(.success(let department)):
+                state.department = department
+                state.isLoading = false
+                return .none
+            case .resultDepartment(.failure(let error)):
+                print(error.localizedDescription)
                 state.isLoading = false
                 return .none
             }
-            return .init(
-                value: .loadDepartment(
-                    departmentID
-                )
-            )
         }
-        state.isLoading = false
-        return .none
-    case .loadDepartment(let id):
-        return env.getDepartment(id)
-            .receive(on: env.mainQueue)
-            .catchToEffect()
-            .map(ClubDetailsAction.resultDepartment)
-    case .resultDepartment(.success(let department)):
-        state.department = department
-        state.isLoading = false
-        return .none
-    case .resultDepartment(.failure(let error)):
-        print(error.localizedDescription)
-        state.isLoading = false
-        return .none
     }
 }
+
 //MARK: - VIEW
 public struct ClubDetailsView: View {
     
@@ -86,11 +78,9 @@ public struct ClubDetailsView: View {
         static let avatarSize: CGFloat = 120
     }
     
-    let store: Store<ClubDetailsState, ClubDetailsAction>
+    let store: StoreOf<ClubDetails>
     
-    public init(
-        store: Store<ClubDetailsState, ClubDetailsAction>
-    ) {
+    public init(store: StoreOf<ClubDetails>) {
         self.store = store
     }
     
@@ -101,20 +91,11 @@ public struct ClubDetailsView: View {
                     ProgressView()
                 } else {
                     VStack {
-                        ImageView(
-                            url: viewStore.club.background?.url,
-                            contentMode: .aspectFill
-                        )
+                        ImageView(url: viewStore.club.background?.url, contentMode: .aspectFill)
                             .frame(height: Constants.backgroundImageHeith)
                         
-                        ImageView(
-                            url: viewStore.club.photo?.url,
-                            contentMode: .aspectFill
-                        )
-                            .frame(
-                                width: Constants.avatarSize,
-                                height: Constants.avatarSize
-                            )
+                        ImageView(url: viewStore.club.photo?.url, contentMode: .aspectFill)
+                            .frame(width: Constants.avatarSize, height: Constants.avatarSize)
                             .clipShape(Circle())
                             .shadow(radius: 7, x: 0, y: -5)
                             .offset(y: -(Constants.avatarSize/2))
@@ -159,3 +140,20 @@ public struct ClubDetailsView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Mock
+extension ClubDetails.State {
+    static let mock: Self = .init(club: .mock)
+}
+
+// MARK: - Preview
+private struct ClubDetailsView_Previews: PreviewProvider {
+    static var previews: some View {
+        ClubDetailsView(
+            store: .init(initialState: .mock, reducer: ClubDetails())
+        )
+    }
+}
+
+#endif

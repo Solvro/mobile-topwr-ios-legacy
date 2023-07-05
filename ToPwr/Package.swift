@@ -58,7 +58,7 @@ let package = Package(
             targets: ["ToPwr"]
         ),
         .library(
-            name: "WhatsNewFeature",
+            name: "WhatsNewFeature", 
             targets: ["ToPwr"]
         ),
     ],

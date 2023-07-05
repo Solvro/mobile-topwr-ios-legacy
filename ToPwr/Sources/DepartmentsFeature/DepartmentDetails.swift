@@ -9,8 +9,8 @@ import ClubsFeature
 public struct DepartmentDetailsState: Equatable, Identifiable {
     public let id: UUID
     public let department: Department
-    var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
-    var clubDetailsState: ClubDetailsState?
+    var clubs: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
+    var clubDetailsState: ClubDetails.State?
     var isClubDetailsActive: Bool = false
     
     public init(
@@ -32,8 +32,8 @@ extension DepartmentDetailsState {
         let adress: String?
         let infoSection: [InfoSection]
         let fieldOfStudy: [FieldOfStudy]
-        let clubs: IdentifiedArrayOf<ClubDetailsState>
-        var clubDetailsState: ClubDetailsState?
+        let clubs: IdentifiedArrayOf<ClubDetails.State>
+        var clubDetailsState: ClubDetails.State?
         var isClubDetailsActive: Bool = false
     }
     
@@ -61,9 +61,9 @@ public enum DepartmentDetailsAction: Equatable {
     case getClubs
     case loadClub(Int)
     case receivedClub(Result<ScienceClub, ErrorModel>)
-    case clubAction(ClubDetailsAction)
+    case clubAction(ClubDetails.Action)
     case isClubDetailsActive(Bool)
-    case clubTapped(ClubDetailsState?)
+    case clubTapped(ClubDetails.State?)
 }
 
 // MARK: - Environment
@@ -107,7 +107,7 @@ public let departmentDetailsReducer = Reducer<
         let clubs = state.clubs
         if !clubs.contains(where: { $0.club.id == club.id }) {
             state.clubs.append(
-                ClubDetailsState(
+                ClubDetails.State(
                     club: club,
                     department: state.department
                 )
@@ -133,18 +133,11 @@ public let departmentDetailsReducer = Reducer<
     }
 }
 .combined(
-    with: clubDetailsReducer
+    with: AnyReducer { env in
+        ClubDetails()
+    }
         .optional()
-        .pullback(
-            state: \.clubDetailsState,
-            action: /DepartmentDetailsAction.clubAction,
-            environment: { env in
-                ClubDetailsEnvironment(
-                    mainQueue: env.mainQueue,
-                    getDepartment: env.getDepartment
-                )
-            }
-        )
+        .pullback(state: \.clubDetailsState, action: /DepartmentDetailsAction.clubAction, environment: { $0 })
 )
 
 // MARK: - View

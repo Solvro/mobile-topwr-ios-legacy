@@ -3,99 +3,76 @@ import ComposableArchitecture
 import Combine
 import Common
 
-//MARK: - STATE
-public struct ClubsState: Equatable {
-    
-    var listState = ClubListState()
-    var showAlert = false
-	
-    public init(){}
-}
-//MARK: - ACTION
-public enum ClubsAction: Equatable {
-    case onAppear
-    case loadClubs
-    case receivedClubs(Result<[ScienceClub], ErrorModel>)
-    case listAction(ClubListAction)
-    case dismissKeyboard
-	case showAlertStateChange(Bool)
-}
-
-//MARK: - ENVIRONMENT
-public struct ClubsEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
-	let getAllClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
-		getAllClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getClubs = getClubs
-        self.getDepartment = getDepartment
-		self.getAllClubs = getAllClubs
-    }
-}
-
-//MARK: - REDUCER
-public let ClubsReducer = Reducer<
-    ClubsState,
-    ClubsAction,
-    ClubsEnvironment
-> { state, action, env in
-    switch action {
-    case .listAction:
-        return .none
-    case .onAppear:
-        if state.listState.clubs.isEmpty {
-            return .init(value: .loadClubs)
-        } else {
-            return .none
+public struct ClubFeature: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var listState: ClubList.State
+        var showAlert = false
+        public init(){
+            self.listState = ClubList.State()
         }
-    case .loadClubs:
-        return env.getClubs(0)
-            .receive(on: env.mainQueue)
-            .catchToEffect()
-            .map(ClubsAction.receivedClubs)
-    case .receivedClubs(.success(let clubs)):
-        return .init(value: .listAction(.receivedClubs(.success(clubs))))
-	case .receivedClubs(.failure(let error)):
-		state.showAlert = true
-        return .none
-    case .dismissKeyboard:
-        UIApplication.shared.dismissKeyboard()
-        return .none
-	case .showAlertStateChange(let newState):
-		state.showAlert = newState
-		return .none
+    }
+    
+    public init() {}
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case onAppear
+        case loadClubs
+        case receivedClubs(TaskResult<[ScienceClub]>)
+        case listAction(ClubList.Action)
+        case dismissKeyboard
+        case showAlertStateChange(Bool)
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        
+//        Scope(
+//            state: \.listState,
+//            action: /ClubFeature.Action.listAction
+//        ) {
+//            ClubList()
+//        }
+        
+        Reduce { state, action in
+            switch action {
+            case .listAction:
+                return .none
+            case .onAppear:
+                if state.listState.clubs.isEmpty {
+                    return .init(value: .loadClubs)
+                } else {
+                    return .none
+                }
+            case .loadClubs:
+                //                return env.getClubs(0)
+                //                    .receive(on: env.mainQueue)
+                //                    .catchToEffect()
+                //                    .map(ClubsAction.receivedClubs)
+                // TODO: - Load clubs
+                return .none
+            case .receivedClubs(.success(let clubs)):
+                return .init(value: .listAction(.receivedClubs(.success(clubs))))
+            case .receivedClubs(.failure(let error)):
+                state.showAlert = true
+                return .none
+            case .dismissKeyboard:
+                UIApplication.shared.dismissKeyboard()
+                return .none
+            case .showAlertStateChange(let newState):
+                state.showAlert = newState
+                return .none
+            }
+        }
     }
 }
-.combined(
-    with: clubListReducer
-        .pullback(
-            state: \.listState,
-            action: /ClubsAction.listAction,
-            environment: {
-                .init(
-                    mainQueue: $0.mainQueue,
-                    getDepartment: $0.getDepartment,
-					getClubs: $0.getClubs,
-					getAllClubs: $0.getAllClubs
-                )
-            }
-        )
-)
+
 //MARK: - VIEW
 public struct ClubsView: View {
-    let store: Store<ClubsState, ClubsAction>
+    let store: StoreOf<ClubFeature>
     
-    public init(
-        store: Store<ClubsState, ClubsAction>
-    ) {
+    public init(store: StoreOf<ClubFeature>) {
         self.store = store
     }
     
@@ -103,9 +80,9 @@ public struct ClubsView: View {
         WithViewStore(store) { viewStore in
             ZStack {
                 ClubListView(
-                    store: self.store.scope(
+                    store: store.scope(
                         state: \.listState,
-                        action: ClubsAction.listAction
+                        action: ClubFeature.Action.listAction
                     )
                 )
             }
@@ -118,6 +95,7 @@ public struct ClubsView: View {
 					set: { viewStore.send(.showAlertStateChange($0)) }
 				)
 			) {
+                // TODO: - Modify this to use AlerState
 				Alert(
 					title: Text(Strings.Other.networkError),
 					primaryButton: .default(
@@ -132,26 +110,24 @@ public struct ClubsView: View {
     }
 }
 
+
 #if DEBUG
-struct DepartmentsView_Previews: PreviewProvider {
+// MARK: - Mock
+extension ClubFeature.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct ClubsView_Preview: PreviewProvider {
     static var previews: some View {
         ClubsView(
-            store: Store(
-                initialState: .init(),
-                reducer: ClubsReducer,
-                environment: .failing
+            store: .init(
+                initialState: .mock,
+                reducer: ClubFeature()
             )
         )
     }
 }
 
-public extension ClubsEnvironment {
-    static let failing: Self = .init(
-        mainQueue: .immediate,
-		getClubs: failing1,
-		getAllClubs: failing0,
-        getDepartment: failing1
-    )
-}
 #endif
 

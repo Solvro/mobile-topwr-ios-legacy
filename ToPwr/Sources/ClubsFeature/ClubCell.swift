@@ -3,11 +3,9 @@ import ComposableArchitecture
 import Common
 
 public struct ClubCellView: View {
-    let viewState: ClubDetailsState
+    let viewState: ClubDetails.State
     
-    public init(
-        viewState: ClubDetailsState
-    ) {
+    public init(viewState: ClubDetails.State) {
         self.viewState = viewState
     }
     
@@ -41,3 +39,5 @@ public struct ClubCellView: View {
         .padding([.leading, .trailing])
     }
 }
+
+// TODO: - Implement mock
