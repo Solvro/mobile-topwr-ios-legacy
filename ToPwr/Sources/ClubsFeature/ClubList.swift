@@ -3,95 +3,56 @@ import ComposableArchitecture
 import Combine
 import Common
 
-//MARK: - STATE
-public struct ClubListState: Equatable {
-    var clubs: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
-    var filtered: IdentifiedArrayOf<ClubDetailsState> = .init(uniqueElements: [])
-    var selection: Identified<ClubDetailsState.ID, ClubDetailsState?>?
-    
-    // FIXME: - What placehodler?
-    var searchState = SearchFeature.State(placeholder: "")
-    var clubTagsState = ClubTagFilterState()
-    
-    var text: String = ""
-    var tag: Tag? = nil
-    
-    var isFetching = false
-	var fetchedAll = false
-    var noMoreFetches = false
-    
-    var isLoading: Bool {
-        clubs.isEmpty ? true : false
-    }
-    
-    public init(
-        clubs: [ScienceClub] = []
-    ) {
-        self.clubs = .init(
-            uniqueElements: clubs.map {
-                ClubDetailsState(club: $0)
-            }
-        )
-        self.filtered = self.clubs
-    }
-}
-
-//MARK: - ACTION
-public enum ClubListAction: Equatable {
-    case listButtonTapped
-    case fetchingOn
-    case updateFiltered
-    case searchAction(SearchFeature.Action)
-    case clubTags(ClubTagFilterAction)
-    case setNavigation(selection: UUID?)
-    case clubDetailsAction(ClubDetailsAction)
-    case receivedClubs(Result<[ScienceClub], ErrorModel>)
-	case receiveAllClubs(Result<[ScienceClub], ErrorModel>)
-    case loadMoreClubs
-	case loadAllClubs
-}
-
-//MARK: - ENVIRONMENT
-public struct ClubListEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    let getClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
-	let getAllClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
-        getClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
-		getAllClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getClubs = getClubs
-        self.getDepartment = getDepartment
-		self.getAllClubs = getAllClubs
-    }
-}
-//MARK: - REDUCER
-public let clubListReducer =
-clubDetailsReducer
-    .optional()
-    .pullback(state: \Identified.value, action: .self, environment: { $0 })
-    .optional()
-    .pullback(
-        state: \ClubListState.selection,
-        action: /ClubListAction.clubDetailsAction,
-        environment: {
-            ClubDetailsEnvironment(
-                mainQueue: $0.mainQueue,
-                getDepartment: $0.getDepartment
-            )
+public struct ClubList: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var clubs: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
+        var filtered: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
+        var selection: ClubDetails.State?
+        
+        // FIXME: - What placehodler?
+        var searchState = SearchFeature.State(placeholder: "")
+        var clubTagsState = ClubTagFilter.State()
+        
+        var text: String = ""
+        var tag: Tag? = nil
+        
+        var isFetching = false
+        var fetchedAll = false
+        var noMoreFetches = false
+        
+        var isLoading: Bool {
+            clubs.isEmpty ? true : false
         }
-    )
-    .combined(
-        with: Reducer<
-        ClubListState,
-        ClubListAction,
-        ClubListEnvironment
-        > { state, action, env in
+        
+        public init(clubs: [ScienceClub] = []) {
+            self.clubs = .init(
+                uniqueElements: clubs.map {
+                    ClubDetails.State(club: $0)
+                }
+            )
+            self.filtered = self.clubs
+        }
+    }
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case listButtonTapped
+        case fetchingOn
+        case updateFiltered
+        case searchAction(SearchFeature.Action)
+        case clubTags(ClubTagFilter.Action)
+        case setNavigation(selection: UUID?)
+        case clubDetailsAction(ClubDetails.Action)
+        case receivedClubs(Result<[ScienceClub], ErrorModel>)
+        case receiveAllClubs(Result<[ScienceClub], ErrorModel>)
+        case loadMoreClubs
+        case loadAllClubs
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
             switch action {
             case .listButtonTapped:
                 return .none
@@ -107,26 +68,26 @@ clubDetailsReducer
                         }
                     )
                 }
-				else if state.text.count == 0 && state.tag != nil {
-					state.filtered = .init(
-						uniqueElements: state.clubs.filter {
-							$0.club.tags.contains(state.tag!)
-						}
-					)
-				}
-				else if state.text.count != 0 && state.tag != nil {
-					state.filtered = .init(
-						uniqueElements: state.clubs.filter {
-							$0.club.name?.contains(state.text) ?? false ||
-							$0.club.description?.contains(state.text) ?? false
-						}
-					)
-					state.filtered = .init(
-						uniqueElements: state.filtered.filter {
-							$0.club.tags.contains(state.tag!)
-						}
-					)
-				}
+                else if state.text.count == 0 && state.tag != nil {
+                    state.filtered = .init(
+                        uniqueElements: state.clubs.filter {
+                            $0.club.tags.contains(state.tag!)
+                        }
+                    )
+                }
+                else if state.text.count != 0 && state.tag != nil {
+                    state.filtered = .init(
+                        uniqueElements: state.clubs.filter {
+                            $0.club.name?.contains(state.text) ?? false ||
+                            $0.club.description?.contains(state.text) ?? false
+                        }
+                    )
+                    state.filtered = .init(
+                        uniqueElements: state.filtered.filter {
+                            $0.club.tags.contains(state.tag!)
+                        }
+                    )
+                }
                 return .none
             case .searchAction(.update(let text)):
                 state.text = text
@@ -143,10 +104,11 @@ clubDetailsReducer
             case .clubTags:
                 return .none
             case let .setNavigation(selection: .some(id)):
-                state.selection = Identified(nil, id: id)
-                guard let id = state.selection?.id,
-                      let club = state.filtered[id: id] else { return .none }
-                state.selection?.value = club
+//                state.selection = Identified(nil, id: id)
+//                guard let id = state.selection?.id,
+//                      let club = state.filtered[id: id] else { return .none }
+//                state.selection?.value = club
+                // TODO: - Correctly handle navigation
                 return .none
             case .setNavigation(selection: .none):
                 state.selection = nil
@@ -154,19 +116,20 @@ clubDetailsReducer
             case .clubDetailsAction:
                 return .none
             case .loadMoreClubs:
-                return env.getClubs(state.clubs.count)
-                    .receive(on: env.mainQueue)
-                    .catchToEffect()
-                    .map(ClubListAction.receivedClubs)
+//                return env.getClubs(state.clubs.count)
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(ClubListAction.receivedClubs)
+                return .none
             case .receivedClubs(.success(let clubs)):
                 if clubs.isEmpty {
                     state.noMoreFetches = true
                     state.isFetching = false
-					state.fetchedAll = true
+                    state.fetchedAll = true
                     return .none
                 }
                 clubs.forEach {
-                    state.clubs.append(ClubDetailsState(club: $0))
+                    state.clubs.append(ClubDetails.State(club: $0))
                 }
                 state.filtered = state.clubs
                 state.isFetching = false
@@ -179,38 +142,38 @@ clubDetailsReducer
             case .fetchingOn:
                 state.isFetching = true
                 return .none
-			case .loadAllClubs:
-				return env.getAllClubs()
-					.receive(on: env.mainQueue)
-					.catchToEffect()
-					.map(ClubListAction.receiveAllClubs)
-			case .receiveAllClubs(.success(let clubs)):
-				state.clubs = IdentifiedArrayOf<ClubDetailsState>.init(uniqueElements: clubs.compactMap { ClubDetailsState(club: $0)})
-				state.filtered = state.clubs
+            case .loadAllClubs:
+//                return env.getAllClubs()
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(ClubListAction.receiveAllClubs)
+                return .none
+            case .receiveAllClubs(.success(let clubs)):
+                state.clubs = IdentifiedArrayOf<ClubDetails.State>.init(uniqueElements: clubs.compactMap { ClubDetails.State(club: $0)})
+                state.filtered = state.clubs
                 state.isFetching = false
-				state.fetchedAll = true
-				state.noMoreFetches = true
-				return .init(value: .updateFiltered)
-			case .receiveAllClubs(.failure(let error)):
-				return .none
+                state.fetchedAll = true
+                state.noMoreFetches = true
+                return .init(value: .updateFiltered)
+            case .receiveAllClubs(.failure(let error)):
+                return .none
             }
         }
-    )
-    .combined(
-        with: clubTagFilterReducer
-            .pullback(
-                state: \.clubTagsState,
-                action: /ClubListAction.clubTags,
-                environment: { _ in .init() }
-            )
-    )
+        .ifLet(
+            \.selection,
+             action: /Action.clubDetailsAction
+        ) {
+            ClubDetails()
+        }
+        // some for each here
+    }
+}
+
 //MARK: - VIEW
 public struct ClubListView: View {
-    let store: Store<ClubListState, ClubListAction>
+    let store: StoreOf<ClubList>
     
-    public init(
-        store: Store<ClubListState, ClubListAction>
-    ) {
+    public init(store: StoreOf<ClubList>) {
         self.store = store
     }
     
@@ -222,7 +185,7 @@ public struct ClubListView: View {
                         SearchView(
                             store: self.store.scope(
                                 state: \.searchState,
-                                action: ClubListAction.searchAction
+                                action: ClubList.Action.searchAction
                             )
                         )
                         .padding(.bottom, 16)
@@ -230,37 +193,38 @@ public struct ClubListView: View {
                         ClubTagFilterView(
                             store: self.store.scope(
                                 state: \.clubTagsState,
-                                action: ClubListAction.clubTags
+                                action: ClubList.Action.clubTags
                             )
                         )
                         
                         LazyVStack(spacing: 16) {
                             ForEach(viewStore.filtered) { club in
-                                NavigationLink(
-                                    destination: IfLetStore(
-                                        self.store.scope(
-                                            state: \.selection?.value,
-                                            action: ClubListAction.clubDetailsAction
-                                        ),
-                                        then: ClubDetailsView.init(store:),
-                                        else: ProgressView.init
-                                    ),
-                                    tag: club.id,
-                                    selection: viewStore.binding(
-                                        get: \.selection?.id,
-                                        send: ClubListAction.setNavigation(selection:)
-                                    )
-                                ) {
-                                    ClubCellView(viewState: club)
-                                        .onAppear {
-											if !viewStore.noMoreFetches{
-                                                viewStore.send(.fetchingOn)
-                                                if club.id == viewStore.clubs.last?.id {
-                                                    viewStore.send(.loadMoreClubs)
-                                                }
-                                            }
-                                        }
-                                }
+//                                NavigationLink(
+//                                    destination: IfLetStore(
+//                                        self.store.scope(
+//                                            state: \.selection?.value,
+//                                            action: ClubList.Action.clubDetailsAction
+//                                        ),
+//                                        then: ClubDetailsView.init(store:),
+//                                        else: ProgressView.init
+//                                    ),
+//                                    tag: club.id,
+//                                    selection: viewStore.binding(
+//                                        get: \.selection?.id,
+//                                        send: ClubList.Action.setNavigation(selection:)
+//                                    )
+//                                ) {
+//                                    ClubCellView(viewState: club)
+//                                        .onAppear {
+//											if !viewStore.noMoreFetches{
+//                                                viewStore.send(.fetchingOn)
+//                                                if club.id == viewStore.clubs.last?.id {
+//                                                    viewStore.send(.loadMoreClubs)
+//                                                }
+//                                            }
+//                                        }
+//                                }
+                                Text("Club cell here")
                             }
                             if viewStore.isFetching { ProgressView() }
                         }
@@ -273,3 +237,23 @@ public struct ClubListView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Mock
+extension ClubList.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct ClubListView_Preview: PreviewProvider {
+    static var previews: some View {
+        ClubListView(
+            store: .init(
+                initialState: .mock,
+                reducer: ClubList()
+            )
+        )
+    }
+}
+
+#endif

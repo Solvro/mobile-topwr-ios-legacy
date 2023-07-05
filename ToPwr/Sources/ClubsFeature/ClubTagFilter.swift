@@ -10,69 +10,61 @@ import ComposableArchitecture
 import Combine
 import Common
 
-//MARK: - STATE
-public struct ClubTagFilterState: Equatable {
-    var allTags: [Tag]
-    var selectedTag: Tag? = nil
+public struct ClubTagFilter: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var allTags: [Tag]
+        var selectedTag: Tag? = nil
+        
+        let initialTag: Tag = .init(
+            id: 0,
+            name: "All"
+        )
+        
+        public init(allTags: [Tag] = [], selectedTag: Tag? = nil) {
+            self.allTags = allTags
+            self.selectedTag = selectedTag
+        }
+    }
     
-    let initialTag: Tag = .init(
-        id: 0,
-        name: "All"
-    )
+    // MARK: - Action
+    public enum Action: Equatable {
+        case updateTags([Tag])
+        case choosedTag(Tag)
+        case updateFilter(Tag?)
+    }
     
-    public init(
-        allTags: [Tag] = [],
-        selectedTag: Tag? = nil
-    ){
-        self.allTags = allTags
-        self.selectedTag = selectedTag
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .updateTags(let tags):
+                state.allTags = [state.initialTag]
+                state.allTags.append(contentsOf: Array(Set(tags)))
+                if state.selectedTag == nil {
+                    state.selectedTag = state.initialTag
+                }
+                return .none
+            case .choosedTag(let tag):
+                if tag == state.initialTag || state.selectedTag == tag {
+                    state.selectedTag = state.initialTag
+                    return .init(value: .updateFilter(nil))
+                } else {
+                    state.selectedTag = tag
+                }
+                return .init(value: .updateFilter(state.selectedTag))
+            case .updateFilter:
+                return .none
+            }
+        }
     }
 }
-//MARK: - ACTION
-public enum ClubTagFilterAction: Equatable {
-    case updateTags([Tag])
-    case choosedTag(Tag)
-    case updateFilter(Tag?)
-}
 
-//MARK: - ENVIRONMENT
-public struct ClubTagFilterEnvironment {
-    public init(){}
-}
-
-//MARK: - REDUCER
-public let clubTagFilterReducer = Reducer<
-    ClubTagFilterState,
-    ClubTagFilterAction,
-    ClubTagFilterEnvironment
-> { state, action, env in
-    switch action {
-    case .updateTags(let tags):
-        state.allTags = [state.initialTag]
-        state.allTags.append(contentsOf: Array(Set(tags)))
-        if state.selectedTag == nil {
-            state.selectedTag = state.initialTag
-        }
-        return .none
-    case .choosedTag(let tag):
-        if tag == state.initialTag || state.selectedTag == tag {
-            state.selectedTag = state.initialTag
-            return .init(value: .updateFilter(nil))
-        } else {
-            state.selectedTag = tag
-        }
-        return .init(value: .updateFilter(state.selectedTag))
-    case .updateFilter:
-        return .none
-    }
-}
 //MARK: - VIEW
 public struct ClubTagFilterView: View {
-    let store: Store<ClubTagFilterState, ClubTagFilterAction>
+    let store: StoreOf<ClubTagFilter>
     
-    public init(
-        store: Store<ClubTagFilterState, ClubTagFilterAction>
-    ) {
+    public init(store: StoreOf<ClubTagFilter>) {
         self.store = store
     }
     
@@ -129,21 +121,22 @@ public struct ClubTagFilterView: View {
 }
 
 #if DEBUG
-struct ClubTagFilterView_Previews: PreviewProvider {
+// MARK: - Mock
+extension ClubTagFilter.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct TemplateView_Preview: PreviewProvider {
     static var previews: some View {
         ClubTagFilterView(
-            store: Store(
-                initialState: .init(),
-                reducer: clubTagFilterReducer,
-                environment: .failing
+            store: .init(
+                initialState: .mock,
+                reducer: ClubTagFilter()
             )
         )
     }
 }
 
-public extension ClubTagFilterEnvironment {
-    static let failing: Self = .init()
-}
 #endif
-
 

@@ -2,74 +2,46 @@ import SwiftUI
 import ComposableArchitecture
 import Common
 
-//MARK: - STATE
-public struct BuildingListState: Equatable {
-    let title: String = Strings.HomeLists.buildingListTitle
-    let buttonText: String = Strings.HomeLists.buildingListButton
-    public var buildings: IdentifiedArrayOf<BuildingCellState> = []
-    
-    var isLoading: Bool {
-        buildings.isEmpty ? true : false
-    }
-    
-    public init(
-        buildings: [BuildingCellState] = []
-    ){
-        self.buildings = .init(uniqueElements: buildings)
-    }
-}
-//MARK: - ACTION
-public enum BuildingListAction: Equatable {
-    case buttonTapped
-    case listButtonTapped
-    case cellAction(id: BuildingCellState.ID, action: BuildingCellAction)
-}
-
-//MARK: - ENVIRONMENT
-public struct BuildingListEnvironment {
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>
-    ) {
-        self.mainQueue = mainQueue
-    }
-}
-
-//MARK: - REDUCER
-public let buildingListReducer = Reducer<
-    BuildingListState,
-    BuildingListAction,
-    BuildingListEnvironment
->
-    .combine(
-        buildingCellReducer.forEach(
-            state: \.buildings,
-            action: /BuildingListAction.cellAction(id:action:),
-            environment: { env in
-                    .init(mainQueue: env.mainQueue)
-            }
-        ),
-        Reducer{ state, action, environment in
-            switch action {
-            case .buttonTapped:
-                print("CELL TAPPED")
-                return .none
-            case .listButtonTapped:
-                return .none
-            case .cellAction:
-                return .none
-            }
+public struct BuildingList: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        let title: String = Strings.HomeLists.buildingListTitle
+        let buttonText: String = Strings.HomeLists.buildingListButton
+        public var buildings: IdentifiedArrayOf<BuildingCell.State> = []
+        
+        var isLoading: Bool {
+            buildings.isEmpty ? true : false
         }
-    )
+        
+        public init(buildings: [BuildingCell.State] = []) {
+            self.buildings = .init(uniqueElements: buildings)
+        }
+    }
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case buttonTapped
+        case listButtonTapped
+        case cellAction(id: BuildingCell.State.ID, action: BuildingCell.Action)
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        EmptyReducer()
+            .forEach(
+                \.buildings,
+                 action: /Action.cellAction
+            ) {
+                BuildingCell()
+            }
+    }
+}
 
 //MARK: - VIEW
 public struct BuildingListView: View {
-    let store: Store<BuildingListState, BuildingListAction>
+    let store: StoreOf<BuildingList>
     
-    public init(
-        store: Store<BuildingListState, BuildingListAction>
-    ) {
+    public init(store: StoreOf<BuildingList>) {
         self.store = store
     }
     
@@ -97,7 +69,7 @@ public struct BuildingListView: View {
                     ForEachStore(
                         self.store.scope(
                             state: \.buildings,
-                            action: BuildingListAction.cellAction(id:action:)
+                            action: BuildingList.Action.cellAction(id:action:)
                         )
                     ) { store in
                         BuildingCellView(store: store)
@@ -108,3 +80,23 @@ public struct BuildingListView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Mock
+extension BuildingList.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct BuildingListView_Preview: PreviewProvider {
+    static var previews: some View {
+        BuildingListView(
+            store: .init(
+                initialState: .mock,
+                reducer: BuildingList()
+            )
+        )
+    }
+}
+
+#endif
