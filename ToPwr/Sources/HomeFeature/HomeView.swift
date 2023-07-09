@@ -34,18 +34,21 @@ public struct Home: ReducerProtocol {
         case loadWelcomeDayText
         case loadWhatsNew
         // TODO: - Use task result
-        case receivedSessionDate(Result<SessionDay, ErrorModel>)
-        case receivedDepartments(Result<[Department], ErrorModel>)
-        case receivedBuildings(Result<[Map], ErrorModel>)
-        case receivedScienceClubs(Result<[ScienceClub], ErrorModel>)
-        case receivedWelcomeDayText(Result<ExceptationDays, ErrorModel>)
-        case receivedNews(Result<[WhatsNew], ErrorModel>)
+        case receivedSessionDate(TaskResult<SessionDay>)
+        case receivedDepartments(TaskResult<[Department]>)
+        case receivedBuildings(TaskResult<[Map]>)
+        case receivedScienceClubs(TaskResult<[ScienceClub]>)
+        case receivedWelcomeDayText(TaskResult<ExceptationDays>)
+        case receivedNews(TaskResult<[WhatsNew]>)
         case buttonTapped
         case whatsNewListAction(WhatsNewListFeature.Action)
         case departmentListAction(DepartmentHomeListAction)
         case buildingListAction(BuildingList.Action)
         case clubHomeListAction(ClubHomeList.Action)
     }
+    
+    // MARK: - Dependencies
+    @Dependency(\.home) var homeClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
@@ -102,41 +105,42 @@ public struct Home: ReducerProtocol {
                   .init(value: .loadWelcomeDayText)
                 )
             case .loadSessionDate:
-//                return env.getSessionDate()
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedSessionDate)
-                return .none
+                return .task {
+                    await .receivedSessionDate(TaskResult {
+                        try await homeClient.getSessionDate()
+                    })
+                }
             case .loadDepartments:
-//                return env.getDepartments(0)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedDepartments)
-                return .none
+                return .task {
+                    await .receivedDepartments(TaskResult {
+                        // FIXME: - Should this be hardcoded?
+                        try await homeClient.getDepartments(0)
+                    })
+                }
             case .loadBuildings:
-//                return env.getBuildings()
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedBuildings)
-                return .none
+                return .task {
+                    await .receivedBuildings(TaskResult {
+                        try await homeClient.getBuildings()
+                    })
+                }
             case .loadScienceClubs:
-//                return env.getScienceClubs(0)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedScienceClubs)
-                return .none
+                return .task {
+                    await .receivedScienceClubs(TaskResult {
+                        try await homeClient.getScienceClubs(0)
+                    })
+                }
             case .loadWelcomeDayText:
-//                return env.getWelcomeDayText()
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedWelcomeDayText)
-                return .none
+                return .task {
+                    await .receivedWelcomeDayText(TaskResult {
+                        try await homeClient.getWelcomeDayText()
+                    })
+                }
             case .loadWhatsNew:
-//                return env.getWhatsNew()
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(HomeAction.receivedNews)
-                return .none
+                return .task {
+                    await .receivedNews(TaskResult {
+                        try await homeClient.getWhatsNew()
+                    })
+                }
             case .receivedSessionDate(.success(let sessionDate)):
                 state.sessionDay = sessionDate
                 return .none
@@ -168,19 +172,13 @@ public struct Home: ReducerProtocol {
             case .receivedNews(.success(let news)):
                 state.whatsNewListState = .init(news: news)
                 return .none
-            case .receivedSessionDate(.failure(let error)):
-                return .none
-            case .receivedDepartments(.failure(let error)):
-                return .none
-            case .receivedBuildings(.failure(let error)):
-                return .none
-            case .receivedScienceClubs(.failure(let error)):
-                print(error)
+            case .receivedSessionDate(.failure),
+                    .receivedDepartments(.failure),
+                    .receivedBuildings(.failure),
+                    .receivedScienceClubs(.failure),
+                    .receivedNews(.failure):
                 return .none
             case .receivedWelcomeDayText(.failure(let error)):
-                return .none
-            case .receivedNews(.failure(let error)):
-                print(error)
                 return .none
             case .buttonTapped:
               return .none

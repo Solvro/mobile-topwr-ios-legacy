@@ -2,6 +2,40 @@
 import Combine
 import XCTestDynamicOverlay
 
+public enum AsyncError: Error {
+    case finishedWithoutValue
+}
+
+// TODO: temporary solution until we actually rewrite stuff do do away with Combine
+public extension AnyPublisher {
+    func async() async throws -> Output {
+        try await withCheckedThrowingContinuation { continuation in
+            var cancellable: AnyCancellable?
+            var finishedWithoutValue = true
+            
+            cancellable = first()
+                .sink(
+                    receiveCompletion: { result in
+                        switch result {
+                        case .finished:
+                            if finishedWithoutValue {
+                                continuation.resume(throwing: AsyncError.finishedWithoutValue)
+                            }
+                        case .failure(let error):
+                            continuation.resume(throwing: error)
+                        }
+                        cancellable?.cancel()
+                    },
+                    receiveValue: { value in
+                        finishedWithoutValue = false
+                        continuation.resume(with: .success(value))
+                    }
+                )
+        }
+    }
+}
+
+
 public extension AnyPublisher {
     static func failing(file: StaticString = #file, line: UInt = #line) -> Self {
         Deferred {
