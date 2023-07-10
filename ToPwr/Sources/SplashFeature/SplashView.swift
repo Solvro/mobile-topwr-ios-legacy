@@ -8,172 +8,117 @@ import PureSwiftUI
 private typealias Curve = (p: CGPoint, cp1: CGPoint, cp2: CGPoint)
 private let toPwrLayoutConfig = LayoutGuideConfig.grid(columns: 10, rows: 5)
 
-//MARK: - STATE
-public struct SplashState: Equatable {
-	var isLoading: Bool = true
-	var showWritingAnimation: Bool = true
-	var listinerTime = 3 // 3 because before we start counting we do the animation that takes 3 seconds
-	var showAlert = false
-	var menuState = MenuState()
-	public init(){}
-}
-//MARK: - ACTION
-public enum SplashAction: Equatable {
-	case onAppear
-	case apiVersion(Result<Version, ErrorModel>)
-	case stopLoading
-	case setWriting(Bool)
-	case menuAction(MenuAction)
-	case delayWritingBy(Int)
-	case startMonitoring
-	case checkIfFinished
-	case showAlertChange(Bool)
-}
-
-//MARK: - ENVIRONMENT
-public struct SplashEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getApiVersion: () -> AnyPublisher<Version, ErrorModel>
-    let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
-    let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
-	let getAllScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
-    let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
-    let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
-	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
+public struct Splash: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var isLoading: Bool = true
+        var showWritingAnimation: Bool = true
+        var listinerTime = 3 // 3 because before we start counting we do the animation that takes 3 seconds
+        var showAlert = false
+        var menuState = MenuFeature.State()
+        
+        public init(){}
+    }
     
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getApiVersion: @escaping () -> AnyPublisher<Version, ErrorModel>,
-        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
-        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
-        getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
-		getAllScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
-        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>,
-		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getApiVersion = getApiVersion
-        self.getSessionDate = getSessionDate
-        self.getDepartments = getDepartments
-        self.getBuildings = getBuildings
-        self.getScienceClubs = getScienceClubs
-		self.getAllScienceClubs = getAllScienceClubs
-        self.getWelcomeDayText = getWelcomeDayText
-        self.getDepartment = getDepartment
-        self.getScienceClub = getScienceClub
-        self.getWhatsNew = getWhatsNew
-        self.getInfos = getInfos
-		self.getAboutUs = getAboutUs
+    public init() {}
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case onAppear
+        case apiVersion(TaskResult<Version>)
+        case stopLoading
+        case setWriting(Bool)
+        case menuAction(MenuFeature.Action)
+        case delayWritingBy(Int)
+        case startMonitoring
+        case checkIfFinished
+        case showAlertChange(Bool)
+    }
+    
+    // MARK: - Dependencies
+    @Dependency(\.splash) var splashClient
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        
+        Scope(
+            state: \.menuState,
+            action: /Action.menuAction
+        ) { () -> MenuFeature in
+            MenuFeature()
+        }
+        
+        Reduce { state, action in
+            enum ListinerID {}
+            switch action {
+            case .onAppear:
+                return .task {
+                    await .apiVersion(TaskResult {
+                        try await splashClient.getApiVersion()
+                    })
+                }
+            case .apiVersion(.success(let version)):
+                // FIXME: - Why are we not doing anything with this version value? 
+                return .init(value: .stopLoading)
+            case .apiVersion(.failure(let error)):
+                return .none
+            case .stopLoading:
+                state.isLoading = false
+                return .none
+            case .setWriting(let newValue):
+                state.showWritingAnimation = newValue
+                return .none
+            case .menuAction:
+                return .none
+            case .delayWritingBy(let delay):
+                return .task {
+                    try? await Task.sleep(for: .seconds(delay))
+                    return .startMonitoring
+                }
+            case .startMonitoring:
+                return .run { send in
+                    do {
+                        while true {
+                            try? await Task.sleep(for: .seconds(0.5))
+                            await send(.checkIfFinished)
+                        }
+                    }    catch{}
+                }
+                .cancellable(id: ListinerID.self)
+            case .checkIfFinished:
+                state.listinerTime += 1
+                
+                if state.listinerTime == 30 {
+                    state.showAlert = true
+                    return .cancel(id: ListinerID.self)
+                }
+                
+                if state.isLoading {
+                    return .none
+                }    else {
+                    return .concatenate (
+                        .init(value: .setWriting(false)),
+                        .cancel(id: ListinerID.self)
+                    )
+                }
+            case .showAlertChange(let newVal):
+                state.showAlert = newVal
+                if !newVal {
+                    state.listinerTime = 0
+                    return    .concatenate (
+                        .init(value: .onAppear),
+                        .init(value: .startMonitoring)
+                    )
+                }
+                return .none
+            }
+        }
     }
 }
 
-//MARK: - REDUCER
-public let splashReducer = Reducer<
-	SplashState,
-	SplashAction,
-	SplashEnvironment
-> { state, action, env in
-	enum ListinerID {}
-	
-	switch action {
-	case .onAppear:
-		return env.getApiVersion()
-			.receive(on: env.mainQueue)
-			.catchToEffect()
-			.map(SplashAction.apiVersion)
-	case .apiVersion(.success(let version)):
-		return .init(value: .stopLoading)
-	case .apiVersion(.failure(let error)):
-		print(error.localizedDescription)
-		return .none
-	case .stopLoading:
-		state.isLoading = false
-		return .none
-	case .setWriting(let newValue):
-		state.showWritingAnimation = newValue
-		return .none
-	case .menuAction:
-		return .none
-	case .delayWritingBy(let delay):
-		return .task {
-			try await env.mainQueue.sleep(for: .seconds(delay))
-			return .startMonitoring
-		}
-	case .startMonitoring:
-		return .run { send in
-			do {
-				while true {
-					try await env.mainQueue.sleep(for: .seconds(0.5))
-					await send(.checkIfFinished)
-				}
-			}	catch{}
-		}
-		.cancellable(id: ListinerID.self)
-	case .checkIfFinished:
-		state.listinerTime += 1
-		
-		if state.listinerTime == 30 {
-			state.showAlert = true
-			return .cancel(id: ListinerID.self)
-		}
-		
-		if state.isLoading {
-			return .none
-		}	else {
-			return .concatenate (
-				.init(value: .setWriting(false)),
-				.cancel(id: ListinerID.self)
-			)
-		}
-	case .showAlertChange(let newVal):
-		state.showAlert = newVal
-		if !newVal {
-			state.listinerTime = 0
-			return	.concatenate (
-				.init(value: .onAppear),
-				.init(value: .startMonitoring)
-			)
-		}
-		return .none
-	}
-}
-.combined(
-    with: menuReducer
-        .pullback(
-            state: \.menuState,
-            action: /SplashAction.menuAction,
-            environment: {
-                    .init(
-                        mainQueue: $0.mainQueue,
-                        getSessionDate: $0.getSessionDate,
-                        getDepartments: $0.getDepartments,
-                        getBuildings: $0.getBuildings,
-						getScienceClubs: $0.getScienceClubs,
-						getAllScienceClubs: $0.getAllScienceClubs,
-                        getWelcomeDayText: $0.getWelcomeDayText,
-                        getDepartment: $0.getDepartment,
-                        getScienceClub: $0.getScienceClub,
-                        getWhatsNew: $0.getWhatsNew,
-                        getInfos: $0.getInfos,
-						getAboutUs: $0.getAboutUs
-                    )
-            }
-        )
-)
-
 //MARK: - VIEW
 public struct SplashView: View {
-	let store: Store<SplashState, SplashAction>
+	let store: StoreOf<Splash>
 	
 	@State var scale: CGFloat = 1.0
 	@State private var progress = 0.0
@@ -195,9 +140,7 @@ public struct SplashView: View {
 			.repeatForever()
 	}
 	
-	public init(
-		store: Store<SplashState, SplashAction>
-	) {
+	public init(store: StoreOf<Splash>) {
 		self.store = store
 	}
 	
@@ -337,11 +280,11 @@ public struct SplashView: View {
 							dismissButton: .default(Text("Spróbuj ponownie"))
 						)
 					}
-				}else {
+				} else {
 					MenuView(
 						store: self.store.scope(
 							state: \.menuState,
-							action: SplashAction.menuAction
+                            action: Splash.Action.menuAction
 						)
 					)
 				}
@@ -501,29 +444,21 @@ public struct SplashView: View {
 }
 
 #if DEBUG
-//struct SplashView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SplashView(
-//            store: Store(
-//                initialState: .init(),
-//                reducer: splashReducer,
-//                environment: .init(
-//                    mainQueue: .immediate,
-//                    getApiVersion: failing0,
-//                    getSessionDate: failing0,
-//                    getDepartments: failing1,
-//                    getBuildings: failing0,
-//					getScienceClubs: failing1,
-//					getAllScienceClubs: failing0,
-//                    getWelcomeDayText: failing0,
-//                    getDepartment: failing1,
-//                    getScienceClub: failing1,
-//                    getWhatsNew: failing0,
-//                    getInfos: failing1,
-//					getAboutUs: failing0
-//                )
-//            )
-//        )
-//    }
-//}
+// MARK: - Mock
+extension Splash.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct TemplateView_Preview: PreviewProvider {
+    static var previews: some View {
+        SplashView(
+            store: .init(
+                initialState: .mock,
+                reducer: Splash()
+            )
+        )
+    }
+}
+
 #endif

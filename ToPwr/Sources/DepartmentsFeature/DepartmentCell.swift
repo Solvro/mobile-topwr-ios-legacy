@@ -13,11 +13,11 @@ public struct DepartmentCellView: View {
         }
     }
     
-    let viewState: DepartmentDetailsState
+    let viewState: DepartmentDetails.State
     let isHomeCell: Bool
     
     public init(
-        state: DepartmentDetailsState,
+        state: DepartmentDetails.State,
         isHomeCell: Bool = false
     ) {
         self.viewState = state

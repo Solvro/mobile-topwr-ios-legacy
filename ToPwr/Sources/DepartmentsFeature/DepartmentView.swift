@@ -3,103 +3,78 @@ import ComposableArchitecture
 import Combine
 import Common
 
-//MARK: - STATE
-public struct DepartmentsState: Equatable {
-    var listState = DepartmentListState()
-	var showAlert = false
-    
-    public init(){}
-}
-//MARK: - ACTION
-public enum DepartmentsAction: Equatable {
-    case onAppear
-    case loadDepartments
-    case receivedDepartments(Result<[Department], ErrorModel>)
-    case listAction(DepartmentListAction)
-    case dismissKeyboard
-	case showAlertStateChange(Bool)
-}
-
-//MARK: - ENVIRONMENT
-public struct DepartmentsEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
-    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getDepartments = getDepartments
-        self.getScienceClub = getScienceClub
-        self.getDepartment = getDepartment
+public struct DepartmentFeature: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var listState = DepartmentList.State()
+        var showAlert = false
+        
+        public init(){}
     }
-}
-
-//MARK: - REDUCER
-public let DepartmentsReducer = Reducer<
-    DepartmentsState,
-    DepartmentsAction,
-    DepartmentsEnvironment
-> { state, action, env in
-    switch action {
-    case .listAction:
-        return .none
-    case .onAppear:
-        if state.listState.departments.isEmpty {
-            return .init(value: .loadDepartments)
-        } else {
-            return .none
-        }
-    case .loadDepartments:
-        return env.getDepartments(0)
-            .receive(on: env.mainQueue)
-            .catchToEffect()
-            .map(DepartmentsAction.receivedDepartments)
-    case .receivedDepartments(.success(let departments)):
-        let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
-        state.listState = .init(
-          departments: sortedDepartments
-        )
-        return .none
-	case .receivedDepartments(.failure(let error)):
-		state.showAlert = true
-        return .none
-    case .dismissKeyboard:
-        UIApplication.shared.dismissKeyboard()
-        return .none
-	case .showAlertStateChange(let newState):
-		state.showAlert = newState
-		return .none
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case onAppear
+        case loadDepartments
+        case receivedDepartments(Result<[Department], ErrorModel>)
+        case listAction(DepartmentList.Action)
+        case dismissKeyboard
+        case showAlertStateChange(Bool)
     }
-}
-.combined(
-    with: departmentListReducer
-        .pullback(
+    
+    public init() {}
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        
+        Scope(
             state: \.listState,
-            action: /DepartmentsAction.listAction,
-            environment: { env in
-                    .init(
-                        mainQueue: env.mainQueue,
-                        getScienceClub: env.getScienceClub,
-                        getDepatrements: env.getDepartments,
-                        getDepartment: env.getDepartment
-                    )
+            action: /Action.listAction
+        ) { () -> DepartmentList in
+            DepartmentList()
+        }
+        
+        Reduce { state, action in
+            switch action {
+            case .listAction:
+                return .none
+            case .onAppear:
+                if state.listState.departments.isEmpty {
+                    return .init(value: .loadDepartments)
+                } else {
+                    return .none
+                }
+            case .loadDepartments:
+//                return env.getDepartments(0)
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(DepartmentsAction.receivedDepartments)
+                return .none
+            case .receivedDepartments(.success(let departments)):
+                let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
+                state.listState = .init(
+                  departments: sortedDepartments
+                )
+                return .none
+            case .receivedDepartments(.failure(let error)):
+                state.showAlert = true
+                return .none
+            case .dismissKeyboard:
+                UIApplication.shared.dismissKeyboard()
+                return .none
+            case .showAlertStateChange(let newState):
+                state.showAlert = newState
+                return .none
             }
-        )
-)
+        }
+    }
+}
 
 //MARK: - VIEW
 public struct DepartmentsView: View {
-    let store: Store<DepartmentsState, DepartmentsAction>
+    let store: StoreOf<DepartmentFeature>
     
-    public init(
-        store: Store<DepartmentsState, DepartmentsAction>
-    ) {
+    public init(store: StoreOf<DepartmentFeature>) {
         self.store = store
     }
     
@@ -108,7 +83,7 @@ public struct DepartmentsView: View {
 			DepartmentListView(
 				store: self.store.scope(
 					state: \.listState,
-					action: DepartmentsAction.listAction
+                    action: DepartmentFeature.Action.listAction
 				)
 			)
 			.onAppear {
@@ -135,24 +110,20 @@ public struct DepartmentsView: View {
 }
 
 #if DEBUG
-struct DepartmentsView_Previews: PreviewProvider {
+// MARK: - Mock
+extension DepartmentFeature.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct DepartmentFeatureView_Preview: PreviewProvider {
     static var previews: some View {
         DepartmentsView(
-            store: Store(
-                initialState: .init(),
-                reducer: DepartmentsReducer,
-                environment: .failing
+            store: .init(
+                initialState: .mock,
+                reducer: DepartmentFeature()
             )
         )
     }
-}
-
-public extension DepartmentsEnvironment {
-    static let failing: Self = .init(
-        mainQueue: .immediate,
-        getDepartments: failing1,
-        getScienceClub: failing1,
-        getDepartment: failing1
-    )
 }
 #endif

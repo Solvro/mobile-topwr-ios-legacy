@@ -10,7 +10,7 @@ public struct Home: ReducerProtocol {
     // MARK: - State
     public struct State: Equatable {
         var whatsNewListState = WhatsNewListFeature.State()
-        var departmentListState = DepartmentHomeListState()
+        var departmentListState = DepartmentHomeList.State()
         public var buildingListState = BuildingList.State()
         var clubHomeListState = ClubHomeList.State()
         var exceptations: ExceptationDays?
@@ -42,7 +42,7 @@ public struct Home: ReducerProtocol {
         case receivedNews(TaskResult<[WhatsNew]>)
         case buttonTapped
         case whatsNewListAction(WhatsNewListFeature.Action)
-        case departmentListAction(DepartmentHomeListAction)
+        case departmentListAction(DepartmentHomeList.Action)
         case buildingListAction(BuildingList.Action)
         case clubHomeListAction(ClubHomeList.Action)
     }
@@ -148,7 +148,7 @@ public struct Home: ReducerProtocol {
                 let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
                 state.departmentListState = .init(
                   departments: sortedDepartments.map {
-                      DepartmentDetailsState(department: $0)
+                      DepartmentDetails.State(department: $0)
                   }
                 )
                 return .none

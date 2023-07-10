@@ -5,25 +5,107 @@ import Common
 import IdentifiedCollections
 import ClubsFeature
 
-// MARK: - State
-public struct DepartmentDetailsState: Equatable, Identifiable {
-    public let id: UUID
-    public let department: Department
-    var clubs: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
-    var clubDetailsState: ClubDetails.State?
-    var isClubDetailsActive: Bool = false
+public struct DepartmentDetails: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable, Identifiable {
+        public let id: UUID
+        public let department: Department
+        var clubs: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
+        var clubDetailsState: ClubDetails.State?
+        var isClubDetailsActive: Bool = false
+        
+        public init(
+            id: UUID = UUID(),
+            department: Department
+        ) {
+            self.id = id
+            self.department = department
+        }
+    }
     
-    public init(
-        id: UUID = UUID(),
-        department: Department
-    ) {
-        self.id = id
-        self.department = department
+    // MARK: - Action
+    public enum Action: Equatable {
+        case onAppear
+        case getClubs
+        case loadClub(Int)
+        case receivedClub(Result<ScienceClub, ErrorModel>)
+        case clubAction(ClubDetails.Action)
+        case isClubDetailsActive(Bool)
+        case clubTapped(ClubDetails.State?)
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .onAppear:
+                return .init(value: .getClubs)
+            case .getClubs:
+//                var actions: [Effect<DepartmentDetailsAction, Never>] = []
+//                for id in state.department.clubsID {
+//                    actions.append(.init(value: .loadClub(id)))
+//                }
+//                return .concatenate(actions)
+                return .none
+            case .loadClub(let id):
+//                return env.getScienceClub(id)
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(DepartmentDetailsAction.receivedClub)
+                return .none
+            case .receivedClub(.success(let club)):
+                let clubs = state.clubs
+                if !clubs.contains(where: { $0.club.id == club.id }) {
+                    state.clubs.append(
+                        ClubDetails.State(
+                            club: club,
+                            department: state.department
+                        )
+                    )
+                }
+                return .none
+            case .receivedClub(.failure(let error)):
+                print(error)
+                return .none
+            case .clubAction:
+                return .none
+            case .isClubDetailsActive(let active):
+                state.isClubDetailsActive = active
+                return .none
+            case .clubTapped(let club):
+                if let club = club {
+                    state.clubDetailsState = club
+                    return .init(value: .isClubDetailsActive(true))
+                } else {
+                    state.isClubDetailsActive = false
+                    return .init(value: .isClubDetailsActive(false))
+                }
+            }
+        }
+        .ifLet(\.clubDetailsState, action: /Action.clubAction) {
+            ClubDetails()
+        }
     }
 }
 
-extension DepartmentDetailsState {
-    struct ViewState: Equatable {
+// MARK: - View
+public struct DepartmentDetailsView: View {
+    private enum Constants {
+        static let backgroundImageHeith: CGFloat = 254
+        static let logoBackgroundSize: CGFloat = 120
+        static let logoSize: CGFloat = 64
+        static let fieldsHeight: CGFloat = 50
+    }
+    
+    let store: StoreOf<DepartmentDetails>
+    
+    public init(store: StoreOf<DepartmentDetails>) {
+        self.store = store
+    }
+    
+    // MARK: - View State
+    
+    private struct ViewState: Equatable {
         let latitude: Float?
         let longitude: Float?
         let logoUrl: URL?
@@ -35,128 +117,24 @@ extension DepartmentDetailsState {
         let clubs: IdentifiedArrayOf<ClubDetails.State>
         var clubDetailsState: ClubDetails.State?
         var isClubDetailsActive: Bool = false
-    }
-    
-    var viewState: ViewState {
-        ViewState(
-            latitude: self.department.latitude,
-            longitude: self.department.longitude,
-            logoUrl: self.department.logo?.url,
-            color: self.department.color,
-            name: self.department.name,
-            adress: self.department.adress,
-            infoSection: self.department.infoSection,
-            fieldOfStudy: self.department.fieldOfStudy,
-            clubs: self.clubs,
-            clubDetailsState: self.clubDetailsState,
-            isClubDetailsActive: self.isClubDetailsActive
-        )
-    }
-    
-}
-
-// MARK: - Actions
-public enum DepartmentDetailsAction: Equatable {
-    case onAppear
-    case getClubs
-    case loadClub(Int)
-    case receivedClub(Result<ScienceClub, ErrorModel>)
-    case clubAction(ClubDetails.Action)
-    case isClubDetailsActive(Bool)
-    case clubTapped(ClubDetails.State?)
-}
-
-// MARK: - Environment
-public struct DepartmentDetailsEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    
-    public init(
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getScienceClub = getScienceClub
-        self.getDepartment = getDepartment
-    }
-}
-
-// MARK: - Reducer
-public let departmentDetailsReducer = Reducer<
-    DepartmentDetailsState,
-    DepartmentDetailsAction,
-    DepartmentDetailsEnvironment
-> { state, action, env in
-    switch action {
-    case .onAppear:
-        return .init(value: .getClubs)
-    case .getClubs:
-        var actions: [Effect<DepartmentDetailsAction, Never>] = []
-        for id in state.department.clubsID {
-            actions.append(.init(value: .loadClub(id)))
+        
+        init(state: DepartmentDetails.State) {
+            self.latitude = state.department.latitude
+            self.longitude = state.department.longitude
+            self.logoUrl = state.department.logo?.url
+            self.color = state.department.color
+            self.name = state.department.name
+            self.adress = state.department.adress
+            self.infoSection = state.department.infoSection
+            self.fieldOfStudy = state.department.fieldOfStudy
+            self.clubs = state.clubs
+            self.clubDetailsState = state.clubDetailsState
+            self.isClubDetailsActive = state.isClubDetailsActive
         }
-        return .concatenate(actions)
-    case .loadClub(let id):
-        return env.getScienceClub(id)
-            .receive(on: env.mainQueue)
-            .catchToEffect()
-            .map(DepartmentDetailsAction.receivedClub)
-    case .receivedClub(.success(let club)):
-        let clubs = state.clubs
-        if !clubs.contains(where: { $0.club.id == club.id }) {
-            state.clubs.append(
-                ClubDetails.State(
-                    club: club,
-                    department: state.department
-                )
-            )
-        }
-        return .none
-    case .receivedClub(.failure(let error)):
-        print(error)
-        return .none
-    case .clubAction:
-        return .none
-    case .isClubDetailsActive(let active):
-        state.isClubDetailsActive = active
-        return .none
-    case .clubTapped(let club):
-        if let club = club {
-            state.clubDetailsState = club
-            return .init(value: .isClubDetailsActive(true))
-        } else {
-            state.isClubDetailsActive = false
-            return .init(value: .isClubDetailsActive(false))
-        }
-    }
-}
-.combined(
-    with: AnyReducer { env in
-        ClubDetails()
-    }
-        .optional()
-        .pullback(state: \.clubDetailsState, action: /DepartmentDetailsAction.clubAction, environment: { $0 })
-)
-
-// MARK: - View
-public struct DepartmentDetailsView: View {
-    private enum Constants {
-        static let backgroundImageHeith: CGFloat = 254
-        static let logoBackgroundSize: CGFloat = 120
-        static let logoSize: CGFloat = 64
-        static let fieldsHeight: CGFloat = 50
-    }
-    
-    let store: Store<DepartmentDetailsState, DepartmentDetailsAction>
-    
-    public init(store: Store<DepartmentDetailsState, DepartmentDetailsAction>) {
-        self.store = store
     }
     
     public var body: some View {
-        WithViewStore(store.scope(state: \.viewState)) { viewStore in
+        WithViewStore(store.scope(state: ViewState.init)) { viewStore in
             ScrollView {
                 VStack {
                     DetailsMapView(
@@ -257,7 +235,7 @@ public struct DepartmentDetailsView: View {
                                 print($0.clubDetailsState)
                                 return $0.clubDetailsState
                             },
-                            action: DepartmentDetailsAction.clubAction
+                            action: DepartmentDetails.Action.clubAction
                         ),
                         then: ClubDetailsView.init(store:),
                         else: ProgressView.init
@@ -324,14 +302,22 @@ public struct DepartmentDetailsView: View {
     }
 }
 
-//MARK: - Mocks
 #if DEBUG
-
-public extension DepartmentDetailsEnvironment {
-    static let failing: Self = .init(
-        mainQueue: .immediate,
-        getScienceClub: failing1,
-        getDepartment: failing1
-    )
+// MARK: - Mock
+extension DepartmentDetails.State {
+    static let mock: Self = .init(department: .mock)
 }
+
+// MARK: - Preview
+private struct DepartmentDetailsView_Preview: PreviewProvider {
+    static var previews: some View {
+        DepartmentDetailsView(
+            store: .init(
+                initialState: .mock,
+                reducer: DepartmentDetails()
+            )
+        )
+    }
+}
+
 #endif
