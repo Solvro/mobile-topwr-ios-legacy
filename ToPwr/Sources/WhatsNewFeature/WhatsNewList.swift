@@ -10,9 +10,7 @@ public struct WhatsNewListFeature: ReducerProtocol {
         let news: IdentifiedArrayOf<WhatsNew>
         var cells: IdentifiedArrayOf<WhatsNewHomeCellFeature.State>
         
-        public init(
-            news: [WhatsNew] = []
-        ) {
+        public init(news: [WhatsNew] = []) {
             self.news = .init(uniqueElements: news)
             self.cells = .init(uniqueElements: news.map { .init(
                 url: $0.photo?.url,
@@ -59,9 +57,6 @@ public struct WhatsNewListFeature: ReducerProtocol {
 // MARK: - View
 public struct WhatsNewListView: View {
     
-    private enum Constants {
-    }
-    
     let store: StoreOf<WhatsNewListFeature>
     
     public init(store: StoreOf<WhatsNewListFeature>) {
@@ -70,7 +65,7 @@ public struct WhatsNewListView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            HStack() {
+            HStack {
                 Text(viewStore.title)
                     .font(.appMediumTitle2)
                     .foregroundColor(K.FontColors.primary)
@@ -80,26 +75,13 @@ public struct WhatsNewListView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
-                    ForEach(viewStore.news) { new in
-                        // FIXME: - Implement simple cell views here. Navigation will be handled from home via navigation stack
-//                        NavigationLink(
-//                            destination: IfLetStore(
-//                                self.store.scope(
-//                                    state: \.selection?.value,
-//                                    action: WhatsNewListAction.whatsNewDetailsAction
-//                                ),
-//                                then: WhatsNewDetailsView.init(store:),
-//                                else: ProgressView.init
-//                            ),
-//                            tag: new.id,
-//                            selection: viewStore.binding(
-//                                get: \.selection?.id,
-//                                send: WhatsNewListAction.setNavigation(selection:)
-//                            )
-//                        ) {
-//                            WhatsNewHomeCellView(viewState: new)
-//                        }
-                        Text("What's new home cell here")
+                    ForEachStore(
+                        store.scope(
+                            state: \.cells,
+                            action: WhatsNewListFeature.Action.cellTapped
+                        )
+                    ) {
+                        WhatsNewHomeCellView(store: $0)
                     }
                 }
                 .horizontalPadding(.normal)

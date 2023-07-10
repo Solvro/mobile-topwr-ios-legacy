@@ -3,124 +3,89 @@ import ComposableArchitecture
 import Combine
 import Common
 
-//MARK: - STATE
-public struct DepartmentHomeListState: Equatable {
-    let title: String = Strings.HomeLists.departmentListTitle
-    let buttonText: String = Strings.HomeLists.departmentListButton
-    
-    var departments: IdentifiedArrayOf<DepartmentDetailsState>
-    var selection: Identified<DepartmentDetailsState.ID, DepartmentDetailsState?>?
-    
-    var isLoading: Bool {
-        departments.isEmpty ? true : false
-    }
-    var isFetching = false
-    var noMoreFetches = false
-    
-    public init(
-        departments: [DepartmentDetailsState] = []
-    ){
-        self.departments = .init(uniqueElements: departments)
-    }
-}
-
-//MARK: - ACTION
-public enum DepartmentHomeListAction: Equatable {
-    case listButtonTapped
-    case setNavigation(selection: UUID?)
-    case departmentDetailsAction(DepartmentDetailsAction)
-    
-    case fetchingOn
-    case receivedDepartments(Result<[Department], ErrorModel>)
-    case loadMoreDepartments
-}
-
-//MARK: - ENVIRONMENT
-public struct DepartmentHomeListEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
-    let getDepatrements: (Int) -> AnyPublisher<[Department], ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getDepatrements: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getScienceClub = getScienceClub
-        self.getDepatrements = getDepatrements
-        self.getDepartment = getDepartment
-    }
-}
-
-//MARK: - REDUCER
-
-public let departmentHomeListReducer =
-departmentDetailsReducer
-.optional()
-.pullback(state: \Identified.value, action: .self, environment: { $0 })
-.optional()
-.pullback(
-  state: \DepartmentHomeListState.selection,
-  action: /DepartmentHomeListAction.departmentDetailsAction,
-  environment: {
-      .init(
-        mainQueue: $0.mainQueue,
-        getScienceClub: $0.getScienceClub,
-        getDepartment: $0.getDepartment
-      )
-  }
-)
-.combined(
-    with: Reducer<
-    DepartmentHomeListState,
-    DepartmentHomeListAction,
-    DepartmentHomeListEnvironment
-    > { state, action, env in
-        switch action {
-        case .listButtonTapped:
-            return .none
-        case let .setNavigation(selection: .some(id)):
-            state.selection = Identified(nil, id: id)
-            guard let id = state.selection?.id,
-                  let department = state.departments[id: id] else { return .none }
-            state.selection?.value = department
-            return .none
-        case .setNavigation(selection: .none):
-            state.selection = nil
-            return .none
-        case .departmentDetailsAction(_):
-            return .none
-        case .loadMoreDepartments:
-            return env.getDepatrements(state.departments.count)
-                .receive(on: env.mainQueue)
-                .catchToEffect()
-                .map(DepartmentHomeListAction.receivedDepartments)
-        case .receivedDepartments(.success(let clubs)):
-            if clubs.isEmpty {
-                state.noMoreFetches = true
-                state.isFetching = false
-                return .none
-            }
-            clubs.forEach { state.departments.append(DepartmentDetailsState(department: $0)) }
-            return .none
-        case .fetchingOn:
-            state.isFetching = true
-            return .none
-        case .receivedDepartments(.failure(_)):
-            return .none
+public struct DepartmentHomeList: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        let title: String = Strings.HomeLists.departmentListTitle
+        let buttonText: String = Strings.HomeLists.departmentListButton
+        
+        var departments: IdentifiedArrayOf<DepartmentDetails.State>
+        var selection: DepartmentDetails.State?
+        
+        var isLoading: Bool {
+            departments.isEmpty ? true : false
+        }
+        var isFetching = false
+        var noMoreFetches = false
+        
+        public init(departments: [DepartmentDetails.State] = []) {
+            self.departments = .init(uniqueElements: departments)
         }
     }
-)
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case listButtonTapped
+        case setNavigation(selection: UUID?)
+        case departmentDetailsAction(DepartmentDetails.Action)
+        
+        case fetchingOn
+        case receivedDepartments(Result<[Department], ErrorModel>)
+        case loadMoreDepartments
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .listButtonTapped:
+                return .none
+            case let .setNavigation(selection: .some(id)):
+//                state.selection = Identified(nil, id: id)
+//                guard let id = state.selection?.id,
+//                      let department = state.departments[id: id] else { return .none }
+//                state.selection?.value = department
+                return .none
+            case .setNavigation(selection: .none):
+                state.selection = nil
+                return .none
+            case .departmentDetailsAction(_):
+                return .none
+            case .loadMoreDepartments:
+//                return env.getDepatrements(state.departments.count)
+//                    .receive(on: env.mainQueue)
+//                    .catchToEffect()
+//                    .map(DepartmentHomeListAction.receivedDepartments)
+                return .none
+            case .receivedDepartments(.success(let clubs)):
+                if clubs.isEmpty {
+                    state.noMoreFetches = true
+                    state.isFetching = false
+                    return .none
+                }
+                clubs.forEach { state.departments.append(DepartmentDetails.State(department: $0)) }
+                return .none
+            case .fetchingOn:
+                state.isFetching = true
+                return .none
+            case .receivedDepartments(.failure(_)):
+                return .none
+            }
+        }
+        .ifLet(
+            \.selection,
+             action: /Action.departmentDetailsAction
+        ) {
+            DepartmentDetails()
+        }
+    }
+}
+
 //MARK: - VIEW
 public struct DepartmentHomeListView: View {
-    let store: Store<DepartmentHomeListState, DepartmentHomeListAction>
+    let store: StoreOf<DepartmentHomeList>
     
-    public init(
-        store: Store<DepartmentHomeListState, DepartmentHomeListAction>
-    ) {
+    public init(store: StoreOf<DepartmentHomeList>) {
         self.store = store
     }
     
@@ -149,31 +114,33 @@ public struct DepartmentHomeListView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 18) {
                     ForEach(viewStore.departments) { department in
-                        NavigationLink(
-                          destination: IfLetStore(
-                            self.store.scope(
-                              state: \.selection?.value,
-                              action: DepartmentHomeListAction.departmentDetailsAction
-                            ),
-                            then: DepartmentDetailsView.init(store:),
-                            else: ProgressView.init
-                          ),
-                          tag: department.id,
-                          selection: viewStore.binding(
-                            get: \.selection?.id,
-                            send: DepartmentHomeListAction.setNavigation(selection:)
-                          )
-                        ) {
-                            DepartmentCellView(state: department, isHomeCell: true)
-                                .onAppear {
-                                    if !viewStore.noMoreFetches {
-                                        viewStore.send(.fetchingOn)
-                                        if department.id == viewStore.departments.last?.id {
-                                            viewStore.send(.loadMoreDepartments)
-                                        }
+                        DepartmentCellView(state: department, isHomeCell: true)
+                            .onAppear {
+                                if !viewStore.noMoreFetches {
+                                    viewStore.send(.fetchingOn)
+                                    if department.id == viewStore.departments.last?.id {
+                                        viewStore.send(.loadMoreDepartments)
                                     }
                                 }
-                        }
+                            }
+                        // FIXME: - Implement proper navigation
+//                        NavigationLink(
+//                          destination: IfLetStore(
+//                            self.store.scope(
+//                              state: \.selection?.value,
+//                              action: DepartmentHomeList.Action.departmentDetailsAction
+//                            ),
+//                            then: DepartmentDetailsView.init(store:),
+//                            else: ProgressView.init
+//                          ),
+//                          tag: department.id,
+//                          selection: viewStore.binding(
+//                            get: \.selection?.id,
+//                            send: DepartmentHomeList.Action.setNavigation(selection:)
+//                          )
+//                        ) {
+//
+//                        }
                     }
                     if viewStore.isFetching { ProgressView() }
                 }
@@ -182,3 +149,23 @@ public struct DepartmentHomeListView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Mock
+extension DepartmentHomeList.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct DepartmentHomeListView_Preview: PreviewProvider {
+    static var previews: some View {
+        DepartmentHomeListView(
+            store: .init(
+                initialState: .mock,
+                reducer: DepartmentHomeList()
+            )
+        )
+    }
+}
+
+#endif

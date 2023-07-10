@@ -8,172 +8,107 @@ import ClubsFeature
 import InfoFeature
 import Common
 
-//MARK: - STATE
-public struct MenuState: Equatable {
-    var homeState = Home.State()
-    var mapState = MapFeatureState()
-    var departmentsState = DepartmentsState()
-    var clubsState = ClubFeature.State()
-    var infoState = InfoState()
-	var selection = 1
-	
-    public init(){}
-}
-
-//MARK: - ACTION
-public enum MenuAction: Equatable {
-    case homeAction(Home.Action)
-    case mapAction(MapFeatureAction)
-    case departmentsAction(DepartmentsAction)
-    case clubsAction(ClubFeature.Action)
-    case infoAction(InfoAction)
-	case newTabSelection(Int)
-}
-
-//MARK: - ENVIRONMENT
-public struct MenuEnvironment {
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-    let getSessionDate: () -> AnyPublisher<SessionDay, ErrorModel>
-    let getDepartments: (Int) -> AnyPublisher<[Department], ErrorModel>
-    let getBuildings: () -> AnyPublisher<[Map], ErrorModel>
-    let getScienceClubs: (Int) -> AnyPublisher<[ScienceClub], ErrorModel>
-	let getAllScienceClubs: () -> AnyPublisher<[ScienceClub], ErrorModel>
-    let getWelcomeDayText: () -> AnyPublisher<ExceptationDays, ErrorModel>
-    let getDepartment: (Int) -> AnyPublisher<Department, ErrorModel>
-    let getScienceClub: (Int) -> AnyPublisher<ScienceClub, ErrorModel>
-    let getWhatsNew: () -> AnyPublisher<[WhatsNew], ErrorModel>
-    let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
-	let getAboutUs: () -> AnyPublisher<AboutUs, ErrorModel>
+public struct MenuFeature: ReducerProtocol {
+    // MARK: - State
+    public struct State: Equatable {
+        var homeState = Home.State()
+        //var mapState = MapFeatureState()
+        var departmentsState = DepartmentFeature.State()
+        var clubsState = ClubFeature.State()
+        var infoState = InfoFeature.State()
+        var selection = 1
+        
+        public init(){}
+    }
     
-    public init (
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        getSessionDate: @escaping () -> AnyPublisher<SessionDay, ErrorModel>,
-        getDepartments: @escaping (Int) -> AnyPublisher<[Department], ErrorModel>,
-        getBuildings: @escaping () -> AnyPublisher<[Map], ErrorModel>,
-        getScienceClubs: @escaping (Int) -> AnyPublisher<[ScienceClub], ErrorModel>,
-		getAllScienceClubs: @escaping () -> AnyPublisher<[ScienceClub], ErrorModel>,
-        getWelcomeDayText: @escaping () -> AnyPublisher<ExceptationDays, ErrorModel>,
-        getDepartment: @escaping (Int) -> AnyPublisher<Department, ErrorModel>,
-        getScienceClub: @escaping (Int) -> AnyPublisher<ScienceClub, ErrorModel>,
-        getWhatsNew: @escaping () -> AnyPublisher<[WhatsNew], ErrorModel>,
-        getInfos: @escaping (Int) -> AnyPublisher<[Info], ErrorModel>,
-		getAboutUs: @escaping () -> AnyPublisher<AboutUs, ErrorModel>
-    ) {
-        self.mainQueue = mainQueue
-        self.getSessionDate = getSessionDate
-        self.getDepartments = getDepartments
-        self.getBuildings = getBuildings
-        self.getScienceClubs = getScienceClubs
-		self.getAllScienceClubs = getAllScienceClubs
-        self.getWelcomeDayText = getWelcomeDayText
-        self.getDepartment = getDepartment
-        self.getScienceClub = getScienceClub
-        self.getWhatsNew = getWhatsNew
-        self.getInfos = getInfos
-		self.getAboutUs = getAboutUs
+    public init() {}
+    
+    // MARK: - Action
+    public enum Action: Equatable {
+        case homeAction(Home.Action)
+        //case mapAction(MapFeatureAction)
+        case departmentsAction(DepartmentFeature.Action)
+        case clubsAction(ClubFeature.Action)
+        case infoAction(InfoFeature.Action)
+        case newTabSelection(Int)
+    }
+    
+    // MARK: - Reducer
+    public var body: some ReducerProtocol<State, Action> {
+        
+        Scope(
+            state: \.homeState,
+            action: /Action.homeAction
+        ) { () -> Home in
+            Home()
+        }
+        
+        // TODO: - Scope map
+        
+        Scope(
+            state: \.departmentsState,
+            action: /Action.departmentsAction
+        ) { () -> DepartmentFeature in
+            DepartmentFeature()
+        }
+        
+        Scope(
+            state: \.clubsState,
+            action: /Action.clubsAction
+        ) { () -> ClubFeature in
+            ClubFeature()
+        }
+        
+        Scope(
+            state: \.infoState,
+            action: /Action.infoAction
+        ) { () -> InfoFeature in
+            InfoFeature()
+        }
+        
+        Reduce { state, action in
+            switch action {
+            case .homeAction(.buildingListAction(.listButtonTapped)):
+                state.selection = 2
+//                return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
+//                    try await environment.mainQueue.sleep(for: .seconds(delay))
+//                    return .mapAction(.sheetOpenStatusChanged(true))
+//                }
+                return .none
+            case .homeAction(.departmentListAction(.listButtonTapped)):
+                state.selection = 3
+                return .none
+            case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
+//                let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
+//                state.mapState = MapFeatureState(preselectionID: id)
+//                state.selection = 2
+                return .none
+            case .homeAction(.clubHomeListAction(.listButtonTapped)):
+                state.selection = 4
+                return .none
+            case .homeAction:
+                return .none
+//            case .mapAction:
+//                return .none
+            case .departmentsAction:
+                return .none
+            case .clubsAction:
+                return .none
+            case .infoAction:
+                return .none
+            case .newTabSelection(let selection):
+                state.selection = selection
+                return .none
+            }
+        }
     }
 }
 
-//MARK: - REDUCER
-public let menuReducer = Reducer<
-    MenuState,
-    MenuAction,
-    MenuEnvironment
-> { state, action, environment in
-    switch action {
-    case .homeAction(.buildingListAction(.listButtonTapped)):
-        state.selection = 2
-        return .task { [delay = state.mapState.bottomSheetOnAppearUpSlideDelay] in
-            try await environment.mainQueue.sleep(for: .seconds(delay))
-            return .mapAction(.sheetOpenStatusChanged(true))
-        }
-    case .homeAction(.departmentListAction(.listButtonTapped)):
-        state.selection = 3
-        return .none
-    case .homeAction(.buildingListAction(.cellAction(id: let id, action: .buttonTapped))):
-        let selectedBuidling = state.homeState.buildingListState.buildings[id: id]
-        state.mapState = MapFeatureState(preselectionID: id)
-        state.selection = 2
-        return .none
-    case .homeAction(.clubHomeListAction(.listButtonTapped)):
-        state.selection = 4
-        return .none
-    case .homeAction:
-        return .none
-    case .mapAction:
-        return .none
-    case .departmentsAction:
-        return .none
-    case .clubsAction:
-        return .none
-    case .infoAction:
-        return .none
-	case .newTabSelection(let selection):
-		state.selection = selection
-		return .none
-    }
-}
-.combined(
-    with: AnyReducer { env in
-        Home()
-    }
-        .pullback(state: \.homeState, action: /MenuAction.homeAction, environment: { $0 })
-)
-.combined(
-	with: mapFeatureReducer
-		.pullback(
-			state: \.mapState,
-			action: /MenuAction.mapAction,
-			environment: { env in
-					.init(
-						getBuildings: env.getBuildings,
-						mainQueue: env.mainQueue
-					)
-			}
-		)
-)
-.combined(
-    with: DepartmentsReducer
-        .pullback(
-            state: \.departmentsState,
-            action: /MenuAction.departmentsAction,
-            environment: { env in
-                    .init(
-                        mainQueue: env.mainQueue,
-                        getDepartments: env.getDepartments,
-                        getScienceClub: env.getScienceClub,
-                        getDepartment: env.getDepartment
-                    )
-            }
-        )
-)
-.combined(
-    with: AnyReducer { env in
-        ClubFeature()
-    }
-        .pullback(state: \.clubsState, action: /MenuAction.clubsAction, environment: { $0 })
-)
-.combined(
-    with: infoReducer
-        .pullback(
-            state: \.infoState,
-            action: /MenuAction.infoAction,
-            environment: { env in
-                    .init(
-                        mainQueue: env.mainQueue,
-                        getInfos: env.getInfos,
-						getAboutUs: env.getAboutUs
-                    )
-            }
-        )
-)
 //MARK: - VIEW
 public struct MenuView: View {
-    let store: Store<MenuState, MenuAction>
+    let store: StoreOf<MenuFeature>
     
-    public init(
-        store: Store<MenuState, MenuAction>
-    ) {
+    public init(store: StoreOf<MenuFeature>) {
         self.store = store
     }
     
@@ -188,7 +123,7 @@ public struct MenuView: View {
 				HomeView(
 					store: self.store.scope(
 						state: \.homeState,
-						action: MenuAction.homeAction
+						action: MenuFeature.Action.homeAction
 					)
 				)
 				.preferredColorScheme(.light)
@@ -197,12 +132,15 @@ public struct MenuView: View {
 				}
 				.tag(1)
 				
-				MapFeatureView(
-					store: self.store.scope(
-						state: \.mapState,
-						action: MenuAction.mapAction
-					)
-				)
+//				MapFeatureView(
+//					store: self.store.scope(
+//						state: \.mapState,
+//                        action: Menu.Action.mapAction
+//					)
+//				)
+                AnyView(
+                    Text("Ola will refactor this view")
+                )
 				.preferredColorScheme(.light)
 				.tabItem {
 					Image("CompassIcon")
@@ -212,7 +150,7 @@ public struct MenuView: View {
 				DepartmentsView(
 					store: self.store.scope(
 						state: \.departmentsState,
-						action: MenuAction.departmentsAction
+						action: MenuFeature.Action.departmentsAction
 					)
 				)
 				.preferredColorScheme(.light)
@@ -224,7 +162,7 @@ public struct MenuView: View {
 				ClubsView(
 					store: self.store.scope(
 						state: \.clubsState,
-						action: MenuAction.clubsAction
+						action: MenuFeature.Action.clubsAction
 					)
 				)
 				.preferredColorScheme(.light)
@@ -235,7 +173,7 @@ public struct MenuView: View {
 				InfoView(
 					store: self.store.scope(
 						state: \.infoState,
-						action: MenuAction.infoAction
+						action: MenuFeature.Action.infoAction
 					)
 				)
 				.preferredColorScheme(.light)
@@ -252,30 +190,22 @@ public struct MenuView: View {
     }
 }
 
-//MARK: - MOCKS & PREVIEW
 #if DEBUG
-//struct MenuView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MenuView(
-//            store: Store(
-//                initialState: .init(),
-//                reducer: menuReducer,
-//                environment: .init(
-//                    mainQueue: .immediate,
-//                    getSessionDate: failing0,
-//                    getDepartments: failing1,
-//                    getBuildings: failing0,
-//					getScienceClubs: failing1,
-//					getAllScienceClubs: failing0,
-//                    getWelcomeDayText: failing0,
-//                    getDepartment: failing1,
-//                    getScienceClub: failing1,
-//                    getWhatsNew: failing0,
-//                    getInfos: failing1,
-//					getAboutUs: failing0
-//                )
-//            )
-//        )
-//    }
-//}
+// MARK: - Mock
+extension MenuFeature.State {
+    static let mock: Self = .init()
+}
+
+// MARK: - Preview
+private struct MenuView_Preview: PreviewProvider {
+    static var previews: some View {
+        MenuView(
+            store: .init(
+                initialState: .mock,
+                reducer: MenuFeature()
+            )
+        )
+    }
+}
+
 #endif
