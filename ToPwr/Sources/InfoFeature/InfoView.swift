@@ -14,13 +14,16 @@ public struct InfoFeature: ReducerProtocol {
     
     public init() {}
     
+    // MARK: - Dependency
+    @Dependency(\.info) var infoClient
+    
     // MARK: - Action
     public enum Action: Equatable {
         case onAppear
         case loadInfos
         case loadAboutUs
-        case receivedInfos(Result<[Info], ErrorModel>)
-        case receiveAboutUs(Result<AboutUs, ErrorModel>)
+        case receivedInfos(TaskResult<[Info]>)
+        case receiveAboutUs(TaskResult<AboutUs>)
         case listAction(InfoListFeature.Action)
         case dismissKeyboard
         case showAlertStateChange(Bool)
@@ -41,62 +44,60 @@ public struct InfoFeature: ReducerProtocol {
             case .listAction:
                 return .none
             case .onAppear:
-        //        if state.listState.infos.isEmpty {
-        //            return .concatenate (
-        //                .init(value: .loadInfos),
-        //                .init(value: .loadAboutUs)
-        //            )
-        //        } else {
-        //            return .none
-        //        }
-                return .none
+                if state.listState.infos.isEmpty {
+                    return .concatenate (
+                        .init(value: .loadInfos),
+                        .init(value: .loadAboutUs)
+                    )
+                } else {
+                    return .none
+                }
             case .loadInfos:
-        //        return env.getInfos(0)
-        //            .receive(on: env.mainQueue)
-        //            .catchToEffect()
-        //            .map(InfoAction.receivedInfos)
-                return .none
+                return .task {
+                    await .receivedInfos(TaskResult {
+                        try await infoClient.getInfos(0)
+                    })
+                }
             case .receivedInfos(.success(let Infos)):
-        //        var infos: IdentifiedArrayOf<InfoDetailsFeature.State> = .init(
-        //            uniqueElements: Infos.map {
-        //                InfoDetailsFeature.State(
-        //                    id: $0.id,
-        //                    url: $0.photo?.url,
-        //                    title: $0.title,
-        //                    description: $0.description,
-        //                    infoSection: $0.infoSection
-        //                )
-        //            }
-        //        )
-        //        state.listState.infos = infos
-        //        state.listState.filtered = infos
+                let infos: IdentifiedArrayOf<InfoDetailsFeature.State> = .init(
+                    uniqueElements: Infos.map {
+                        InfoDetailsFeature.State(
+                            id: $0.id,
+                            url: $0.photo?.url,
+                            title: $0.title,
+                            description: $0.description,
+                            infoSection: $0.infoSection
+                        )
+                    }
+                )
+                state.listState.infos = infos
+                state.listState.filtered = infos
                 return .none
-            case .receivedInfos(.failure(let error)):
-                //state.showAlert = true
+            case .receivedInfos(.failure):
+                state.showAlert = true
                 return .none
             case .dismissKeyboard:
-                //UIApplication.shared.dismissKeyboard()
+                UIApplication.shared.dismissKeyboard()
                 return .none
             case .showAlertStateChange(let newState):
-                //state.showAlert = newState
+                state.showAlert = newState
                 return .none
             case .loadAboutUs:
-        //        return env.getAboutUs()
-        //            .receive(on: env.mainQueue)
-        //            .catchToEffect()
-        //            .map(InfoAction.receiveAboutUs)
-                return .none
+                return .task {
+                    await .receiveAboutUs(TaskResult {
+                        try await infoClient.getAboutUs()
+                    })
+                }
             case .receiveAboutUs(.success(let aboutUs)):
-        //        state.listState.aboutUs = InfoDetailsFeature.State(
-        //            id: aboutUs.id,
-        //            url: aboutUs.photo.url,
-        //            title: "About Us",
-        //            description: aboutUs.description,
-        //            infoSection: aboutUs.infoSection
-        //        )
+                state.listState.aboutUs = InfoDetailsFeature.State(
+                    id: aboutUs.id,
+                    url: aboutUs.photo?.url,
+                    title: "About Us",
+                    description: aboutUs.content,
+                    infoSection: []
+                )
                 return .none
-            case .receiveAboutUs(.failure(let error)):
-                //print(error.localizedDescription)
+            case .receiveAboutUs(.failure):
                 return .none
             }
         }
@@ -115,7 +116,7 @@ public struct InfoView: View {
         WithViewStore(store) { viewStore in
             ZStack {
                 InfoListView(
-                    store: self.store.scope(
+                    store: store.scope(
                         state: \.listState,
                         action: InfoFeature.Action.listAction
                     )

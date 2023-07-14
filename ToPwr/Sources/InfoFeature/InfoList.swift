@@ -44,14 +44,14 @@ public struct InfoListFeature: ReducerProtocol {
         case loadMoreInfos
     }
     
-    // TODO: - add as dependancy
-    // let getInfos: (Int) -> AnyPublisher<[Info], ErrorModel>
-    
     public var body: some ReducerProtocol<State, Action> {
         
-//        Scope(state: \.searchState, action: /Action.searchAction) {
-//            SearchFeature()
-//        }
+        Scope(
+            state: \.searchState,
+            action: /Action.searchAction
+        ) { () -> SearchFeature in
+            SearchFeature()
+        }
         
         Reduce { state, action in
             switch action {
@@ -95,7 +95,7 @@ public struct InfoListView: View {
 							)
 						).padding(.bottom, 16)
 						LazyVStack(spacing: 16) {
-                            Text("About us was here. Also needs refactoring")
+                            
 //							NavigationLink {
 //								IfLetStore(
 //									self.store.scope(
@@ -106,14 +106,16 @@ public struct InfoListView: View {
 //									else: ProgressView.init
 //								)
 //							} label: {
-//								if viewStore.aboutUs != nil {
-//									InfoCellView(
-//										title: "O Nas!",
-//										url: viewStore.aboutUs?.info.photo?.url,
-//										isAboutUs: true
-//									)
-//								}
+
 //							}
+                            
+                            if viewStore.aboutUs != nil {
+                                InfoCellView(
+                                    title: "O Nas!",
+                                    url: viewStore.aboutUs?.url,
+                                    isAboutUs: true
+                                )
+                            }
 							
 							ForEach(viewStore.filtered) { club in
 //								NavigationLink(
@@ -131,13 +133,14 @@ public struct InfoListView: View {
 //										send: InfoListAction.setNavigation(selection:)
 //									)
 //								) {
-//									InfoCellView(
-//										title: club.info.title,
-//										url: club.info.photo?.url,
-//										description: club.info.shortDescription
-//									)
+
 //								}
-                                Text("There was a navigation link here. Navigation needs refactoring")
+                                
+                                InfoCellView(
+                                    title: club.title,
+                                    url: club.url,
+                                    description: club.description
+                                )
 							}
 							if let safeVerion = Constants.appVersion {
 								Text("Version \(safeVerion)")
@@ -155,80 +158,3 @@ public struct InfoListView: View {
 		}
 	}
 }
-
-/*
- //MARK: - REDUCER
- public let InfoListReducer =
- infoDetailsReducer
-     .optional()
-     .pullback(state: \Identified.value, action: .self, environment: { $0 })
-     .optional()
-     .pullback(
-         state: \InfoListState.selection,
-         action: /InfoListAction.infoDetailsAction,
-         environment: {
-             InfoDetailsEnvironment(
-                 mainQueue: $0.mainQueue
-             )
-         }
-     )
-     .combined(
-         with: Reducer<
-         InfoListState,
-         InfoListAction,
-         InfoListEnvironment
-         > { state, action, env in
-             switch action {
-             case .onAppear:
-                 return .none
-             case .searchAction(.update(let text)):
-                 state.text = text
-                 
-                 if text.count == 0 {
-                     state.filtered = state.infos
-                 } else {
-                     state.filtered = .init(
-                         uniqueElements: state.infos.filter {
-                             $0.info.title.contains(text) ||
-                             $0.info.description?.contains(text) ?? false
-                         }
-                     )
-                 }
-                 return .none
-             case .searchAction:
-                 return .none
-             case let .setNavigation(selection: .some(id)):
-                 state.selection = Identified(nil, id: id)
-                 guard let id = state.selection?.id,
-                       let info = state.filtered[id: id] else { return .none }
-                 state.selection?.value = info
-                 return .none
-             case .setNavigation(selection: .none):
-                 state.selection = nil
-                 return .none
-             case .infoDetailsAction:
-                 return .none
-             case .fetchingOn:
-                 state.isFetching = true
-                 return .none
-             case .receivedInfos(.success(let infos)):
-                 if infos.isEmpty {
-                     state.noMoreFetches = true
-                     state.isFetching = false
-                     return .none
-                 }
-                 infos.forEach { state.infos.append(InfoDetailsState(info: $0)) }
-                 state.filtered = state.infos
-                 state.isFetching = false
-                 return .none
-             case .receivedInfos(.failure(_)):
-                 return .none
-             case .loadMoreInfos:
-                 return env.getInfos(state.infos.count)
-                     .receive(on: env.mainQueue)
-                     .catchToEffect()
-                     .map(InfoListAction.receivedInfos)
-             }
-         }
-     )
- */

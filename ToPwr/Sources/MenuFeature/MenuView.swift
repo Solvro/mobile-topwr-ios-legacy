@@ -121,7 +121,7 @@ public struct MenuView: View {
 				)
 			) {
 				HomeView(
-					store: self.store.scope(
+					store: store.scope(
 						state: \.homeState,
 						action: MenuFeature.Action.homeAction
 					)
@@ -148,7 +148,7 @@ public struct MenuView: View {
 				.tag(2)
 				
 				DepartmentsView(
-					store: self.store.scope(
+					store: store.scope(
 						state: \.departmentsState,
 						action: MenuFeature.Action.departmentsAction
 					)
@@ -160,7 +160,7 @@ public struct MenuView: View {
 				.tag(3)
 				
 				ClubsView(
-					store: self.store.scope(
+					store: store.scope(
 						state: \.clubsState,
 						action: MenuFeature.Action.clubsAction
 					)
@@ -170,8 +170,9 @@ public struct MenuView: View {
 					Image("RocketIcon")
 				}
 				.tag(4)
+                
 				InfoView(
-					store: self.store.scope(
+					store: store.scope(
 						state: \.infoState,
 						action: MenuFeature.Action.infoAction
 					)

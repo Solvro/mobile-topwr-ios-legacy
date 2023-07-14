@@ -16,13 +16,16 @@ public struct DepartmentFeature: ReducerProtocol {
     public enum Action: Equatable {
         case onAppear
         case loadDepartments
-        case receivedDepartments(Result<[Department], ErrorModel>)
+        case receivedDepartments(TaskResult<[Department]>)
         case listAction(DepartmentList.Action)
         case dismissKeyboard
         case showAlertStateChange(Bool)
     }
     
     public init() {}
+    
+    // MARK: - Dependency
+    @Dependency(\.departments) var departmentsClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
@@ -45,18 +48,18 @@ public struct DepartmentFeature: ReducerProtocol {
                     return .none
                 }
             case .loadDepartments:
-//                return env.getDepartments(0)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(DepartmentsAction.receivedDepartments)
-                return .none
+                return .task {
+                    await .receivedDepartments(TaskResult {
+                        try await departmentsClient.getDepartments(0)
+                    })
+                }
             case .receivedDepartments(.success(let departments)):
                 let sortedDepartments = departments.sorted(by: { $0.id < $1.id})
                 state.listState = .init(
                   departments: sortedDepartments
                 )
                 return .none
-            case .receivedDepartments(.failure(let error)):
+            case .receivedDepartments(.failure):
                 state.showAlert = true
                 return .none
             case .dismissKeyboard:
@@ -81,7 +84,7 @@ public struct DepartmentsView: View {
     public var body: some View {
 		WithViewStore(store) { viewStore in
 			DepartmentListView(
-				store: self.store.scope(
+				store: store.scope(
 					state: \.listState,
                     action: DepartmentFeature.Action.listAction
 				)
