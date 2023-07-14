@@ -6,9 +6,9 @@ import ComposableArchitecture
 public struct InfoDetailsFeature: ReducerProtocol {
     public struct State: Equatable, Identifiable {
         public let id: Int
-        let url: URL?
-        let title: String
-        let description: String?
+        public let url: URL?
+        public let title: String
+        public let description: String?
         let infoSection: [InfoSection]
         
         public init(id: Int, url: URL?, title: String, description: String?, infoSection: [InfoSection]) {

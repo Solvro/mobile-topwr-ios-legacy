@@ -199,6 +199,7 @@ public struct ClubListView: View {
                         
                         LazyVStack(spacing: 16) {
                             ForEach(viewStore.filtered) { club in
+                                // TODO: - Implement
 //                                NavigationLink(
 //                                    destination: IfLetStore(
 //                                        self.store.scope(
@@ -214,17 +215,18 @@ public struct ClubListView: View {
 //                                        send: ClubList.Action.setNavigation(selection:)
 //                                    )
 //                                ) {
-//                                    ClubCellView(viewState: club)
-//                                        .onAppear {
-//											if !viewStore.noMoreFetches{
-//                                                viewStore.send(.fetchingOn)
-//                                                if club.id == viewStore.clubs.last?.id {
-//                                                    viewStore.send(.loadMoreClubs)
-//                                                }
-//                                            }
-//                                        }
+
 //                                }
-                                Text("Club cell here")
+                                
+                                ClubCellView(viewState: club)
+                                    .onAppear {
+                                        if !viewStore.noMoreFetches{
+                                            viewStore.send(.fetchingOn)
+                                            if club.id == viewStore.clubs.last?.id {
+                                                viewStore.send(.loadMoreClubs)
+                                            }
+                                        }
+                                    }
                             }
                             if viewStore.isFetching { ProgressView() }
                         }

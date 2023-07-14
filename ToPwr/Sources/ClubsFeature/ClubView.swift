@@ -15,6 +15,9 @@ public struct ClubFeature: ReducerProtocol {
     
     public init() {}
     
+    // MARK: - Dependency
+    @Dependency(\.clubs) var clubsClient
+    
     // MARK: - Action
     public enum Action: Equatable {
         case onAppear
@@ -28,12 +31,12 @@ public struct ClubFeature: ReducerProtocol {
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
         
-//        Scope(
-//            state: \.listState,
-//            action: /ClubFeature.Action.listAction
-//        ) {
-//            ClubList()
-//        }
+        Scope(
+            state: \.listState,
+            action: /ClubFeature.Action.listAction
+        ) { () -> ClubList in
+            ClubList()
+        }
         
         Reduce { state, action in
             switch action {
@@ -46,15 +49,14 @@ public struct ClubFeature: ReducerProtocol {
                     return .none
                 }
             case .loadClubs:
-                //                return env.getClubs(0)
-                //                    .receive(on: env.mainQueue)
-                //                    .catchToEffect()
-                //                    .map(ClubsAction.receivedClubs)
-                // TODO: - Load clubs
-                return .none
+                return .task {
+                    await .receivedClubs(TaskResult {
+                        try await clubsClient.getScienceClubs(0)
+                    })
+                }
             case .receivedClubs(.success(let clubs)):
                 return .init(value: .listAction(.receivedClubs(.success(clubs))))
-            case .receivedClubs(.failure(let error)):
+            case .receivedClubs(.failure):
                 state.showAlert = true
                 return .none
             case .dismissKeyboard:
