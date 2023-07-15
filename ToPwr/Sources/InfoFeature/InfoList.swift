@@ -139,7 +139,7 @@ public struct InfoListView: View {
                                 InfoCellView(
                                     title: club.title,
                                     url: club.url,
-                                    description: club.description
+                                    description: club.shortDescription
                                 )
 							}
 							if let safeVerion = Constants.appVersion {

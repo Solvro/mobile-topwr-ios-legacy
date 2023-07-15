@@ -66,6 +66,7 @@ public struct InfoFeature: ReducerProtocol {
                             url: $0.photo?.url,
                             title: $0.title,
                             description: $0.description,
+                            shortDescription: $0.shortDescription,
                             infoSection: $0.infoSection
                         )
                     }

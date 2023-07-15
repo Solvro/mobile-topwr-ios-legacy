@@ -9,13 +9,22 @@ public struct InfoDetailsFeature: ReducerProtocol {
         public let url: URL?
         public let title: String
         public let description: String?
+        public let shortDescription: String?
         let infoSection: [InfoSection]
         
-        public init(id: Int, url: URL?, title: String, description: String?, infoSection: [InfoSection]) {
+        public init(
+            id: Int,
+            url: URL?,
+            title: String,
+            description: String?,
+            shortDescription: String? = nil,
+            infoSection: [InfoSection]
+        ) {
             self.id = id
             self.url = url
             self.title = title
             self.description = description
+            self.shortDescription = shortDescription
             self.infoSection = infoSection
         }
     }
