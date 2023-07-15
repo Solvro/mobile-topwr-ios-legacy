@@ -28,6 +28,7 @@ public struct Api {
         }
         
         var request = URLRequest(url: url)
+
         var urlComponents = URLComponents(string: url.absoluteString)!
         if let order = order {
             urlComponents.queryItems?.append(URLQueryItem(name: "_sort", value: "\(order)"))
@@ -39,6 +40,7 @@ public struct Api {
             urlComponents.queryItems?.append(URLQueryItem(name: "_limit", value: "\(limit)"))
         }
         request = URLRequest(url: urlComponents.url!)
+        
         return URLSession.DataTaskPublisher(request: request, session: .shared)
             .tryMap { data, response in
                 guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
