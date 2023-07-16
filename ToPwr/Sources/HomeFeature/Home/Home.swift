@@ -193,6 +193,9 @@ public struct Home: ReducerProtocol {
                 return .none
             case .whatsNewListAction:
                 return .none
+            case .departmentListAction(.navigateToDetails(let navState)):
+                state.destinations.append(.departmentDetails(navState))
+                return .none
             case .departmentListAction:
                 return .none
             case .buildingListAction:
@@ -216,11 +219,13 @@ public struct Home: ReducerProtocol {
         public enum State: Equatable {
             case whatsNewDetails(WhatsNewDetailsFeature.State)
             case club(ClubDetails.State)
+            case departmentDetails(DepartmentDetails.State)
         }
         
         public enum Action: Equatable {
             case whatsNewDetails(WhatsNewDetailsFeature.Action)
             case club(ClubDetails.Action)
+            case departmentDetails(DepartmentDetails.Action)
         }
         
         public var body: some ReducerProtocol<State,Action> {
@@ -236,6 +241,12 @@ public struct Home: ReducerProtocol {
                      action: /Action.club
                 ) {
                     ClubDetails()
+                }
+                .ifCaseLet(
+                    /State.departmentDetails,
+                     action: /Action.departmentDetails
+                ) {
+                    DepartmentDetails()
                 }
         }
     }
