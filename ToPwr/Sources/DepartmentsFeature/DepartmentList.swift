@@ -15,11 +15,7 @@ public struct DepartmentList: ReducerProtocol {
         var text: String = ""
         var isFetching = false
         var noMoreFetches = false
-
-        var isLoading: Bool {
-            departments.isEmpty ? true : false
-        }
-        
+    
         public init(departments: [Department] = []) {
             self.departments = .init(
                 uniqueElements: departments.map {

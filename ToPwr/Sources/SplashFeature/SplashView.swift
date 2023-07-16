@@ -49,7 +49,7 @@ public struct Splash: ReducerProtocol {
         }
         
         Reduce { state, action in
-            enum ListinerID {}
+            enum ListenerID {}
             switch action {
             case .onAppear:
                 return .task {
@@ -77,20 +77,18 @@ public struct Splash: ReducerProtocol {
                 }
             case .startMonitoring:
                 return .run { send in
-                    do {
-                        while true {
-                            try? await Task.sleep(for: .seconds(0.5))
-                            await send(.checkIfFinished)
-                        }
-                    }    catch{}
+                    while true {
+                        try? await Task.sleep(for: .seconds(0.5))
+                        await send(.checkIfFinished)
+                    }
                 }
-                .cancellable(id: ListinerID.self)
+                .cancellable(id: ListenerID.self)
             case .checkIfFinished:
                 state.listinerTime += 1
                 
                 if state.listinerTime == 30 {
                     state.showAlert = true
-                    return .cancel(id: ListinerID.self)
+                    return .cancel(id: ListenerID.self)
                 }
                 
                 if state.isLoading {
@@ -98,7 +96,7 @@ public struct Splash: ReducerProtocol {
                 }    else {
                     return .concatenate (
                         .init(value: .setWriting(false)),
-                        .cancel(id: ListinerID.self)
+                        .cancel(id: ListenerID.self)
                     )
                 }
             case .showAlertChange(let newVal):

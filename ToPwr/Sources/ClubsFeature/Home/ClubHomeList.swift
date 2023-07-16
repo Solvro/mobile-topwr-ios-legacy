@@ -11,10 +11,6 @@ public struct ClubHomeList: ReducerProtocol {
         
         var clubs: IdentifiedArrayOf<ClubDetails.State> = .init(uniqueElements: [])
         var selection: ClubDetails.State?
-        
-        var isLoading: Bool {
-            clubs.isEmpty ? true : false
-        }
         var isFetching = false
         var noMoreFetches = false
         
@@ -133,17 +129,18 @@ public struct ClubHomeListView: View {
 //                                send: ClubHomeList.Action.setNavigation(selection:)
 //                            )
 //                        ) {
-//                            ClubHomeCellView(viewState: club)
-//                                .onAppear {
-//                                    if !viewStore.noMoreFetches {
-//                                        viewStore.send(.fetchingOn)
-//                                        if club.id == viewStore.clubs.last?.id {
-//                                            viewStore.send(.loadMoreClubs)
-//                                        }
-//                                    }
-//                                }
+
 //                        }
-                        // TODO: - Implement correct navigation
+                        
+                        ClubHomeCellView(viewState: club)
+                            .onAppear {
+                                if !viewStore.noMoreFetches {
+                                    viewStore.send(.fetchingOn)
+                                    if club.id == viewStore.clubs.last?.id {
+                                        viewStore.send(.loadMoreClubs)
+                                    }
+                                }
+                            }
                     }
                     if viewStore.isFetching { ProgressView() }
                 }

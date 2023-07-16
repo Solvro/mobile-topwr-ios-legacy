@@ -21,10 +21,6 @@ public struct ClubList: ReducerProtocol {
         var fetchedAll = false
         var noMoreFetches = false
         
-        var isLoading: Bool {
-            clubs.isEmpty ? true : false
-        }
-        
         public init(clubs: [ScienceClub] = []) {
             self.clubs = .init(
                 uniqueElements: clubs.map {

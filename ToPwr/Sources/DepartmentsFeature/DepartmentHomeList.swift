@@ -11,10 +11,6 @@ public struct DepartmentHomeList: ReducerProtocol {
         
         var departments: IdentifiedArrayOf<DepartmentDetails.State>
         var selection: DepartmentDetails.State?
-        
-        var isLoading: Bool {
-            departments.isEmpty ? true : false
-        }
         var isFetching = false
         var noMoreFetches = false
         
