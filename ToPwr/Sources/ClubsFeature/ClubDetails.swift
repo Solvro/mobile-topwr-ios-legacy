@@ -32,6 +32,9 @@ public struct ClubDetails: ReducerProtocol {
         case resultDepartment(TaskResult<Department>)
     }
     
+    // MARK: - Dependency
+    @Dependency(\.clubs) var clubsClient
+    
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
@@ -51,12 +54,11 @@ public struct ClubDetails: ReducerProtocol {
                 state.isLoading = false
                 return .none
             case .loadDepartment(let id):
-                // TODO: - Implement department loading
-//                return env.getDepartment(id)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(ClubDetailsAction.resultDepartment)
-                return .none
+                return .task {
+                    await .resultDepartment(TaskResult {
+                        try await clubsClient.getDepartment(id)
+                    })
+                }
             case .resultDepartment(.success(let department)):
                 state.department = department
                 state.isLoading = false

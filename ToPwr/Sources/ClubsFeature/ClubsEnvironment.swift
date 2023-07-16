@@ -12,11 +12,14 @@ import Common
 
 public struct ClubsEnvironment {
     var getScienceClubs: (Int) async throws -> [ScienceClub]
+    var getDepartment: (Int) async throws -> Department
     
     public init(
-        getScienceClubs: @escaping (Int) async throws -> [ScienceClub]
+        getScienceClubs: @escaping (Int) async throws -> [ScienceClub],
+        getDepartment: @escaping (Int) async throws -> Department
     ) {
         self.getScienceClubs = getScienceClubs
+        self.getDepartment = getDepartment
     }
 }
 
@@ -28,7 +31,8 @@ public extension DependencyValues {
     
     enum ClubsKey: TestDependencyKey {
         public static var testValue: ClubsEnvironment = .init(
-            getScienceClubs: XCTUnimplemented("Get scienceClubs")
+            getScienceClubs: XCTUnimplemented("Get scienceClubs"),
+            getDepartment: XCTUnimplemented("Get department")
         )
 #if DEBUG
         // TODO: - Implement preview val
