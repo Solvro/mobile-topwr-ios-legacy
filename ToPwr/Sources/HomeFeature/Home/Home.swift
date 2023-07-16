@@ -1,14 +1,23 @@
-import SwiftUI
+//
+//  Home.swift
+//  
+//
+//  Created by Mikolaj Zawada on 16/07/2023.
+//
+
+import Foundation
 import ComposableArchitecture
-import Combine
-import Common
 import DepartmentsFeature
-import ClubsFeature
 import WhatsNewFeature
+import ClubsFeature
+import Common
 
 public struct Home: ReducerProtocol {
     // MARK: - State
     public struct State: Equatable {
+        
+        var destinations = StackState<Destinations.State>()
+        
         var whatsNewListState = WhatsNewListFeature.State()
         var departmentListState = DepartmentHomeList.State()
         var buildingListState = BuildingList.State()
@@ -44,6 +53,7 @@ public struct Home: ReducerProtocol {
         case departmentListAction(DepartmentHomeList.Action)
         case buildingListAction(BuildingList.Action)
         case clubHomeListAction(ClubHomeList.Action)
+        case destinations(StackAction<Destinations.State, Destinations.Action>)
     }
     
     // MARK: - Dependencies
@@ -52,13 +62,12 @@ public struct Home: ReducerProtocol {
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
         
-        // TODO: - Scope department list
-//        Scope(
-//            state: \.departmentListState,
-//            action: /Action.departmentListAction
-//        ) {
-//
-//            }
+        Scope(
+            state: \.departmentListState,
+            action: /Action.departmentListAction
+        ) { () -> DepartmentHomeList in
+            DepartmentHomeList()
+        }
         
         Scope(
             state: \.buildingListState,
@@ -85,22 +94,22 @@ public struct Home: ReducerProtocol {
             switch action {
             case .onAppear:
                 if state.sessionDay == nil {
-                    return .init(value: .loadApiData)
+                    return .task { .loadApiData }
                 } else {
                     return .none
                 }
             case .onAppCameToForeground:
-                return .init(value: .loadApiData)
+                return .task { .loadApiData }
                 //api load
             case .loadApiData:
-                return .merge(
-                  .init(value: .loadWhatsNew),
-                  .init(value: .loadSessionDate),
-                  .init(value: .loadDepartments),
-                  .init(value: .loadBuildings),
-                  .init(value: .loadScienceClubs),
-                  .init(value: .loadWelcomeDayText)
-                )
+                return .run { send in
+                    await send(.loadWhatsNew)
+                    await send(.loadSessionDate)
+                    await send(.loadDepartments)
+                    await send(.loadBuildings)
+                    await send(.loadScienceClubs)
+                    await send(.loadWelcomeDayText)
+                }
             case .loadSessionDate:
                 return .task {
                     await .receivedSessionDate(TaskResult {
@@ -175,10 +184,13 @@ public struct Home: ReducerProtocol {
                     .receivedScienceClubs(.failure),
                     .receivedNews(.failure):
                 return .none
-            case .receivedWelcomeDayText(.failure(let error)):
+            case .receivedWelcomeDayText(.failure):
                 return .none
             case .buttonTapped:
               return .none
+            case .whatsNewListAction(.navigateToDetails(let navState)):
+                state.destinations.append(.whatsNewDetails(navState))
+                return .none
             case .whatsNewListAction:
                 return .none
             case .departmentListAction:
@@ -187,95 +199,42 @@ public struct Home: ReducerProtocol {
                 return .none
             case .clubHomeListAction:
                 return .none
+            case .destinations:
+                return .none
             }
         }
-    }
-}
-
-//MARK: - VIEW
-public struct HomeView: View {
-    let store: StoreOf<Home>
-    
-    public init(store: StoreOf<Home>) {
-        self.store = store
+        .forEach(\.destinations, action: /Action.destinations) {
+            Destinations()
+        }
     }
     
-    public var body: some View {
-        WithViewStore(store) { viewStore in
-            NavigationView {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        WelcomeView(
-                            exceptations: viewStore.exceptations
-                        )
-                            .horizontalPadding(.normal)
-                        
-                        DaysToSessionView(session: viewStore.sessionDay)
-                            .horizontalPadding(.normal)
-                        
-                        /// Whats New
-                        WhatsNewListView(
-                            store:  store.scope(
-                                state: \.whatsNewListState,
-                                action: Home.Action.whatsNewListAction
-                            )
-                        )
-                        
-                        /// Buildings
-                        BuildingListView(
-                            store:  store.scope(
-                                state: \.buildingListState,
-                                action: Home.Action.buildingListAction
-                            )
-                        )
-                        
-                        // Science Clubs
-                        ClubHomeListView(
-                            store: store.scope(
-                                state: \.clubHomeListState,
-                                action: Home.Action.clubHomeListAction
-                            )
-                        )
-                        
-                        /// Departments
-                        DepartmentHomeListView(
-                            store: store.scope(
-                                state: \.departmentListState,
-                                action: Home.Action.departmentListAction
-                            )
-                        )
-                    }
-                    .padding(.bottom, UIDimensions.normal.size)
+    public struct Destinations: ReducerProtocol {
+        
+        public enum State: Equatable {
+            case whatsNewDetails(WhatsNewDetailsFeature.State)
+        }
+        
+        public enum Action: Equatable {
+            case whatsNewDetails(WhatsNewDetailsFeature.Action)
+        }
+        
+        public var body: some ReducerProtocol<State,Action> {
+            EmptyReducer()
+                .ifCaseLet(
+                    /State.whatsNewDetails,
+                     action: /Action.whatsNewDetails
+                ) {
+                    WhatsNewDetailsFeature()
                 }
-                .navigationBarTitleDisplayMode(.inline)
-                .onAppear {
-                    viewStore.send(.onAppear)
-                }
-                .onAppCameToForeground {
-                    viewStore.send(.onAppCameToForeground)
-                }
-                .barLogo()
-            }
         }
     }
 }
 
 #if DEBUG
+
 // MARK: - Mock
 extension Home.State {
     static let mock: Self = .init()
-}
-
-// MARK: - Preview
-private struct HomeView_Preview: PreviewProvider {
-    static var previews: some View {
-        HomeView(
-            store: .init(
-                initialState: .mock,
-                reducer: Home()
-            )
-        )
-    }
 }
 
 #endif

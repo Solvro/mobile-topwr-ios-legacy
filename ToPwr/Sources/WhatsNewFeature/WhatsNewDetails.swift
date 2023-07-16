@@ -17,6 +17,8 @@ public struct WhatsNewDetailsFeature: ReducerProtocol {
         }
     }
     
+    public init() {}
+    
     public enum Action: Equatable {
         case onAppear
         case onDisappear
