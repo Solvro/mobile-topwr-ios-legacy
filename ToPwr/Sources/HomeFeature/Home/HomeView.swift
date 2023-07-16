@@ -80,6 +80,12 @@ public struct HomeView: View {
                     action: Home.Destinations.Action.whatsNewDetails,
                     then: WhatsNewDetailsView.init(store:)
                 )
+            case .club:
+                CaseLet(
+                    /Home.Destinations.State.club,
+                     action: Home.Destinations.Action.club,
+                     then: ClubDetailsView.init(store:)
+                )
             }
         }
     }

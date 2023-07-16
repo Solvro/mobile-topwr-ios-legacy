@@ -24,12 +24,15 @@ public struct ClubHomeList: ReducerProtocol {
     // MARK: - Action
     public enum Action: Equatable {
         case listButtonTapped
-        case setNavigation(selection: UUID?)
         case clubDetailsAction(ClubDetails.Action)
-        case receivedClubs(Result<[ScienceClub], ErrorModel>)
+        case receivedClubs(TaskResult<[ScienceClub]>)
         case loadMoreClubs
         case fetchingOn
+        case navigateToDetails(ClubDetails.State)
     }
+    
+    // MARK: - Dependency
+    @Dependency(\.clubs) var clubsClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
@@ -37,25 +40,14 @@ public struct ClubHomeList: ReducerProtocol {
             switch action {
             case .listButtonTapped:
                 return .none
-            case let .setNavigation(selection: .some(id)):
-//                state.selection = Identified(nil, id: id)
-//                guard let id = state.selection?.id,
-//                      let club = state.clubs[id: id] else { return .none }
-//                state.selection?.value = club
-                // TODO: - Correctly handle navigation
-                return .none
-            case .setNavigation(selection: .none):
-                state.selection = nil
-                return .none
             case .clubDetailsAction(_):
                 return .none
             case .loadMoreClubs:
-//                return env.getClubs(state.clubs.count)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(ClubHomeListAction.receivedClubs)
-                // TODO: - Implement dependency
-                return .none
+                return .task { [count = state.clubs.count] in
+                    await .receivedClubs(TaskResult{
+                        try await clubsClient.getScienceClubs(count)
+                    })
+                }
             case .receivedClubs(.success(let clubs)):
                 if clubs.isEmpty {
                     state.noMoreFetches = true
@@ -69,6 +61,8 @@ public struct ClubHomeList: ReducerProtocol {
                 return .none
             case .fetchingOn:
                 state.isFetching = true
+                return .none
+            case .navigateToDetails:
                 return .none
             }
         }
@@ -114,33 +108,19 @@ public struct ClubHomeListView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     ForEach(viewStore.clubs) { club in
-//                        NavigationLink(
-//                            destination: IfLetStore(
-//                                self.store.scope(
-//                                    state: \.selection?.value,
-//                                    action: ClubHomeList.Action.clubDetailsAction
-//                                ),
-//                                then: ClubDetailsView.init(store:),
-//                                else: ProgressView.init
-//                            ),
-//                            tag: club.id,
-//                            selection: viewStore.binding(
-//                                get: \.selection?.id,
-//                                send: ClubHomeList.Action.setNavigation(selection:)
-//                            )
-//                        ) {
-
-//                        }
-                        
-                        ClubHomeCellView(viewState: club)
-                            .onAppear {
-                                if !viewStore.noMoreFetches {
-                                    viewStore.send(.fetchingOn)
-                                    if club.id == viewStore.clubs.last?.id {
-                                        viewStore.send(.loadMoreClubs)
-                                    }
+                        Button {
+                            viewStore.send(.navigateToDetails(club))
+                        } label: {
+                            ClubHomeCellView(viewState: club)
+                        }
+                        .onAppear {
+                            if !viewStore.noMoreFetches {
+                                viewStore.send(.fetchingOn)
+                                if club.id == viewStore.clubs.last?.id {
+                                    viewStore.send(.loadMoreClubs)
                                 }
                             }
+                        }
                     }
                     if viewStore.isFetching { ProgressView() }
                 }

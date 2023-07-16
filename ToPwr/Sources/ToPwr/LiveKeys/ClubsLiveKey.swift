@@ -14,5 +14,7 @@ import CoreLogic
 extension DependencyValues.ClubsKey: DependencyKey {
     public static var liveValue: ClubsEnvironment = .init { start in
         try await CoreLogic().getScienceClubs(startingFrom: start).async()
+    } getDepartment: { id in
+        try await CoreLogic().getDepartment(id: id).async()
     }
 }
