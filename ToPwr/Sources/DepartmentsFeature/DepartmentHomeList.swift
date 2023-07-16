@@ -24,13 +24,16 @@ public struct DepartmentHomeList: ReducerProtocol {
     // MARK: - Action
     public enum Action: Equatable {
         case listButtonTapped
-        case setNavigation(selection: UUID?)
+        case navigateToDetails(DepartmentDetails.State)
         case departmentDetailsAction(DepartmentDetails.Action)
-        
         case fetchingOn
-        case receivedDepartments(Result<[Department], ErrorModel>)
+        case receivedDepartments(TaskResult<[Department]>)
         case loadMoreDepartments
     }
+    
+    // MARK: - Dependencies
+    
+    @Dependency(\.departments) var departmentsClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
@@ -38,23 +41,14 @@ public struct DepartmentHomeList: ReducerProtocol {
             switch action {
             case .listButtonTapped:
                 return .none
-            case let .setNavigation(selection: .some(id)):
-//                state.selection = Identified(nil, id: id)
-//                guard let id = state.selection?.id,
-//                      let department = state.departments[id: id] else { return .none }
-//                state.selection?.value = department
-                return .none
-            case .setNavigation(selection: .none):
-                state.selection = nil
-                return .none
             case .departmentDetailsAction(_):
                 return .none
             case .loadMoreDepartments:
-//                return env.getDepatrements(state.departments.count)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(DepartmentHomeListAction.receivedDepartments)
-                return .none
+                return .task { [count = state.departments.count] in
+                    await .receivedDepartments(TaskResult{
+                        try await departmentsClient.getDepartments(count)
+                    })
+                }
             case .receivedDepartments(.success(let clubs)):
                 if clubs.isEmpty {
                     state.noMoreFetches = true
@@ -67,6 +61,8 @@ public struct DepartmentHomeList: ReducerProtocol {
                 state.isFetching = true
                 return .none
             case .receivedDepartments(.failure(_)):
+                return .none
+            case .navigateToDetails:
                 return .none
             }
         }
@@ -112,33 +108,19 @@ public struct DepartmentHomeListView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 18) {
                     ForEach(viewStore.departments) { department in
-                        DepartmentCellView(state: department, isHomeCell: true)
-                            .onAppear {
-                                if !viewStore.noMoreFetches {
-                                    viewStore.send(.fetchingOn)
-                                    if department.id == viewStore.departments.last?.id {
-                                        viewStore.send(.loadMoreDepartments)
-                                    }
+                        Button {
+                            viewStore.send(.navigateToDetails(department))
+                        } label: {
+                            DepartmentCellView(state: department, isHomeCell: true)
+                        }
+                        .onAppear {
+                            if !viewStore.noMoreFetches {
+                                viewStore.send(.fetchingOn)
+                                if department.id == viewStore.departments.last?.id {
+                                    viewStore.send(.loadMoreDepartments)
                                 }
                             }
-                        // FIXME: - Implement proper navigation
-//                        NavigationLink(
-//                          destination: IfLetStore(
-//                            self.store.scope(
-//                              state: \.selection?.value,
-//                              action: DepartmentHomeList.Action.departmentDetailsAction
-//                            ),
-//                            then: DepartmentDetailsView.init(store:),
-//                            else: ProgressView.init
-//                          ),
-//                          tag: department.id,
-//                          selection: viewStore.binding(
-//                            get: \.selection?.id,
-//                            send: DepartmentHomeList.Action.setNavigation(selection:)
-//                          )
-//                        ) {
-//
-//                        }
+                        }
                     }
                     if viewStore.isFetching { ProgressView() }
                 }

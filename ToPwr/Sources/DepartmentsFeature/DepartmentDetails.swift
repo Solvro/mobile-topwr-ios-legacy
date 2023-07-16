@@ -23,6 +23,8 @@ public struct DepartmentDetails: ReducerProtocol {
         }
     }
     
+    public init() {}
+    
     // MARK: - Action
     public enum Action: Equatable {
         case onAppear
