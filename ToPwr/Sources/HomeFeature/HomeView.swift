@@ -11,7 +11,7 @@ public struct Home: ReducerProtocol {
     public struct State: Equatable {
         var whatsNewListState = WhatsNewListFeature.State()
         var departmentListState = DepartmentHomeList.State()
-        public var buildingListState = BuildingList.State()
+        var buildingListState = BuildingList.State()
         var clubHomeListState = ClubHomeList.State()
         var exceptations: ExceptationDays?
         var sessionDay: SessionDay? = nil
@@ -24,7 +24,6 @@ public struct Home: ReducerProtocol {
     // MARK: - Action
     public enum Action: Equatable {
         case onAppear
-        case onDisappear
         case onAppCameToForeground
         case loadApiData
         case loadSessionDate
@@ -90,8 +89,6 @@ public struct Home: ReducerProtocol {
                 } else {
                     return .none
                 }
-            case .onDisappear:
-                return .none
             case .onAppCameToForeground:
                 return .init(value: .loadApiData)
                 //api load

@@ -14,10 +14,6 @@ public struct InfoListFeature: ReducerProtocol {
         var isFetching = false
         var noMoreFetches = false
         
-        var isLoading: Bool {
-            infos.isEmpty ? true : false
-        }
-        
         public init(
             infos: IdentifiedArrayOf<InfoDetailsFeature.State> = .init(uniqueElements: []),
             aboutUs: InfoDetailsFeature.State? = nil,
