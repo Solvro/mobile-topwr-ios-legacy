@@ -1,7 +1,5 @@
 //LOCALIZABLE STRINGS
 
-"searching"="szukaj...";
-
 //Home bars
 "home_bar_item"="Home";
 "map_bar_item"="Mapa";
@@ -35,7 +33,7 @@
 "welcome_view_odd_saturday"="w nieparzystą Sobotę!";
 
 //Other (TO DO)
-"searching"="szukaj...";
+"searching"="Szukaj...";
 "welcome_title"="Cześć, miło Cie widzieć";
 "days_text"="dni";
 "till_session_start"="do rozpoczęcia sesji";

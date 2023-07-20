@@ -12,7 +12,7 @@ public struct MenuFeature: ReducerProtocol {
     // MARK: - State
     public struct State: Equatable {
         var homeState = Home.State()
-        //var mapState = MapFeatureState()
+        var mapState = MapFeature.State()
         var departmentsState = DepartmentFeature.State()
         var clubsState = ClubFeature.State()
         var infoState = InfoFeature.State()
@@ -26,7 +26,7 @@ public struct MenuFeature: ReducerProtocol {
     // MARK: - Action
     public enum Action: Equatable {
         case homeAction(Home.Action)
-        //case mapAction(MapFeatureAction)
+        case mapAction(MapFeature.Action)
         case departmentsAction(DepartmentFeature.Action)
         case clubsAction(ClubFeature.Action)
         case infoAction(InfoFeature.Action)
@@ -35,7 +35,6 @@ public struct MenuFeature: ReducerProtocol {
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
-        
         Scope(
             state: \.homeState,
             action: /Action.homeAction
@@ -43,7 +42,12 @@ public struct MenuFeature: ReducerProtocol {
             Home()
         }
         
-        // TODO: - Scope map
+        Scope(
+            state: \.mapState,
+            action: /Action.mapAction
+        ) { () -> MapFeature in
+            MapFeature()
+        }
         
         Scope(
             state: \.departmentsState,
@@ -88,8 +92,8 @@ public struct MenuFeature: ReducerProtocol {
                 return .none
             case .homeAction:
                 return .none
-//            case .mapAction:
-//                return .none
+            case .mapAction:
+                return .none
             case .departmentsAction:
                 return .none
             case .clubsAction:
@@ -132,15 +136,12 @@ public struct MenuView: View {
 				}
 				.tag(1)
 				
-//				MapFeatureView(
-//					store: self.store.scope(
-//						state: \.mapState,
-//                        action: Menu.Action.mapAction
-//					)
-//				)
-                AnyView(
-                    Text("Ola will refactor this view")
-                )
+				MapFeatureView(
+					store: self.store.scope(
+						state: \.mapState,
+                        action: MenuFeature.Action.mapAction
+					)
+				)
 				.preferredColorScheme(.light)
 				.tabItem {
 					Image("CompassIcon")

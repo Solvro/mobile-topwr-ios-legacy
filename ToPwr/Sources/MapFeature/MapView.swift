@@ -16,7 +16,7 @@ struct MapView: UIViewRepresentable {
 	}
 	var selectionTmpCopy: CustomAnnotation? = nil
 	@Binding var region: MKCoordinateRegion
-	@ObservedObject var wrapperViewState: ViewStore<MapState,MapAction>
+	@ObservedObject var wrapperViewState: ViewStoreOf<MapWrapper>
 	
 	func makeUIView(context: Context) -> MKMapView {
 		let view = MKMapView(frame: .zero)
