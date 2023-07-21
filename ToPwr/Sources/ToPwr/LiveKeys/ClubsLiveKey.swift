@@ -16,5 +16,7 @@ extension DependencyValues.ClubsKey: DependencyKey {
         try await CoreLogic().getScienceClubs(startingFrom: start).async()
     } getDepartment: { id in
         try await CoreLogic().getDepartment(id: id).async()
+    } getAllScienceClubs: {
+        try await CoreLogic().getAllScienceClubs().async()
     }
 }

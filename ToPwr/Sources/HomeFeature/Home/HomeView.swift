@@ -19,7 +19,7 @@ public struct HomeView: View {
             action: Home.Action.destinations
         )) {
             WithViewStore(store, observe: { $0 }) { viewStore in
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
                         WelcomeView(
                             exceptations: viewStore.exceptations
