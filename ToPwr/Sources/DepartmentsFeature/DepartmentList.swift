@@ -30,12 +30,15 @@ public struct DepartmentList: ReducerProtocol {
     public enum Action: Equatable {
         case listButtonTapped
         case searchAction(SearchFeature.Action)
-        case setNavigation(selection: UUID?)
+        case navigateToDetails(DepartmentDetails.State)
         case departmentDetailsAction(DepartmentDetails.Action)
         case receivedDepartments(TaskResult<[Department]>)
         case fetchingOn
         case loadMoreDepartments
     }
+    
+    // MARK: - Dependency
+    @Dependency(\.departments) var departmentsClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
@@ -68,23 +71,14 @@ public struct DepartmentList: ReducerProtocol {
                 return .none
             case .searchAction:
                 return .none
-            case let .setNavigation(selection: .some(id)):
-//                state.selection = Identified(nil, id: id)
-//                guard let id = state.selection?.id,
-//                  let department = state.filtered[id: id] else { return .none }
-//                  state.selection?.value = department
-                return .none
-            case .setNavigation(selection: .none):
-                state.selection = nil
-                return .none
             case .departmentDetailsAction:
                 return .none
             case .loadMoreDepartments:
-//                return env.getDepatrements(state.departments.count)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(DepartmentListAction.receivedDepartments)
-                return .none
+                return .task { [start = state.departments.count] in
+                    await .receivedDepartments(TaskResult {
+                        try await departmentsClient.getDepartments(start)
+                    })
+                }
             case .receivedDepartments(.success(let departments)):
                 if departments.isEmpty {
                     state.isFetching = false
@@ -101,6 +95,8 @@ public struct DepartmentList: ReducerProtocol {
                 return .none
             case .receivedDepartments(.failure(_)):
                 return .none
+            case .navigateToDetails:
+                return .none
             }
         }
         .ifLet(
@@ -111,17 +107,6 @@ public struct DepartmentList: ReducerProtocol {
         }
     }
 }
-
-//.combined(
-//    with: searchReducer
-//        .pullback(
-//            state: \.searchState,
-//            action: /DepartmentListAction.searchAction,
-//            environment: { env in
-//                    .init(mainQueue: env.mainQueue)
-//            }
-//        )
-//)
 
 //MARK: - VIEW
 public struct DepartmentListView: View {
@@ -145,33 +130,19 @@ public struct DepartmentListView: View {
                         
                         LazyVStack(spacing: 16) {
                             ForEach(viewStore.filtered) { department in
-                                // FIXME: - Modify navigation
-//                                NavigationLink(
-//                                  destination: IfLetStore(
-//                                    self.store.scope(
-//                                      state: \.selection?.value,
-//                                      action: DepartmentListAction.departmentDetailsAction
-//                                    ),
-//                                    then: DepartmentDetailsView.init(store:),
-//                                    else: ProgressView.init
-//                                  ),
-//                                  tag: department.id,
-//                                  selection: viewStore.binding(
-//                                    get: \.selection?.id,
-//                                    send: DepartmentListAction.setNavigation(selection:)
-//                                  )
-//                                ) {
-//
-//                                }
-                                DepartmentCellView(state: department)
-                                    .onAppear {
-                                        if !viewStore.noMoreFetches {
-                                            viewStore.send(.fetchingOn)
-                                            if department.id == viewStore.departments.last?.id {
-                                                viewStore.send(.loadMoreDepartments)
-                                            }
+                                Button {
+                                    viewStore.send(.navigateToDetails(department))
+                                } label: {
+                                    DepartmentCellView(state: department)
+                                }
+                                .onAppear {
+                                    if !viewStore.noMoreFetches {
+                                        viewStore.send(.fetchingOn)
+                                        if department.id == viewStore.departments.last?.id {
+                                            viewStore.send(.loadMoreDepartments)
                                         }
                                     }
+                                }
                             }
                         }
                         .padding(.bottom, UIDimensions.normal.size)

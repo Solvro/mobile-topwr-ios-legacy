@@ -18,7 +18,7 @@ public struct HomeView: View {
             state: \.destinations,
             action: Home.Action.destinations
         )) {
-        WithViewStore(store) { viewStore in
+            WithViewStore(store, observe: { $0 }) { viewStore in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         WelcomeView(
