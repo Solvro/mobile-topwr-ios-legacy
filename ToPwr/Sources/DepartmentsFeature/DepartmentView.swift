@@ -8,6 +8,7 @@ public struct DepartmentFeature: ReducerProtocol {
     public struct State: Equatable {
         var listState = DepartmentList.State()
         var showAlert = false
+        var destinations = StackState<Destinations.State>()
         
         public init(){}
     }
@@ -20,6 +21,7 @@ public struct DepartmentFeature: ReducerProtocol {
         case listAction(DepartmentList.Action)
         case dismissKeyboard
         case showAlertStateChange(Bool)
+        case destinations(StackAction<Destinations.State, Destinations.Action>)
     }
     
     public init() {}
@@ -39,14 +41,16 @@ public struct DepartmentFeature: ReducerProtocol {
         
         Reduce { state, action in
             switch action {
+            case .listAction(.navigateToDetails(let detailsState)):
+                state.destinations.append(.details(detailsState))
+                return .none
             case .listAction:
                 return .none
             case .onAppear:
                 if state.listState.departments.isEmpty {
                     return .init(value: .loadDepartments)
-                } else {
-                    return .none
                 }
+                return .none
             case .loadDepartments:
                 return .task {
                     await .receivedDepartments(TaskResult {
@@ -68,7 +72,33 @@ public struct DepartmentFeature: ReducerProtocol {
             case .showAlertStateChange(let newState):
                 state.showAlert = newState
                 return .none
+            case .destinations:
+                return .none
             }
+        }
+        .forEach(\.destinations, action: /Action.destinations) {
+            Destinations()
+        }
+    }
+    
+    public struct Destinations: ReducerProtocol {
+        
+        public enum State: Equatable {
+            case details(DepartmentDetails.State)
+        }
+        
+        public enum Action: Equatable {
+            case details(DepartmentDetails.Action)
+        }
+        
+        public var body: some ReducerProtocol<State,Action> {
+            EmptyReducer()
+                .ifCaseLet(
+                    /State.details,
+                     action: /Action.details
+                ) {
+                    DepartmentDetails()
+                }
         }
     }
 }
@@ -82,33 +112,47 @@ public struct DepartmentsView: View {
     }
     
     public var body: some View {
-		WithViewStore(store) { viewStore in
-			DepartmentListView(
-				store: store.scope(
-					state: \.listState,
-                    action: DepartmentFeature.Action.listAction
-				)
-			)
-			.onAppear {
-				viewStore.send(.onAppear)
-			}
-			.alert(
-				isPresented: Binding(
-					get: { viewStore.showAlert },
-					set: { viewStore.send(.showAlertStateChange($0)) }
-				)
-			) {
-				Alert(
-					title: Text(Strings.Other.networkError),
-					primaryButton: .default(
-						Text(Strings.Other.tryAgain),
-						action: {
-							viewStore.send(.loadDepartments)
-					} ),
-					secondaryButton: .cancel(Text(Strings.Other.cancel))
-				)
-			}
-		}
+        NavigationStackStore(store.scope(
+            state: \.destinations,
+            action: DepartmentFeature.Action.destinations
+        )) {
+            WithViewStore(store, observe: { $0 }) { viewStore in
+                DepartmentListView(
+                    store: store.scope(
+                        state: \.listState,
+                        action: DepartmentFeature.Action.listAction
+                    )
+                )
+                .onAppear {
+                    viewStore.send(.onAppear)
+                }
+                .alert(
+                    isPresented: Binding(
+                        get: { viewStore.showAlert },
+                        set: { viewStore.send(.showAlertStateChange($0)) }
+                    )
+                ) {
+                    Alert(
+                        title: Text(Strings.Other.networkError),
+                        primaryButton: .default(
+                            Text(Strings.Other.tryAgain),
+                            action: {
+                                viewStore.send(.loadDepartments)
+                            } ),
+                        secondaryButton: .cancel(Text(Strings.Other.cancel))
+                    )
+                }
+            }
+        } destination: {
+            switch $0 {
+            case .details:
+                CaseLet(
+                    /DepartmentFeature.Destinations.State.details,
+                     action: DepartmentFeature.Destinations.Action.details,
+                     then: DepartmentDetailsView.init(store:)
+                )
+            }
+        }
 	}
 }
 

@@ -30,31 +30,33 @@ public struct DepartmentDetails: ReducerProtocol {
         case onAppear
         case getClubs
         case loadClub(Int)
-        case receivedClub(Result<ScienceClub, ErrorModel>)
+        case receivedClub(TaskResult<ScienceClub>)
         case clubAction(ClubDetails.Action)
         case isClubDetailsActive(Bool)
         case clubTapped(ClubDetails.State?)
     }
+    
+    // MARK: - Dependencies
+    @Dependency(\.departments) var departmentsClient
     
     // MARK: - Reducer
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .init(value: .getClubs)
+                return .task { .getClubs }
             case .getClubs:
-//                var actions: [Effect<DepartmentDetailsAction, Never>] = []
-//                for id in state.department.clubsID {
-//                    actions.append(.init(value: .loadClub(id)))
-//                }
-//                return .concatenate(actions)
-                return .none
+                return .run { [clubsID = state.department.clubsID] send in
+                    for id in clubsID {
+                        await send(.loadClub(id))
+                    }
+                }
             case .loadClub(let id):
-//                return env.getScienceClub(id)
-//                    .receive(on: env.mainQueue)
-//                    .catchToEffect()
-//                    .map(DepartmentDetailsAction.receivedClub)
-                return .none
+                return .task {
+                    await .receivedClub(TaskResult {
+                        try await departmentsClient.getScienceClub(id)
+                    })
+                }
             case .receivedClub(.success(let club)):
                 let clubs = state.clubs
                 if !clubs.contains(where: { $0.club.id == club.id }) {
@@ -66,8 +68,7 @@ public struct DepartmentDetails: ReducerProtocol {
                     )
                 }
                 return .none
-            case .receivedClub(.failure(let error)):
-                print(error)
+            case .receivedClub(.failure):
                 return .none
             case .clubAction:
                 return .none
@@ -77,10 +78,10 @@ public struct DepartmentDetails: ReducerProtocol {
             case .clubTapped(let club):
                 if let club = club {
                     state.clubDetailsState = club
-                    return .init(value: .isClubDetailsActive(true))
+                    return .task { .isClubDetailsActive(true) }
                 } else {
                     state.isClubDetailsActive = false
-                    return .init(value: .isClubDetailsActive(false))
+                    return .task { .isClubDetailsActive(false) }
                 }
             }
         }
