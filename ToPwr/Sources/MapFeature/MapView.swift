@@ -1,5 +1,4 @@
 import MapKit
-import UIKit
 import SwiftUI
 import Common
 import ComposableArchitecture

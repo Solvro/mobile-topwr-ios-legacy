@@ -23,10 +23,7 @@ public struct MapWrapper: ReducerProtocol {
         var annotations: [CustomAnnotation]
         var newSelection: Bool = false
         
-        public init(
-            id: UUID,
-            annotations: [CustomAnnotation]
-        ) {
+        public init(id: UUID, annotations: [CustomAnnotation]) {
             self.id = id
             self.annotations = annotations
         }
