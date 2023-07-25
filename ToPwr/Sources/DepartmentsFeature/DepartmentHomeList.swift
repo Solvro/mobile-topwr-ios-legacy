@@ -19,6 +19,8 @@ public struct DepartmentHomeList: ReducerProtocol {
         }
     }
     
+    public init() {}
+    
     // MARK: - Action
     public enum Action: Equatable {
         case listButtonTapped
