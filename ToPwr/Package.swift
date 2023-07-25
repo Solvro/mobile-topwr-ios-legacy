@@ -78,6 +78,10 @@ let package = Package(
         .package(
             url: "https://github.com/firebase/firebase-ios-sdk",
             from: "9.0.0"
+        ),
+        .package(
+            url: "https://github.com/scinfu/SwiftSoup.git",
+            from: "2.6.0"
         )
     ],
     targets: [
@@ -87,6 +91,7 @@ let package = Package(
                 "SplashFeature",
                 "Common",
                 "CoreLogic",
+                "HomeFeature",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -250,6 +255,7 @@ let package = Package(
                 "Common",
                 "Api",
                 "Storage",
+                "SwiftSoup",
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"

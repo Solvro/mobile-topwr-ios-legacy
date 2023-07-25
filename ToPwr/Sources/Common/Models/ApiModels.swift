@@ -21,7 +21,7 @@ public struct SessionDay: Codable, Equatable {
 }
 
 // MARK: - Department
-public struct Department: Codable, Equatable {
+public struct Department: Decodable, Equatable {
     public var id: Int
     public var name: String?
     public var code: String?
@@ -80,20 +80,30 @@ public struct FieldOfStudy: Codable, Equatable, Identifiable {
 }
 
 // MARK: - Photo
-public struct Photo: Codable, Equatable {
-    public let id: Int
-    public let name: String
-    private let stringUrl: String
+public struct Photo: Decodable, Equatable {
+    public let id: Int?
+    public let name: String?
+    public let url: URL
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
-        case stringUrl = "url"
+        case url = "url"
+    }
+    
+    public init(
+        id: Int? = nil,
+        name: String? = nil,
+        url: URL
+    ) {
+        self.id = id
+        self.name = name
+        self.url = url
     }
 }
 
 //MARK: - Social Media
-public struct LinkComponent: Codable, Equatable, Identifiable {
+public struct LinkComponent: Decodable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let link: String?
@@ -109,7 +119,7 @@ public struct LinkComponent: Codable, Equatable, Identifiable {
 }
 
 //MARK: - Info Section
-public struct InfoSection: Codable, Equatable, Identifiable {
+public struct InfoSection: Decodable, Equatable, Identifiable {
     public let id: Int
     public let name: String?
     public let info: [InfoComponent]
@@ -122,7 +132,7 @@ public struct InfoSection: Codable, Equatable, Identifiable {
 }
 
 //MARK: - Info Component
-public struct InfoComponent: Codable, Equatable, Identifiable {
+public struct InfoComponent: Decodable, Equatable, Identifiable {
     public let id: Int
     public let value: String?
     public let icon: Photo?
@@ -176,7 +186,7 @@ public extension InfoComponent {
 }
 
 //MARK: - Science Clubs
-public struct ScienceClub: Codable, Equatable {
+public struct ScienceClub: Decodable, Equatable {
     public let id: Int
     public let name: String?
     public let department: Int?
@@ -231,7 +241,7 @@ public struct Contact: Codable, Equatable, Identifiable {
 }
 
 //MARK: - Maps
-public struct Map: Codable, Equatable {
+public struct Map: Decodable, Equatable {
     public let id: Int
     public let name: String?
     public let code: String?
@@ -330,23 +340,58 @@ public struct Version: Codable, Equatable {
 }
 
 // MARK: - WhatsNew
-public struct WhatsNew: Codable, Equatable, Identifiable {
-    public let id: Int
+public struct WhatsNew: Decodable, Equatable, Identifiable {
+    public let id: UUID
+    public let apiID: Int?
     public let title: String
     public let description: String?
     private let dateString: String?
     public let infoSection: [InfoSection]
     public let photo: Photo?
+    public let detailsUrl: URL?
     
     enum CodingKeys: String, CodingKey {
-        case id = "id"
+        case apiID = "id"
         case title = "title"
         case dateString = "date"
         case description = "description"
         case infoSection = "infoSection"
         case photo = "photo"
     }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = UUID()
+        self.apiID = try container.decodeIfPresent(Int.self, forKey: .apiID)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description)
+        self.dateString = try container.decodeIfPresent(String.self, forKey: .dateString)
+        self.infoSection = try container.decode([InfoSection].self, forKey: .infoSection)
+        self.photo = try container.decodeIfPresent(Photo.self, forKey: .photo)
+        self.detailsUrl = nil
+    }
+    
+    public init(
+        id: UUID,
+        apiID: Int? = nil,
+        title: String,
+        description: String? = nil,
+        dateString: String? = nil,
+        infoSection: [InfoSection],
+        photo: Photo? = nil,
+        detailsUrl: URL? = nil
+    ) {
+        self.id = id
+        self.apiID = apiID
+        self.title = title
+        self.description = description
+        self.dateString = dateString
+        self.infoSection = infoSection
+        self.photo = photo
+        self.detailsUrl = detailsUrl
+    }
 }
+
 
 #warning("TO DO: inject everywhere DateFormatter - it's not optimal way")
 public extension WhatsNew {
@@ -368,7 +413,7 @@ public extension WhatsNew {
 }
 
 // MARK: - WhatsNew
-public struct Info: Codable, Equatable, Identifiable {
+public struct Info: Decodable, Equatable, Identifiable {
     public let id: Int
     public let title: String
     public let description: String?
@@ -404,7 +449,7 @@ public struct Info: Codable, Equatable, Identifiable {
 
 // MARK: - AboutUs
 
-public struct AboutUs: Codable, Equatable {
+public struct AboutUs: Decodable, Equatable {
 	public let id: Int
 	public let content: String
 	public let photo: Photo?
@@ -422,12 +467,6 @@ public extension WeekDay {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yy-MM-dd"
         return dateFormatter.date(from: dateString)
-    }
-}
-
-public extension Photo {
-    var url: URL? {
-        URL(string: stringUrl)
     }
 }
 
@@ -496,7 +535,8 @@ public extension ScienceClub {
 
 public extension WhatsNew {
     static let mock: Self = .init(
-        id: 123,
+        id: UUID(),
+        apiID: 123,
         title: "Title",
         description: "description",
         dateString: nil,

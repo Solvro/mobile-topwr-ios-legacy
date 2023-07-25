@@ -8,9 +8,9 @@ public struct WhatsNewHomeCellFeature: ReducerProtocol {
         let dateLabel: String?
         let title: String
         let description: String?
-        public let id: Int
+        public let id: UUID
         
-        public init(url: URL?, dateLabel: String?, title: String, description: String?, id: Int) {
+        public init(url: URL?, dateLabel: String?, title: String, description: String?, id: UUID) {
             self.url = url
             self.dateLabel = dateLabel
             self.title = title
@@ -85,7 +85,7 @@ public struct WhatsNewHomeCellView: View {
                         }
                     }
                     .padding(3)
-                    Spacer()
+                    
                     VStack(alignment: .leading) {
                         HStack {
                             Text(viewStore.title)
@@ -93,10 +93,14 @@ public struct WhatsNewHomeCellView: View {
                                 .multilineTextAlignment(.leading)
                             Spacer()
                         }
+                        
                         Text(viewStore.description ?? "")
                             .font(.appRegularTitle4)
                             .verticalPadding(.normal)
                             .multilineTextAlignment(.leading)
+                        
+                        Spacer()
+                        
                         HStack {
                             HStack {
                                 Text(Strings.Other.readMore)
