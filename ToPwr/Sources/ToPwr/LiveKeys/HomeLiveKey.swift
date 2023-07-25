@@ -24,7 +24,6 @@ extension DependencyValues.HomeKey: DependencyKey {
         try await CoreLogic().getWelcomeDayText().async()
     } getWhatsNew: {
         var websiteNews = try await NewsWebScrapper.shared.getWhatsNew()
-        print(websiteNews)
         websiteNews.append(contentsOf: try await CoreLogic().getWhatsNew().async())
         return websiteNews
     }
